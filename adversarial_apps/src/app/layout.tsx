@@ -15,12 +15,12 @@ export default function RootLayout({
       <body>
        <header
           style={{
-            backgroundColor: "#A0F6FF",
+            backgroundColor: "#B1CEF2", //background color for the header
             width: 1920,
             height:93
           }}
           >
-            <Image
+            <Image //our logo image
               src="/Adversarial_Apps_Logo.png"
               width={302}
               height={68}
