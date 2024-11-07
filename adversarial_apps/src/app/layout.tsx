@@ -13,12 +13,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-       <header
+       <header 
           style={{
-            backgroundColor: "#B1CEF2", //background color for the header
+            backgroundColor: "#002759", //background color for the header
             width: 1920,
             height:93
           }}
+          className ="drop-shadow-[0_2px_2px_rgba(255,255,255,1.0)]"
           >
             <figure className="relative h-auto w-auto">
             <Link href = "/">
