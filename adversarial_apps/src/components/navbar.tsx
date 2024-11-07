@@ -3,6 +3,8 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 const links = [
+    //Constant link to all pages 
+
     {name: 'Home', href: '/' },
     {
         name: 'Education',
@@ -32,8 +34,8 @@ const links = [
 export default function NavBar() {
     const pathname = usePathname();
     return (
-<> 
-<p> Navbar </p>
-</>
+      <> 
+        {/* FOR CHRISTIAN Finish making Navbar here */}
+      </>
     );
 }
