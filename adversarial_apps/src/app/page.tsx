@@ -5,48 +5,25 @@ export default function Home() {
     <>
     <main>
         {/*main text goes here*/}
-        <p className="pl-5"> <br />
-            Welcome to Adversarial Apps:<br />
-            Your resource for identifying Friendly and Adversarial Companies!
-        </p>
+        <br /><br /><br /><br />
+        <h1 className="text-4xl text-center font-bold"> <br />
+            Adversarial Apps<br />
+        </h1>
 
-        <h1 className="text-lg font-bold pl-5"><br />Powerful Search Tools</h1>
+        <h3 className="text-2xl text-center"><br />
+        Helping <span className="font-bold">You</span> Identify Friendly Business Partners
+        </h3>
 
-        <p className="pl-5"> 
-            Our advanced search capabilities are designed to help you connect
-            with businesses that align with Department of Defense (DoD)
-            standards and <br /> security requirements. Features include: 
-        </p>
+        <h5 className="text-lg text-center"><br /><br /><br />
+        We offer an extensive database with powerful search tools to help you pursue your contracting goals
+        </h5>
 
-        <ul className="list-disc pl-12">
-            <li>DoD Compliance Checks: Discover companies compliant 
-                with essential standards and regulations.</li>
-            <li>SBIR, SAM, CFR: Access businesses aligned with federal programs like SBIR, 
-                registered on SAM, and compliant with CFR guidelines.</li>
-            <li>Risk-Based Identification: Filter companies based on their 
-                risk factor to ensure safer, smarter partnerships.</li>
-        </ul>
-
-        <h1 className="text-lg font-bold pl-5"><br />Educational Resources</h1>
-        <p className="pl-5">Stay informed with our Education Section, where you can explore how to 
-            effectively assess companies and reduce your exposure to potential 
-            risks. <br />Here, you'll find:</p>
-
-        <ul className="list-disc pl-12">
-            <li>Vetting Guides: Learn best practices for vetting companies and 
-                understanding risk signals.</li>
-            <li>Industry Insights: Access valuable articles and tutorials 
-                to help you make data-driven, secure business decisions.</li>
-        </ul>
-
-        <p className="pl-5">Adversarial Apps: Empowering you to make trusted connections in 
-            a complex business landscape.</p>
     </main>
 
-    <footer>
+    <footer className="fixed bottom-0 mx-auto">
         {/*images go here*/}
-        <h1 className="mb-6 text-3xl font-semibold text-black">Sponsors: </h1>
-        <div className= " flex flex-wrap justify-start space-x-4"> 
+        <h1 className="mb-6 text-3xl font-semibold">Sponsors: </h1>
+        <div className= " flex flex-wrap justify-center space-x-4"> 
         {/*makes sure images are side by side and not below each other*/}
         <figure className="relative h-auto w-auto"> 
         <a 
