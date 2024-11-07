@@ -5,7 +5,7 @@ export default function Home() {
     <>
     <main>
         {/*main text goes here*/}
-        <br /><br /><br /><br /><br />
+        <br /><br /><br /><br />
         <h1 className="text-4xl text-center font-bold"> <br />
             Adversarial Apps<br />
         </h1>
