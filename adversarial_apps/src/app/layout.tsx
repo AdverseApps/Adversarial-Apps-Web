@@ -19,7 +19,7 @@ export default function RootLayout({
             width: 1920,
             height:93
           }}
-          className ="drop-shadow-[0_2px_2px_rgba(255,255,255,1.0)]" //white drop shadow to separate header from main
+          className ="drop-shadow-[0_4px_2px_rgba(255,255,255,1.0)]" //white drop shadow to separate header from main
           >
             <figure className="relative h-auto w-auto">
             <Link href = "/" className="inline-block"> 
@@ -28,6 +28,7 @@ export default function RootLayout({
               width={302}
               height={68}
               alt="Adversarial Apps Logo"
+              className="ml-6"  // Adjust as needed
             />
             </Link>
             </figure>
