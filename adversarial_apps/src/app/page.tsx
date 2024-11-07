@@ -45,7 +45,7 @@ export default function Home() {
 
     <footer>
         {/*images go here*/}
-        <h1 className="mb-6 text-3xl font-semibold text-black">Sponsors: </h1>
+        <h1 className="mb-6 text-3xl font-semibold">Sponsors: </h1>
         <div className= " flex flex-wrap justify-start space-x-4"> 
         {/*makes sure images are side by side and not below each other*/}
         <figure className="relative h-auto w-auto"> 
