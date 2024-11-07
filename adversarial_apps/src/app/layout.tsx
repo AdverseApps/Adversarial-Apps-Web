@@ -19,11 +19,11 @@ export default function RootLayout({
             width: 1920,
             height:93
           }}
-          className ="drop-shadow-[0_2px_2px_rgba(255,255,255,1.0)]"
+          className ="drop-shadow-[0_2px_2px_rgba(255,255,255,1.0)]" //white drop shadow to separate header from main
           >
             <figure className="relative h-auto w-auto">
-            <Link href = "/">
-            <Image //our logo image
+            <Link href = "/" className="inline-block"> 
+            <Image //our logo image that links to home page
               src="/Adversarial_Apps_Logo.png"
               width={302}
               height={68}
