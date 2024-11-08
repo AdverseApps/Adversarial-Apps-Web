@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Image from "next/image";
 import Link from "next/link";
-
+import SearchBar from "@/components/searchbar";
 
 export default function RootLayout({
   children,
@@ -16,10 +16,10 @@ export default function RootLayout({
        <header 
           style={{
             backgroundColor: "#002759", //background color for the header
-            width: 1920,
             height:93
           }}
-          className ="drop-shadow-[0_4px_2px_rgba(255,255,255,1.0)]" //white drop shadow to separate header from main
+          className ="w-full drop-shadow-[0_4px_2px_rgba(255,255,255,1.0)] " //white drop shadow to separate header from main
+          
           >
             <figure className="relative h-auto w-auto">
             <Link href = "/" className="inline-block"> 
@@ -32,6 +32,12 @@ export default function RootLayout({
             />
             </Link>
             </figure>
+
+           {/* SearchBar positioned in the top-right */}
+          <nav className="fixed top-0 right-0 mt-4 mr-8 w-1/6">
+            <SearchBar placeholder="Search..."/> {/* Control width with size */}
+          </nav>
+
         </header>
 
       
