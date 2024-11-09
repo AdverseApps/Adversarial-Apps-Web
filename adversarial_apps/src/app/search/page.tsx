@@ -16,7 +16,7 @@ export default function  Page({
     return (
         <>
         <main>
-            <h1 className={`text-4xl mt-5 ml-6`}>Search</h1>
+            <h1 className={`text-4xl mt-12 ml-6 text-center`}>Search</h1>
 
           {/*search bar*/}
           <nav className="inset-0 flex items-center justify-center mt-9 gap-2 md:mt-8 ">
