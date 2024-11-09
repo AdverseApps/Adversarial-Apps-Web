@@ -43,7 +43,7 @@ export default function SearchResultsHandler({ query, currentPage }: SearchResul
           </ul>
         </div>
       ) : results.length > 0 ? (
-        <div className="text-center">
+        <div className="text-center text-xl">
           <h2>Search Results for "{query}":</h2>
           <ul className="mt-4">
             {results.map((result, index) => (
