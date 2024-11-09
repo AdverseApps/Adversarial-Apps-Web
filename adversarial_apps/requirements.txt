@@ -1,0 +1,3 @@
+# List of requirements For Python API
+requests
+beautifulsoup4

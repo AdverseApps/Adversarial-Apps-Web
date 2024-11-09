@@ -7,7 +7,7 @@ export default function HomePage() {
   const [result, setResult] = useState(null);
 
   const sendDataToPython = async () => {
-    const data = { name: "Alice", age: 30 };
+    const data = { action: "obtain_cik_number", search_term: "Google" };
     try {
       const response = await fetch('/api/call-python-api', {
         method: 'POST',

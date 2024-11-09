@@ -6,7 +6,7 @@ import path from 'path';
 export async function POST(req: NextRequest) {
   try {
     // Parse the incoming JSON data from the request
-    const inputData = await req.json();
+    const inputActionAndData = await req.json();
 
     // Path to the Python script
     const scriptPath = 'src/app/api/call-python-api/python-calls/main_api.py';
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Pass JSON data to the Python script via stdin
-    pythonProcess.stdin.write(JSON.stringify(inputData));
+    pythonProcess.stdin.write(JSON.stringify(inputActionAndData));
     pythonProcess.stdin.end();
 
     // Wait for the Python script to finish execution
