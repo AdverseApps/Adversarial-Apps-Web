@@ -1,4 +1,5 @@
 import Image from "next/image";
+import SearchBar from "@/components/searchbar";
 
 export default function Home() {
   return(
@@ -17,6 +18,13 @@ export default function Home() {
         <h5 className="text-lg text-center"><br /><br /><br />
         We offer an extensive database with powerful search tools to help you pursue your contracting goals
         </h5>
+        
+        <nav className="inset-0 flex items-center justify-center mt-9 gap-2 md:mt-8 ">
+            <div className="w-2/5 rounded-sm"> 
+            <SearchBar placeholder="Search..."  />
+            </div>
+        </nav>
+
 
     </main>
 
