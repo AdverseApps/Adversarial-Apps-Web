@@ -25,7 +25,7 @@ export default function SearchBar({ placeholder }: {placeholder: string}) {
     }, [searchTerm]);
 
     async function fetchResults(query: string) {
-      // Mock results for demonstration; replace with actual fetch if needed
+      // Mock results for demonstration; replace with actual fetch
       const mockResults = ["Company A", "Company B", "Company C"].filter((item) =>
         item.toLowerCase().includes(query.toLowerCase())
       );

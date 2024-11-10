@@ -7,6 +7,10 @@ const links = [
 
     {name: 'Home', href: '/' },
     {
+      name: 'Search',
+      href: '/search',
+    },
+    {
         name: 'Education',
         href: '/Education',
       },
@@ -35,7 +39,9 @@ export default function NavBar() {
     const pathname = usePathname();
     return (
       <> 
-        {/* FOR CHRISTIAN Finish making Navbar here */}
+        {/* FOR CHRISTIAN Finish making Navbar here 
+        use the Link component in place of the <a> tag, 
+        literally the same thing but Link is better*/}
       </>
     );
 }
