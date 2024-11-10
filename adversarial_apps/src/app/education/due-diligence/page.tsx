@@ -1,3 +1,7 @@
 export default function page(){
-    return (<p>Due Diligence</p>);
+    return (
+        <main>
+            <p>Due Diligence</p>
+        </main>
+    );
 }

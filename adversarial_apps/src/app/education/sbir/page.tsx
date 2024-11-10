@@ -1,3 +1,7 @@
 export default function page(){
-    return (<p>SBIR Contract</p>);
+    return (
+    <main>
+    <p>SBIR Contract</p>
+    </main>
+    );
 }

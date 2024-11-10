@@ -1,3 +1,7 @@
 export default function page(){
-    return (<p>SAM Compliance</p>);
+    return (
+        <main>
+            <p>SAM Compliance</p>
+        </main>
+    );
 }

@@ -1,3 +1,7 @@
 export default function page(){
-    return (<p>Resources Page</p>);
+    return (
+        <main>
+            <p>Resources Page</p>
+        </main>
+    );
 }

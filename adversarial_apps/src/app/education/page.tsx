@@ -3,8 +3,9 @@ export default function page(){
     
     return (
         <>
+        <main>
         {/*main text goes here*/}
-            <h1 className="text-6xl font-bold pl-5"><br />Education</h1>
+            <h1 className="text-6xl font-bold pl-5">Education</h1>
             <p className="pl-5">Educate yourself on all things Government Compliance. 
                 Your Journey to secure business starts here!</p>
                 <p className="pl-5"><br /> Places tp start: <br /></p>
@@ -17,6 +18,7 @@ export default function page(){
             <Link href = "education/resources"><li>Resources</li></Link>
             {/* Need to add links to each page here */}
         </ul>
+        </main>
         </>
     );
 }
