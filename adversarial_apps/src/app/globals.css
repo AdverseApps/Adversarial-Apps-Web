@@ -3,14 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #121212;
+  --foreground: #ffffff;
+  height: 100%;
+ 
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #FFFFFF;
-    --foreground: #ededed;
+    --background: #121212;
+    --foreground: #ffffff;
   }
 }
 
@@ -18,8 +20,27 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr; /* Single column layout */
+  grid-template-rows: auto 1fr; /* Auto for header, 1fr for main content */
+  
 }
 
+main {
+  padding: 1rem;
+  /* Optional: add more styling here, such as font sizes, colors, etc. */
+}
+
+/* Footer styling */
+footer {
+  
+  padding: 1.5rem 0;
+  background-color: #121212; 
+  color: white;
+  
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;
