@@ -16,6 +16,7 @@ export default function SearchBar({ placeholder }: {placeholder: string}) {
 
     useEffect(() => {
       if (searchTerm) {
+        console.log("Searching for:", searchTerm);
         fetchResults(searchTerm);
         setShowDropdown(true);
       } else {
@@ -25,11 +26,19 @@ export default function SearchBar({ placeholder }: {placeholder: string}) {
     }, [searchTerm]);
 
     async function fetchResults(query: string) {
+        const data = { action: "obtain_cik_number", search_term: query };
+        const response = await fetch('/api/call-python-api', {
+          method: 'Post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        console.log("Result is for:", result);
+        const companyNames = result.companies.map((company: { "Company Name": string }) => company["Company Name"]);
+        setResults(companyNames)
       // Mock results for demonstration; replace with actual fetch
-      const mockResults = ["Company A", "Company B", "Company C"].filter((item) =>
-        item.toLowerCase().includes(query.toLowerCase())
-      );
-      setResults(mockResults);
     }
 
     /*
