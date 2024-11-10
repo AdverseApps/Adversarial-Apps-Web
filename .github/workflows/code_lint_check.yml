@@ -1,0 +1,35 @@
+name: Code Linting Check
+
+# Triggers the workflow when push a commit or open a pull request
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+
+      - name: Install ESLint and eslint-config-next
+        run: |
+          # eslint must be the specified version per Next.js documentation
+          npm install eslint@^8 eslint-config-next@14.2.15 --no-save
+
+      - name: Check ESLint (Next.js Linter)
+        run: npx eslint .
+
+      - name: Install Black and isort
+        run: |
+          pip install black isort
+
+      - name: Check Black (Python formatter)
+        run: |
+          black . 
+
+      - name: Check isort (Python import sorter)
+        run: |
+          isort .
