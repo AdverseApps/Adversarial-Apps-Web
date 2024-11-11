@@ -66,6 +66,31 @@ pnpm run dev
 
 This will boot up the application, report any errors, and will update site live as you make changes. It will also tell you where the server is running on allowing you to go to that page to view the application.
 
+## Linting
+
+All the code must be linted to standardize formatting. We use Black & iSort for python files and ESLint for the Next.js component.
+
+ESLint comes provided as part of the required packages for application.
+You must use that version of ESLint. When you install the packages as seen above in README you will have ESLint and can run the following command:
+```bash
+npx eslint "src/**"
+```
+
+You can also run
+```bash
+npm run lint
+```
+
+Black and isort are ran as follows
+```bash
+black adversarial_apps
+isort adversarial_apps
+```
+
+Essentially just run the two commands and specify the root older of the project afterwards.
+
+You may also isolate it to the specific folder.
+
 ## Contributing
 
 To contribute to this application and the process for doing so, please view the [Contribution Guide](.github\CONTRIBUTING.md).

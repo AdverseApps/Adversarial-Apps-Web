@@ -44,7 +44,7 @@ export default function SearchResultsHandler({ query, currentPage }: SearchResul
         </div>
       ) : results.length > 0 ? (
         <div className="text-center text-xl">
-          <h2>Search Results for "{query}":</h2>
+          <h2>Search Results for &quot;{query}&quot;:</h2>
           <ul className="mt-4">
             {results.map((result, index) => (
               <li key={index} className="text-lg">
@@ -54,7 +54,7 @@ export default function SearchResultsHandler({ query, currentPage }: SearchResul
           </ul>
         </div>
       ) : (
-        <p className="text-center text-lg">No results found for "{query}".</p>
+        <p className="text-center text-lg">No results found for &quot;{query}&quot;.</p>
       )}
     </div>
   );

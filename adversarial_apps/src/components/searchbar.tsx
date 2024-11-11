@@ -1,12 +1,10 @@
 'use client';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 export default function SearchBar({ placeholder }: {placeholder: string}) {
     
     const searchParams = useSearchParams();
-    const pathname = usePathname();
     const replace = useRouter();
     const [searchTerm, setSearchTerm] = useState('');
     const [results, setResults] = useState<string[]>([]);
@@ -40,18 +38,6 @@ export default function SearchBar({ placeholder }: {placeholder: string}) {
         const companyNames = result.companies.map((company: { "Company Name": string }) => company["Company Name"]);
         setResults(companyNames)
     }
-
-    /*
-    function handleSearch(term: string) {
-        const params = new URLSearchParams(searchParams);
-        if (term) {
-          params.set('query', term);
-        } else {
-          params.delete('query');
-        }
-        replace(`${"/search"}?${params.toString()}`);
-      }
-    */
 
       function handleSearch(term: string) {
         if (term) {
