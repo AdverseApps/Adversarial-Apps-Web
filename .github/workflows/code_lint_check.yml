@@ -28,7 +28,7 @@ jobs:
 
       - name: Check Black (Python formatter)
         run: |
-          black --check .
+          black --check . --exclude '/(node_modules|.venv)/' .
 
       - name: Check isort (Python import sorter)
         run: |
