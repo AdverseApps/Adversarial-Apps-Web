@@ -1,12 +1,10 @@
 'use client';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 export default function SearchBar({ placeholder }: {placeholder: string}) {
     
     const searchParams = useSearchParams();
-    const pathname = usePathname();
     const replace = useRouter();
     const [searchTerm, setSearchTerm] = useState('');
     const [results, setResults] = useState<string[]>([]);

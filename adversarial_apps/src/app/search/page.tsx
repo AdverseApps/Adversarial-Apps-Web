@@ -1,6 +1,5 @@
 import SearchBar from '@/components/searchbar';
 import SearchResultsHandler from '@/components/SearchResultsHandler';
-import { Suspense } from 'react';
 
 export default function  Page({
     searchParams,

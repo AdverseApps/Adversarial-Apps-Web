@@ -1,7 +1,6 @@
 // File: /src/app/api/run-python/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
-import path from 'path';
 
 export async function POST(req: NextRequest) {
   try {
