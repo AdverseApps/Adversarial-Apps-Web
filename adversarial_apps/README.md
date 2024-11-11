@@ -37,8 +37,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Linting
 
-It's recommended to install an ESLint extension for these to be handled during development.
-Alternatively, you can also lint by use the following command:
+ESLint comes provided as part of the required packages for application.
+You must use that version of ESLint. When you install the packages as seen above in README you will have ESLint and can run the following command:
 `npx eslint "src/**"`
 
-You may also isolate it to the specific folder you are editing too.
+You may also isolate it to the specific folder.
