@@ -28,8 +28,8 @@ jobs:
 
       - name: Check Black (Python formatter)
         run: |
-          black . 
+          black --check .
 
       - name: Check isort (Python import sorter)
         run: |
-          isort .
+          isort --check-only .
