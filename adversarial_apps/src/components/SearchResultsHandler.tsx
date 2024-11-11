@@ -8,9 +8,9 @@ interface SearchResultsHandlerProps {
   currentPage: number;
 }
 
-export default function SearchResultsHandler({ query, cik, currentPage }: SearchResultsHandlerProps) {
+export default function SearchResultsHandler({ cik }: SearchResultsHandlerProps) {
   
-  const [results, setResults] = useState<any>(null);
+  const [results, setResults] = useState<unknown>(null);
   const [hasSearched, setHasSearched] = useState(false);
   
   useEffect(() => {

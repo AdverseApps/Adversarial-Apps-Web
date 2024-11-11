@@ -4,7 +4,6 @@ import { spawn } from 'child_process';
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("HELLO")
     // Parse the incoming JSON data from the request
     const inputActionAndData = await req.json();
 
@@ -19,7 +18,6 @@ export async function POST(req: NextRequest) {
 
     // Collect stdout data
     pythonProcess.stdout.on('data', (data) => {
-      console.log('Python stdout:', data.toString());  // Log output for debugging
       stdout += data.toString();
     });
 
