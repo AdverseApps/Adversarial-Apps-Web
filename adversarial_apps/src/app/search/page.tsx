@@ -6,10 +6,12 @@ export default function  Page({
   }: {
     searchParams?: {
       query?: string;
+      cik?: string;
       page?: string;
     };
   }) {
     const query = searchParams?.query || '';
+    const cik = searchParams?.cik || '';
     const currentPage = Number(searchParams?.page) || 1; //for whenever pagination is added
 
     return (
@@ -29,7 +31,7 @@ export default function  Page({
           </nav>
 
            {/* Search Results and states handled here */}
-      <SearchResultsHandler query={query} currentPage={currentPage} />
+           <SearchResultsHandler query={query} cik={cik} currentPage={currentPage} />
           </main>
         </>
       );

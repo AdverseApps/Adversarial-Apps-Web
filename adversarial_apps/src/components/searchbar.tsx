@@ -7,7 +7,7 @@ export default function SearchBar({ placeholder }: {placeholder: string}) {
     const searchParams = useSearchParams();
     const replace = useRouter();
     const [searchTerm, setSearchTerm] = useState('');
-    const [results, setResults] = useState<string[]>([]);
+    const [results, setResults] = useState<{ name: string; cik: string }[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
 
 
@@ -35,8 +35,12 @@ export default function SearchBar({ placeholder }: {placeholder: string}) {
         });
         const result = await response.json();
         // Will likely return the whole object in the future, but for V1 it's fine to just surface the names.
-        const companyNames = result.companies.map((company: { "Company Name": string }) => company["Company Name"]);
-        setResults(companyNames)
+        console.log(result);
+        const companies = result.companies.map((company: { "Company Name": string, "CIK": string }) => ({
+          name: company["Company Name"],
+          cik: company["CIK"]
+      }));
+        setResults(companies)
     }
 
       function handleSearch(term: string) {
@@ -79,11 +83,11 @@ export default function SearchBar({ placeholder }: {placeholder: string}) {
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 onClick={() => {
                   //REPLACE WITH HAVING THEM REDIRECTED TO RESULTS PAGE FOR THE ENTRY HERE
-                  handleSearch(result);
+                  replace.push(`/search?query=${result.name}&cik=${result.cik}`);
                   setShowDropdown(false); // Hide dropdown after selection
                 }}
               >
-              {result}
+              {result.name}
               </li>
               ))
             }

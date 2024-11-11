@@ -4,28 +4,43 @@ import { useEffect, useState } from "react";
 
 interface SearchResultsHandlerProps {
   query: string;
-  currentPage: number; //for whenever pagination is added
+  cik: string;
+  currentPage: number;
 }
-export default function SearchResultsHandler({ query, currentPage }: SearchResultsHandlerProps) {
+
+export default function SearchResultsHandler({ query, cik, currentPage }: SearchResultsHandlerProps) {
   
-  const [results, setResults] = useState<string[]>([]);
+  const [results, setResults] = useState<any>(null);
   const [hasSearched, setHasSearched] = useState(false);
   
   useEffect(() => {
-    if (query) {
+    if (cik) {
       setHasSearched(true);
-      fetchResults(query);
+      fetchResults(cik);
     } else {
       setHasSearched(false);
       setResults([]);
     }
-  }, [query, currentPage]);
+  }, [cik]);
 
-  async function fetchResults(searchTerm: string) {
-    const mockResults = ["Company A", "Company B", "Company C"].filter((item) =>
-      item.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setResults(mockResults);
+  async function fetchResults(cik: string) {
+    console.log("cik:",cik);
+    const data = { action: "get_sec_data", search_term: cik };
+    const response = await fetch('/api/call-python-api', {
+        method: 'Post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    console.log("clicked Company");
+    console.log(result);
+    if (result.status === "success") {
+        setResults(result.data);
+    } else {
+        setResults(null);
+    }
   }
   
   
@@ -42,19 +57,15 @@ export default function SearchResultsHandler({ query, currentPage }: SearchResul
             <li>DFR14 found:</li>
           </ul>
         </div>
-      ) : results.length > 0 ? (
+      ) : results ? (
         <div className="text-center text-xl">
-          <h2>Search Results for &quot;{query}&quot;:</h2>
-          <ul className="mt-4">
-            {results.map((result, index) => (
-              <li key={index} className="text-lg">
-                {result}
-              </li>
-            ))}
-          </ul>
+          <h2>Details for CIK {cik}:</h2>
+          <pre className="mt-4 text-left whitespace-pre-wrap">
+            {JSON.stringify(results, null, 2)}
+          </pre>
         </div>
       ) : (
-        <p className="text-center text-lg">No results found for &quot;{query}&quot;.</p>
+        <p className="text-center text-lg">No data found for CIK {cik}.</p>
       )}
     </div>
   );
