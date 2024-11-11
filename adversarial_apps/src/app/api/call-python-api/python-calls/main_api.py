@@ -57,12 +57,13 @@ def obtain_cik_number(search_term: str) -> dict:
     except Exception as e:
         return {"status": "error", "message": f"An error occurred: {str(e)}"}
 
+
 def get_sec_data(cik: str) -> dict:
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     headers = {
         "User-Agent": "YourName Here <youremail@example.com>",
         "Accept-Encoding": "gzip, deflate",
-        "Host": "data.sec.gov"
+        "Host": "data.sec.gov",
     }
     response = requests.get(url, headers=headers)
 
@@ -71,8 +72,9 @@ def get_sec_data(cik: str) -> dict:
     else:
         return {
             "status": "error",
-            "message": f"Unable to retrieve data for CIK {cik} (Status Code: {response.status_code})"
+            "message": f"Unable to retrieve data for CIK {cik} (Status Code: {response.status_code})",
         }
+
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
