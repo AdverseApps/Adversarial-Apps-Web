@@ -39,18 +39,6 @@ export default function SearchBar({ placeholder }: {placeholder: string}) {
         setResults(companyNames)
     }
 
-    /*
-    function handleSearch(term: string) {
-        const params = new URLSearchParams(searchParams);
-        if (term) {
-          params.set('query', term);
-        } else {
-          params.delete('query');
-        }
-        replace(`${"/search"}?${params.toString()}`);
-      }
-    */
-
       function handleSearch(term: string) {
         if (term) {
           replace.push(`/search?query=${term}`);
