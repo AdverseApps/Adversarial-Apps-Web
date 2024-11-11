@@ -35,10 +35,3 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## Linting
-
-ESLint comes provided as part of the required packages for application.
-You must use that version of ESLint. When you install the packages as seen above in README you will have ESLint and can run the following command:
-`npx eslint "src/**"`
-
-You may also isolate it to the specific folder.
