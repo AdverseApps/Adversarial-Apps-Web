@@ -13,6 +13,8 @@ const EducationSubNavBar = () => {
         <li><Link href="/education/due-diligence" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">Due Diligence</Link></li>
         <li><Link href="/education/sbir" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">SBIR Contract</Link></li>
         <li><Link href="/education/resources" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">Resources</Link></li>
+        <li><Link href="/education/cmmc" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">CMMC 2.0</Link></li>
+        <li><Link href="/education/foci" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">FOCI</Link></li>
       </ul>
     </div>
   );
