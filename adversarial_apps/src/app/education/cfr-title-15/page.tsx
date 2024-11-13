@@ -4,7 +4,7 @@ export default function page(){
         <main>
             <h1 className="text-6xl font-bold pl-5">CFR Title 15</h1>
             <h4 className="text-xl font-bold pl-5"><br />What is Title 15 about?</h4>
-            <p className = "pl-5">A CFR stands for Code of Federal Regulations and contains 
+            <p className = "pl-5"><br />A CFR stands for Code of Federal Regulations and contains 
                 all the codes and regulations published by the government 
                 from various departments.</p>
 
@@ -23,7 +23,7 @@ export default function page(){
             <p className = "pl-5"><br />The goal of CFR Title 15 is to ensure that companies which will be 
                 contracted by the U.S. have no affiliation with foreign countries that the U.S. deems as adversaries. 
                 Specifically, this section will go over what is addressed in Part 791: <a href=
-                "https://www.ecfr.gov/current/title-15/subtitle-B/chapter-VII/subchapter-E/part-791"></a>.</p>
+                "https://www.ecfr.gov/current/title-15/subtitle-B/chapter-VII/subchapter-E/part-791"> <u>Part 791 Link</u></a></p>
 
             <p className = "pl-5"><br />Part 791.1 outlines the purpose of this section, which is to determine 
                 how CFR deals with software on a security front. It defines how authorities will handle software that 
@@ -37,13 +37,14 @@ export default function page(){
                 AI, quantum computing software, and more; there are exceptions, but it is extremely limited. The latter part, 
                 791.4, defines the current foreign adversaries of the United States. These include:</p>
 
-            <ul className = "pl-5">
-                <li>The People`&apos;`s Republic of China, including the Hong Kong Special Administrative Region</li>
-                <li>Republic of Cuba</li>
-                <li>Islamic Republic of Iran</li>
-                <li>Democratic People`&apos;`s Republic of Korea</li>
-                <li>Russian Federation</li>
-                <li>Venezuelan politician Nicolás Maduro</li></ul>
+            <ol className = "pl-10"><br />
+                <li>1. The People&apos;s Republic of China, including the Hong Kong Special Administrative Region</li>
+                <li>2. Republic of Cuba</li>
+                <li>3. Islamic Republic of Iran</li>
+                <li>4. Democratic People&apos;s Republic of Korea</li>
+                <li>5. Russian Federation</li>
+                <li>6. Venezuelan politician Nicolás Maduro</li>
+            </ol>
             
             <p className = "pl-5"><br />Parts 791.5 to 791.7 contain legal information that outlines public 
                 disclosure and the amendment process.</p>
