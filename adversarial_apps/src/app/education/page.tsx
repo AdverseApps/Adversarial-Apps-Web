@@ -16,6 +16,8 @@ export default function page(){
             <Link href = "education/due-diligence"><li>Due Dilligence</li></Link>
             <Link href = "education/sbir"><li>SBIR Contract</li></Link>
             <Link href = "education/resources"><li>Resources</li></Link>
+            <Link href = "education/cmmc"><li>CMMC 2.0</li></Link>
+            <Link href = "education/foci"><li>FOCI</li></Link>
             {/* Need to add links to each page here */}
         </ul>
         </main>
