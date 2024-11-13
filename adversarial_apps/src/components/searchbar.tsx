@@ -33,14 +33,17 @@ export default function SearchBar({ placeholder }: {placeholder: string}) {
           },
           body: JSON.stringify(data)
         });
-        const result = await response.json();
-        // Will likely return the whole object in the future, but for V1 it's fine to just surface the names.
-        console.log(result);
-        const companies = result.companies.map((company: { "Company Name": string, "CIK": string }) => ({
-          name: company["Company Name"],
-          cik: company["CIK"]
-      }));
-        setResults(companies)
+        if (response.status === 200) {
+          const result = await response.json();
+          console.log(result);
+  
+          const companies = result.companies.map((company: { "Company Name": string, "CIK": string }) => ({
+              name: company["Company Name"],
+              cik: company["CIK"]
+          }));
+          
+          setResults(companies);
+      }
     }
 
       function handleSearch(term: string) {
