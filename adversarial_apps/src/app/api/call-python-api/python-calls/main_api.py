@@ -58,6 +58,24 @@ def obtain_cik_number(search_term: str) -> dict:
         return {"status": "error", "message": f"An error occurred: {str(e)}"}
 
 
+def get_sec_data(cik: str) -> dict:
+    url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+    headers = {
+        "User-Agent": "YourName Here <youremail@example.com>",
+        "Accept-Encoding": "gzip, deflate",
+        "Host": "data.sec.gov",
+    }
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        return {"status": "success", "data": response.json()}  # Return JSON data
+    else:
+        return {
+            "status": "error",
+            "message": f"Unable to retrieve data for CIK {cik} (Status Code: {response.status_code})",
+        }
+
+
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
 if __name__ == "__main__":
@@ -66,11 +84,14 @@ if __name__ == "__main__":
         input_action_and_data = json.load(sys.stdin)
 
         # Each action corresponds to a different function, so setting action
+        action = input_action_and_data.get("action")
         # determines which API call is being made
-        if input_action_and_data.get("action") == "obtain_cik_number":
+        if action == "obtain_cik_number":
             # Then the inputActionAndData is formatted as such:
             # { action: "obtain_cik_number", search_term: YOUR_SEARCH_TERM }
             result = obtain_cik_number(input_action_and_data.get("search_term"))
+        elif action == "get_sec_data":
+            result = get_sec_data(input_action_and_data.get("search_term"))
         else:
             # Process the input data
             result = {"status": "error", "message": "Invalid action"}
