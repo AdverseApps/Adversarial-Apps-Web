@@ -7,10 +7,88 @@ from bs4 import BeautifulSoup
 
 from typing import List, Dict
 
-def verify_addresses(addresses: Dict) -> Dict:
+def lookup_beneficial_owners(company_info: Dict, cik_number: str) -> List:
+    """
+    Looks up the beneficial owners of a company based on the CIK number
+    :param company_info: json data of company containing filling information
+    :param cik_number: CIK number of the company
+    :return: list of beneficial owners
+    """
+    
+    filings = company_info.get("filings", {})
+    recent_filings = filings.get("recent", {})
+    form_list = recent_filings.get("form", [])
+
+    # checks if DEF 14A is in fillings as that will have the beneficial owners
+    if "DEF 14A" in form_list:
+        
+        # will always grab the most recent DEF 14A form
+        # grabs accessionNumber based on same index as DEF 14A was found at
+        def_14a_index = form_list.index("DEF 14A")
+        def_14a_accession_number = recent_filings.get("accessionNumber")[def_14a_index]
+
+        # removes leading 0s from CIK number
+        cik_number = cik_number.lstrip("0")
+
+        # removes dashes from accession number
+        accession_number_without_dashes = def_14a_accession_number.replace("-", "")
+
+        # obtains txt file of the DEF 14A form
+        url = f"https://www.sec.gov/Archives/edgar/data/{cik_number}/{accession_number_without_dashes}/{def_14a_accession_number}.txt"
+
+        headers = {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Connection": "keep-alive",
+            #"Cookie": "ak_bmsc=669F965DD74566E47877A54655268BC1~000000000000000000000000000000~YAAQlBwhF9S4WTOTAQAABvubNxmNOGMUpAZ6+yW5NfcQg6ZwlcbFbB9SoDnmh3BHLXmoG1tqITwLbRfImKuaotqXgNddyyNGqOMhdL9w4uQmyvq/vYHjSDsstPPdE8lQ9nVmxi8w3lync6renadepnpC7wxHKbHwDjRNmUhFdy/8SGDM3INf6rDdIXWTbbDUiwuBulVVjY22YeS548Qjl7m9casBWPVVto91keUc+ohPnhQ6/QDBrokqeBcWMyq/OvF/D8L8N6TUBZlyAtWpyX8GM/G36baKlp1XlcHqB61xdZnG3ZcaW2AhSk23yicP6+nnJFbYYGiY1WjELefJ46RFNyZo93z9IxcmoBgHRP6KX0dRJTtJAyBXHApbKI5iERJNEEwnK5jXwOPAKUcvoLuwWepyU1wyO4P3LD7qghLuOne2nv0ryFJ1Ju1D1SxcZt44kzPeUCmMpdZEJ+juqi13HdukSnpGgCaC2JdqTWRB4160jbfEIyUGKU/lx+5Xs0phVo8bjugrZ7Qzgxkqs3iyXvKCmX3IaogF/Nh7xvvrNmaKV4Sj3E0nFwtSxTPHAUxrhGMCtVfPo0grflFb6Qcw0Xad0xEoA/w5csvRA0/GXsX0YP9Lt14pp4MgAuzSmSG9/xaw==~1; bm_sv=312CD1E60D83778336646269640EB20D~YAAQlBwhF08eWjOTAQAAJSijNxk3auNpgUFNSFXcvQbiZWnCItaraloJX28u+9LxCsaev0Ow1I6vZyBB4PX7D1w9k4T6BD2qTMAKikVn/yHa7ubbHfbU0TSJBGrCl5wb151kTkVZKwPeuPlXfXqKVCae/S+RQiDvCy6kO5fICtbR0dP54jR+ex5m+lLO3Xf/b0mJJRU0t0PApi5A7xkp8yOhvbyCeJMRpCeJfD9sOpDYCEtTeRfqLzD2pXgKlA==~1",
+            "Host": "www.sec.gov",
+            "Referer": f"https://www.sec.gov/Archives/edgar/data/{cik_number}/{accession_number_without_dashes}",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-User": "?1",
+            "Upgrade-Insecure-Requests": "1",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
+        }
+
+        response = requests.get(url, headers=headers)
+
+        # if the request was successful (status code 200)
+        if response.status_code == 200:
+
+            # initializes the BeautifulSoup library to parse the text
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            # Step 3: Define a list of keywords to search for in table data cells
+            keywords = ["name of beneficial owner", "name and address of beneficial owner"]
+
+            tables = soup.find_all("table")
+
+            tables_with_keyword = []
+
+            for table in tables:
+                for tr in table.find_all("tr"):
+                    for td in tr.find_all("td"):
+                        if td.get_text().lower() in keywords:
+                            tables_with_keyword.append(table)
+                            break
+
+            return f"{td.get_text().lower()}"
+        else:
+            return {"status": "error", "message": f"Failed to fetch data: {response.status_code} {response.text}"}
+
+        return {"accessionNumber": response.text}
+       
+    else:
+        return "No DEF 14A form found"
+    
+
+
+def verify_addresses(company_info: Dict) -> Dict:
     """
     Verifies if the addresses are in the US or not and adds field to addresses marking them as such
-    :param addresses: dictionary of addresses
+    :param company_info: json data of company containing addresses
     :return: addresses with safe or foreign added depending on status
     """
 
@@ -24,6 +102,8 @@ def verify_addresses(addresses: Dict) -> Dict:
     ]
 
     processed_addresses = []
+
+    addresses = company_info.get("addresses", {})
 
     # checks if the state of the addresses provided are in the US or apart of another country
     # each json data can have multiple types of addresses so we loop through that and check each one
@@ -136,10 +216,10 @@ def generate_report(cik_number: str) -> dict:
     
     # format the response to json to extract and get data
     company_info = response.json()
-    
-    company_addresses = company_info.get("addresses", {})
 
-    processed_addresses = verify_addresses(company_addresses)
+    processed_addresses = verify_addresses(company_info)
+
+    beneficial_owners = lookup_beneficial_owners(company_info, cik_number)
     
     # extract info out of json if it exists
     final_report_data = {
@@ -151,6 +231,7 @@ def generate_report(cik_number: str) -> dict:
             "sicDescription": company_info.get("sicDescription"),
             "stateOfIncorporation": company_info.get("stateOfIncorporationDescription"),
             "addresses": processed_addresses,
+            "beneficial_owners": beneficial_owners,
         }
 
     return {"status": "success", "report_data": final_report_data}
