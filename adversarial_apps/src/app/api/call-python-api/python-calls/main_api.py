@@ -5,8 +5,46 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 
+from typing import List, Dict
 
-def obtain_cik_number(search_term: str) -> dict:
+def verify_addresses(addresses: Dict) -> Dict:
+    """
+    Verifies if the addresses are in the US or not and adds field to addresses marking them as such
+    :param addresses: dictionary of addresses
+    :return: addresses with safe or foreign added depending on status
+    """
+
+    # includes Washington DC since is apart of US
+    list_of_us_state_abbreviations = [
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA",
+        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", 
+    ]
+
+    processed_addresses = []
+
+    # checks if the state of the addresses provided are in the US or apart of another country
+    # each json data can have multiple types of addresses so we loop through that and check each one
+    for address_type, address_data in addresses.items():
+        state_or_country = address_data.get("stateOrCountry")
+        
+        # adds the type for reference since that is cut out when the data is returned
+        address_data["address_type"] = address_type
+
+        # adds risk info if apart of US or not
+        if state_or_country in list_of_us_state_abbreviations:
+            address_data["risk"] = "safe"
+        else:
+            address_data["risk"] = "foreign"
+        
+        processed_addresses.append(address_data)
+
+    return processed_addresses
+
+
+def obtain_cik_number(search_term: str) -> Dict:
     """
     Returns list of companies based on search and their CIK numbers
     :param search_term: string to search for
@@ -58,22 +96,64 @@ def obtain_cik_number(search_term: str) -> dict:
         return {"status": "error", "message": f"An error occurred: {str(e)}"}
 
 
-def get_sec_data(cik: str) -> dict:
-    url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+def generate_report(cik_number: str) -> dict:
+
+    # obtains the report for the given CIK number
+    url = f"https://data.sec.gov/submissions/CIK{cik_number}.json"
     headers = {
-        "User-Agent": "YourName Here <youremail@example.com>",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
         "Accept-Encoding": "gzip, deflate",
         "Host": "data.sec.gov",
     }
-    response = requests.get(url, headers=headers)
 
-    if response.status_code == 200:
-        return {"status": "success", "data": response.json()}  # Return JSON data
-    else:
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx and 5xx)
+    
+    except requests.exceptions.HTTPError as http_err:
+        # this means there is no json file for that cik number or cik number is invalid
+        if response.status_code == 404:
+            return {
+                "status": "error",
+                "message": f"Invalid CIK number {cik_number}. Resource not found (404).",
+            }
+        else:
+            return {
+                "status": "error",
+                "message": f"HTTP error occurred for CIK {cik_number}: {http_err}",
+            }
+
+    except requests.exceptions.RequestException as req_err:
         return {
             "status": "error",
-            "message": f"Unable to retrieve data for CIK {cik} (Status Code: {response.status_code})",
+            "message": f"Request error occurred for CIK {cik_number}: {req_err}",
         }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"An error occurred: {str(e)}",
+        }
+    
+    # format the response to json to extract and get data
+    company_info = response.json()
+    
+    company_addresses = company_info.get("addresses", {})
+
+    processed_addresses = verify_addresses(company_addresses)
+    
+    # extract info out of json if it exists
+    final_report_data = {
+            "cik_number": company_info.get("cik"),
+            "company_name": company_info.get("name"),
+            # sic is the Standard Industrial Classification code and is like a label for the type of business
+            # the company is in
+            "sic_category_code": company_info.get("sic"),
+            "sicDescription": company_info.get("sicDescription"),
+            "stateOfIncorporation": company_info.get("stateOfIncorporationDescription"),
+            "addresses": processed_addresses,
+        }
+
+    return {"status": "success", "report_data": final_report_data}
 
 
 # the call-python-api will call it here, and provides the inputActionAndData
@@ -83,17 +163,18 @@ if __name__ == "__main__":
         # Read JSON data from stdin
         input_action_and_data = json.load(sys.stdin)
 
-        # Each action corresponds to a different function, so setting action
         action = input_action_and_data.get("action")
-        # determines which API call is being made
+
         if action == "obtain_cik_number":
-            # Then the inputActionAndData is formatted as such:
+            # for the obtain_cik_number action input is formatted as such:
             # { action: "obtain_cik_number", search_term: YOUR_SEARCH_TERM }
             result = obtain_cik_number(input_action_and_data.get("search_term"))
-        elif action == "get_sec_data":
-            result = get_sec_data(input_action_and_data.get("search_term"))
+        elif action == "generate_report":
+            # For the generate report action input is formatted as such:
+            # { action: "generate_report", cik_number: YOUR_CIK_NUMBER }
+            result = generate_report(input_action_and_data.get("cik_number"))
         else:
-            # Process the input data
+            # No valid action was provided so error
             result = {"status": "error", "message": "Invalid action"}
 
         # Print the result as a dictionary (this becomes stdout and the output of the API)
