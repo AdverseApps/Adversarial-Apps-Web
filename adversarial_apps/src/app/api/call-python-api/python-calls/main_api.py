@@ -41,7 +41,6 @@ def lookup_beneficial_owners(company_info: Dict, cik_number: str) -> List:
             "Accept-Encoding": "gzip, deflate, br, zstd",
             "Accept-Language": "en-US,en;q=0.5",
             "Connection": "keep-alive",
-            #"Cookie": "ak_bmsc=669F965DD74566E47877A54655268BC1~000000000000000000000000000000~YAAQlBwhF9S4WTOTAQAABvubNxmNOGMUpAZ6+yW5NfcQg6ZwlcbFbB9SoDnmh3BHLXmoG1tqITwLbRfImKuaotqXgNddyyNGqOMhdL9w4uQmyvq/vYHjSDsstPPdE8lQ9nVmxi8w3lync6renadepnpC7wxHKbHwDjRNmUhFdy/8SGDM3INf6rDdIXWTbbDUiwuBulVVjY22YeS548Qjl7m9casBWPVVto91keUc+ohPnhQ6/QDBrokqeBcWMyq/OvF/D8L8N6TUBZlyAtWpyX8GM/G36baKlp1XlcHqB61xdZnG3ZcaW2AhSk23yicP6+nnJFbYYGiY1WjELefJ46RFNyZo93z9IxcmoBgHRP6KX0dRJTtJAyBXHApbKI5iERJNEEwnK5jXwOPAKUcvoLuwWepyU1wyO4P3LD7qghLuOne2nv0ryFJ1Ju1D1SxcZt44kzPeUCmMpdZEJ+juqi13HdukSnpGgCaC2JdqTWRB4160jbfEIyUGKU/lx+5Xs0phVo8bjugrZ7Qzgxkqs3iyXvKCmX3IaogF/Nh7xvvrNmaKV4Sj3E0nFwtSxTPHAUxrhGMCtVfPo0grflFb6Qcw0Xad0xEoA/w5csvRA0/GXsX0YP9Lt14pp4MgAuzSmSG9/xaw==~1; bm_sv=312CD1E60D83778336646269640EB20D~YAAQlBwhF08eWjOTAQAAJSijNxk3auNpgUFNSFXcvQbiZWnCItaraloJX28u+9LxCsaev0Ow1I6vZyBB4PX7D1w9k4T6BD2qTMAKikVn/yHa7ubbHfbU0TSJBGrCl5wb151kTkVZKwPeuPlXfXqKVCae/S+RQiDvCy6kO5fICtbR0dP54jR+ex5m+lLO3Xf/b0mJJRU0t0PApi5A7xkp8yOhvbyCeJMRpCeJfD9sOpDYCEtTeRfqLzD2pXgKlA==~1",
             "Host": "www.sec.gov",
             "Referer": f"https://www.sec.gov/Archives/edgar/data/{cik_number}/{accession_number_without_dashes}",
             "Sec-Fetch-Dest": "document",
