@@ -2,8 +2,8 @@ export default function page(){
     return (
     <main>
         <h1 className="text-6xl font-bold pl-5">Cybersecurity Maturity Model Certification (CMMC)</h1>
-        <h4 className="text-xl font-bold pl-5"><br />What is Cybersecurity Maturity Model Certification 
-            (CMMC) 2.0? Is it replacing the need for NIST 800-171 compliance? </h4>
+        <h2 className="text-xl font-bold pl-5"><br />What is Cybersecurity Maturity Model Certification 
+            (CMMC) 2.0? Is it replacing the need for NIST 800-171 compliance? </h2>
         <p className = "pl-5"><br />CMMC 2.0 is a certification that the federal government will begin requiring 
             entities working for the government to go through in 2025, with the goal of reaching Level 3 
             compliance by 2028. This is separate from the existing NIST 800-171 requirements, and CMMC serves 

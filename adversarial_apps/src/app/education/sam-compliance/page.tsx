@@ -2,7 +2,7 @@ export default function page(){
     return (
         <main>
             <h1 className="text-6xl font-bold pl-5">SAM Info and Compliance</h1>
-            <h4 className="text-xl font-bold pl-5"><br />What is SAM?</h4>
+            <h2 className="text-xl font-bold pl-5"><br />What is SAM?</h2>
             <p className = "pl-5">SAM is the website used by most, if not all, prime contractors and other 
                 parties working for the United States government. Among other administrative tasks for your 
                 entity (which is defined at length as several kinds of parties doing business with the U.S. 
@@ -17,7 +17,7 @@ export default function page(){
                 for the public, the Dynamic Small Business Search (DSBS), which contains records of all entities 
                 that have had contracts, both completed and ongoing, with the U.S. government.</p>
             
-            <h4 className="text-xl font-bold pl-5"><br />How do I maintain SAM compliance?</h4>
+            <h2 className="text-xl font-bold pl-5"><br />How do I maintain SAM compliance?</h2>
             <p className = "pl-5">More info on this later</p>
         </main>
     );

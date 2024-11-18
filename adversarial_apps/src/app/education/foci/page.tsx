@@ -2,7 +2,7 @@ export default function page(){
     return (
         <main>
             <h1 className="text-6xl font-bold pl-5">Foreign Ownership Control and Influence (FOCI)</h1>
-            <h4 className="text-xl font-bold pl-5"><br />What is FOCI? Why should I care?</h4>
+            <h2 className="text-xl font-bold pl-5"><br />What is FOCI? Why should I care?</h2>
             <p className = "pl-5"><br />FOCI is an important part of ensuring compliance with CFR Title 15. In 
                 FOCI, ownership generally refers to beneficial ownership of the business. A beneficial 
                 owner of a security &mdash; in this case a business &mdash; includes any person who 

@@ -3,7 +3,7 @@ export default function page(){
     <>
         <main>
             <h1 className="text-6xl font-bold pl-5">CFR Title 15</h1>
-            <h4 className="text-xl font-bold pl-5"><br />What is Title 15 about?</h4>
+            <h2 className="text-xl font-bold pl-5"><br />What is Title 15 about?</h2>
             <p className = "pl-5"><br />A CFR stands for Code of Federal Regulations and contains 
                 all the codes and regulations published by the government 
                 from various departments.</p>
@@ -17,8 +17,8 @@ export default function page(){
                 disclose certain information in regard to foreign adversaries such as the ownership percentage for foreign adversaries, 
                 patent processing in foreign countries, and other such fields.</p>
 
-            <h4 className="text-xl font-bold pl-5"><br />What is CFR Title 15, Part 791? 
-                A Concise Breakdown of Its Documentation and Its Relevance</h4>
+            <h2 className="text-xl font-bold pl-5"><br />What is CFR Title 15, Part 791? 
+                A Concise Breakdown of Its Documentation and Its Relevance</h2>
 
             <p className = "pl-5"><br />The goal of CFR Title 15 is to ensure that companies which will be 
                 contracted by the U.S. have no affiliation with foreign countries that the U.S. deems as adversaries. 
