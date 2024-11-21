@@ -1,6 +1,6 @@
 # Adversarial Apps Web Application
 
-Created by Conner Harbaugh, James Allen, Christopher Gagnier, Christian Rodriguez, and Oluwadamilol Ogboja.
+Created by Conner Harbaugh, James Allen, Christopher Gagnier, Christian Rodriguez, and Oluwadamilola Ogboja.
 
 ## About
 
