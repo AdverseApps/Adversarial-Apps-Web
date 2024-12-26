@@ -1,6 +1,6 @@
 export default function page(){
     return (
-        <main>
+        <main aria-label="main-content">
             <h1 className="text-6xl font-bold pl-5">Forms and Resources</h1>
             <p className = "pl-5"><br />Navy SBIR / STTR Forms & Templates (Including Volume VII Disclosures 
                 of Foreign Affiliations or Relationships to Foreign Countries Walkthrough):

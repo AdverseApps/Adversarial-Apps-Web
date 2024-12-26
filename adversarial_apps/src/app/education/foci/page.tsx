@@ -1,6 +1,6 @@
 export default function page(){
     return (
-        <main>
+        <main aria-label="main-content">
             <h1 className="text-6xl font-bold pl-5">Foreign Ownership Control and Influence (FOCI)</h1>
             <h2 className="text-xl font-bold pl-5"><br />What is FOCI? Why should I care?</h2>
             <p className = "pl-5"><br />FOCI is an important part of ensuring compliance with CFR Title 15. In 

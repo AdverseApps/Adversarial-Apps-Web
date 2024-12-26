@@ -1,6 +1,6 @@
 export default function page(){
     return (
-        <main>
+        <main aria-label="main-content">
             <h1 className="text-6xl font-bold pl-5">SAM Info and Compliance</h1>
             <h2 className="text-xl font-bold pl-5"><br />What is SAM?</h2>
             <p className = "pl-5">SAM is the website used by most, if not all, prime contractors and other 

@@ -1,6 +1,6 @@
 export default function page(){
     return (
-    <main>
+    <main aria-label="main-content">
         <h1 className="text-6xl font-bold pl-5">Cybersecurity Maturity Model Certification (CMMC)</h1>
         <h2 className="text-xl font-bold pl-5"><br />What is Cybersecurity Maturity Model Certification 
             (CMMC) 2.0? Is it replacing the need for NIST 800-171 compliance? </h2>
