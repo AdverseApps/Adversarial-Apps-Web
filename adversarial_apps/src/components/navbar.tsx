@@ -94,7 +94,7 @@ export default function NavBar() {
       {/* Search Bar Component */}
       <div className="flex justify-end mr-6 p-2 rounded-lg">
         <SearchBar placeholder="Search..."
-        aria-label="Search the website" 
+        aria-label="Search for business partners" 
         />
       </div>
     </header>
