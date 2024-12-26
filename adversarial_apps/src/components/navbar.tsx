@@ -8,6 +8,7 @@ import { useState, useRef } from 'react';
 const EducationSubNavBar =  ({ isSubMenuOpen }: { isSubMenuOpen: boolean }) =>{
   return (
     <div id="education-submenu" role="menu" 
+    aria-labelledby="education-menu" // Associate with the main link
     className={`absolute left-1/2 transform -translate-x-1/2 ${isSubMenuOpen ? 'block' : 'hidden'} bg-blue-800 text-white rounded-lg p-4 mt-2 shadow-lg`}
     >
       <ul className="flex space-x-6">
@@ -53,7 +54,7 @@ export default function NavBar() {
     <header className="bg-blue-900 grid grid-cols-3 items-center p-4 shadow-md">
       {/* Logo Image - links to home page */}
       <div className="flex justify-start ml-4">
-        <Link href="/">
+        <Link href="/" aria-label="Go to home page">
           <Image 
             src="/Adversarial_Apps_Logo.png"
             width={250}  
@@ -67,7 +68,7 @@ export default function NavBar() {
       {/* Navigation Links */}
       <nav className="flex justify-center space-x-6 relative">
         <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
-          <Link href="/" className="text-white text-xl">Home</Link>
+          <Link aria-label="Go to Home Page" href="/" className="text-white text-xl">Home</Link>
         </div>
   
         <div className="group relative hover:bg-blue-950 p-2 rounded-lg transition duration-200"
@@ -80,19 +81,21 @@ export default function NavBar() {
          onMouseEnter={handleMouseEnter} // Keep submenu open on mouse hover
          onMouseLeave={handleMouseLeave} // Close submenu when mouse leaves
         >
-          <Link href="/education" className="text-white text-xl">Education</Link>
+          <Link aria-label = "go to education page" id="education-menu" href="/education" className="text-white text-xl">Education</Link>
           {/* Submenu for education */}
           <EducationSubNavBar isSubMenuOpen={isSubMenuOpen} />
         </div>
 
         <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
-          <Link href="/search" className="text-white text-xl">Search</Link>
+          <Link aria-label="Go to search page" href="/search" className="text-white text-xl">Search</Link>
         </div>
       </nav>
 
       {/* Search Bar Component */}
       <div className="flex justify-end mr-6 p-2 rounded-lg">
-        <SearchBar placeholder="Search..."/>
+        <SearchBar placeholder="Search..."
+        aria-label="Search the website" 
+        />
       </div>
     </header>
   );
