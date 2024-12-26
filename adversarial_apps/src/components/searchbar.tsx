@@ -2,7 +2,7 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
-export default function SearchBar({ placeholder }: {placeholder: string}) {
+export default function SearchBar({ placeholder}: {placeholder: string}) {
     
     const searchParams = useSearchParams();
     const replace = useRouter();
