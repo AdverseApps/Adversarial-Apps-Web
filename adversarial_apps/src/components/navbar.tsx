@@ -2,7 +2,7 @@
 import Image from "next/image";
 import SearchBar from "@/components/searchbar";
 import Link from "next/link";
-import { useState} from 'react';
+import { useState } from 'react';
 
 // Component for the menu that appears when you hover over education
 const EducationSubNavBar =  ({ isSubMenuOpen }: { isSubMenuOpen: boolean }) =>{
