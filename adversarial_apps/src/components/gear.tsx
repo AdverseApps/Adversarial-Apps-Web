@@ -38,6 +38,7 @@ export default function Gear() {
         document.body.classList.remove("light-mode");
         }
     }, [isLightMode]);
+
   return (
     <>
       <button 
@@ -46,7 +47,7 @@ export default function Gear() {
       className="p-2" // Optional padding or styling
     >
          <Image
-          src="/gear_settings.png" //image
+          src="/gear_settings_white.png" //image
           alt="Settings"
           width={32} // Adjust dimensions as needed
           height={32} // Adjust dimensions as needed
@@ -58,7 +59,7 @@ export default function Gear() {
       >
         <div 
             ref={modalRef}
-            className="modal bg-white p-4 rounded shadow-lg"
+            className={`modal p-4 rounded shadow-lg ${isLightMode ? 'bg-white text-black' : 'bg-gray-800 text-white'} bg-opacity-100`}
             role="dialog"
             aria-labelledby="settings-title"
             aria-describedby="settings-description"
@@ -66,7 +67,7 @@ export default function Gear() {
            <h2 id="settings-title" className="text-lg font-bold">
             Settings
           </h2>
-          <p id="settings-description" className="text-sm text-gray-600">
+          <p id="settings-description" className="text-sm">
             Adjust your preferences below.
           </p>
           {/* Settings content goes here */}
@@ -74,12 +75,14 @@ export default function Gear() {
           {/* Light Mode Toggle */}
           <button onClick={toggleLightMode}
             className="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            aria-label={isLightMode ? "Switch to dark mode" : "Switch to light mode"}
            >
             {isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
            </button>
           <button 
             onClick={() => setIsOpen(false)} 
             className="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            aria-label="close settings panel"
           >
             Close
           </button>
