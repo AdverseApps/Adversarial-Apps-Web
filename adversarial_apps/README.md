@@ -29,6 +29,12 @@ npm run test
 this will run all active tests in the "tests" directory.
 Expected to work out the box with `package.json`, `jest.setup`, and `jest.config` being up-to-date.
 
+To test specific tests or to investigate individual tests, you can run:
+```
+npm run test-watch
+```
+You can follow the prompts to decrease the scope of the tests.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
