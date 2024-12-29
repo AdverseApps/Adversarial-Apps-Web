@@ -33,6 +33,7 @@ export default function SearchBar({ placeholder }: {placeholder: string}) {
           },
           body: JSON.stringify(data)
         });
+        console.log(response.status);
         if (response.status === 200) {
           const result = await response.json();
           console.log(result);

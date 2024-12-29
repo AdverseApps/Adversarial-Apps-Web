@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import NavBar from '../../components/navbar'; // Adjust to your actual path
+import NavBar from '../../components/navbar';
 
 describe('NavBar', () => {
-  it('shows the Education submenu items when hovering over Education', async () => {
+  it('shows the Education menu items when hovering over Education', async () => {
     render(<NavBar />);
 
     // Hover over the "Education" link
