@@ -22,6 +22,8 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Unit Testing
 
+Unit Testing is in GitHub Actions so testing locally isn't required.
+
 To run the testing environment locally, you can run:
 ```
 npm run test
@@ -29,7 +31,7 @@ npm run test
 this will run all active tests in the "tests" directory.
 Expected to work out the box with `package.json`, `jest.setup`, and `jest.config` being up-to-date.
 
-To test specific tests or to investigate individual tests, you can run:
+To investigate individual tests, you can run:
 ```
 npm run test-watch
 ```
