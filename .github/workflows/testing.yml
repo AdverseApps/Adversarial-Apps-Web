@@ -15,6 +15,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: adversarial_apps
 
       - name: Run tests
         run: npm run test
