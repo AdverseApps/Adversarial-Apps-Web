@@ -109,4 +109,3 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
         </div>
       );
     }
-    
