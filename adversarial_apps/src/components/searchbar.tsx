@@ -1,8 +1,16 @@
 'use client';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 
-export default function SearchBar({ placeholder }: {placeholder: string}) {
+export default function SearchBar({ placeholder }: { placeholder: string }) {
+  return (
+    <Suspense fallback={<div>Loading search bar...</div>}>
+      <SearchBarContent placeholder={placeholder} />
+    </Suspense>
+  );
+}
+
+function SearchBarContent({ placeholder }: {placeholder: string}) {
     
     const searchParams = useSearchParams();
     const replace = useRouter();

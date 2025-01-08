@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const inputActionAndData = await req.json();
 
     // Path to the Python script
-    const scriptPath = 'src/app/api/call-python-api/python-calls/main_api.py';
+    const scriptPath = `${process.cwd()}/src/app/api/call-python-api/python-calls/main_api.py`;
     
     // Spawn a child process to run the Python script
     const pythonProcess = spawn('python3', [scriptPath]);
