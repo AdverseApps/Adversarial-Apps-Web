@@ -18,7 +18,7 @@ def obtain_cik_number(search_term: str) -> dict:
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
+            "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
             "Referer": "https://www.sec.gov/search-filings/cik-lookup",
         }
 
@@ -61,7 +61,7 @@ def obtain_cik_number(search_term: str) -> dict:
 def get_sec_data(cik: str) -> dict:
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     headers = {
-        "User-Agent": "YourName Here <youremail@example.com>",
+        "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
         "Accept-Encoding": "gzip, deflate",
         "Host": "data.sec.gov",
     }
