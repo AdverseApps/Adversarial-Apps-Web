@@ -114,6 +114,9 @@ export default function NavBar() {
             id="education-menu"
             href="/education"
             className="text-white text-xl"
+            aria-haspopup="true" 
+            aria-expanded={isSubMenuOpen ? "true" : "false"}
+            aria-controls="education-submenu"
             onFocus={openSubMenu}
           >
             Education
