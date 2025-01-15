@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { POST } from '../../../../app/api/call-python-api/route';
 import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
