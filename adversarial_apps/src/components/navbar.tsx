@@ -54,16 +54,17 @@ export default function NavBar() {
         </div>
       </nav>
 
-      {/* Search Bar Component */}
-      <div className="flex justify-end mr-6 p-2 rounded-lg">
-        <div className="">
-        <SearchBar placeholder="Search..." />
-      </div>
       
-      {/* Gear Settings Component */}
-      <div>
-        <Gear />
-      </div>
+      <div className="flex justify-end mr-6 p-2 rounded-lg">
+        {/* Search Bar Component */}
+        <div className=" pt-1.5">
+          <SearchBar placeholder="Search..." />
+        </div>
+      
+        {/* Gear Settings Component */}
+        <div>
+          <Gear />
+        </div>
       </div>
     </header>
   );
