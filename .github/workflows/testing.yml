@@ -1,0 +1,22 @@
+name: Testing Code Check
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: adversarial_apps
+
+      - name: Run tests
+        run: npm run test
+        working-directory: adversarial_apps
