@@ -24,6 +24,11 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 Unit Testing is in GitHub Actions so testing locally isn't required.
 
+To allow for local testing. You must first install jest:
+```
+npm install --save-dev jest
+```
+
 To run the testing environment locally, you can run:
 ```
 npm run test
