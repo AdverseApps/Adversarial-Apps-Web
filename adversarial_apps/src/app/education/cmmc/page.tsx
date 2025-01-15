@@ -14,7 +14,7 @@ export default function page(){
             Third-Party Assessment Organization (C3PAO). Unlike CMMC, NIST 800-171 assessments can be self-reported 
             and are submitted to meet DoD contractor requirements.</p>
         <p className = "pl-5"><br />More information can be found here from the DoD&apos;s CIO website:
-            <a href="https://dodcio.defense.gov/cmmc/About/"> <u>CMMC 2.0 About Page</u></a></p>
+            <a href="https://dodcio.defense.gov/cmmc/About/" target="_blank"> <u>CMMC 2.0 About Page</u></a></p>
     </main>
     );
 }

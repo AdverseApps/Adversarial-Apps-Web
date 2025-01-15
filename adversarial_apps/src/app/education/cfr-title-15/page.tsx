@@ -23,7 +23,7 @@ export default function page(){
             <p className = "pl-5"><br />The goal of CFR Title 15 is to ensure that companies which will be 
                 contracted by the U.S. have no affiliation with foreign countries that the U.S. deems as adversaries. 
                 Specifically, this section will go over what is addressed in Part 791: <a href=
-                "https://www.ecfr.gov/current/title-15/subtitle-B/chapter-VII/subchapter-E/part-791"> <u>Part 791 Link</u></a></p>
+                "https://www.ecfr.gov/current/title-15/subtitle-B/chapter-VII/subchapter-E/part-791" target="_blank"> <u>Part 791 Link</u></a></p>
 
             <p className = "pl-5"><br />Part 791.1 outlines the purpose of this section, which is to determine 
                 how CFR deals with software on a security front. It defines how authorities will handle software that 

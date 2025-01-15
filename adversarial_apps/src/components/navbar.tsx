@@ -1,8 +1,9 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
 import Image from "next/image";
-import SearchBar from './searchbar';
+import SearchBar from "@/components/searchbar";
+import Link from "next/link";
+import Gear from "./gear"
 
 const EducationSubNavBar = ({ isSubMenuOpen }: { isSubMenuOpen: boolean }) => {
   return (
@@ -104,9 +105,17 @@ export default function NavBar() {
         </div>
       </nav>
 
-      {/* Search Bar Component */}
+      
       <div className="flex justify-end mr-6 p-2 rounded-lg">
-        <SearchBar placeholder="Search..." aria-label="Search for business partners" />
+        {/* Search Bar Component */}
+        <div className=" pt-1.5">
+          <SearchBar placeholder="Search..." aria-label="Search for business partners" />
+        </div>
+      
+        {/* Gear Settings Component */}
+        <div>
+          <Gear />
+        </div>
       </div>
     </header>
   );
