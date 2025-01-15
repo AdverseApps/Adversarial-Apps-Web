@@ -2,6 +2,7 @@
 import Image from "next/image";
 import SearchBar from "@/components/searchbar";
 import Link from "next/link";
+import Gear from "./gear"
 
 // Component for the menu that appears when you hover over education
 const EducationSubNavBar = () => {
@@ -53,9 +54,17 @@ export default function NavBar() {
         </div>
       </nav>
 
-      {/* Search Bar Component */}
+      
       <div className="flex justify-end mr-6 p-2 rounded-lg">
-        <SearchBar placeholder="Search..." />
+        {/* Search Bar Component */}
+        <div className=" pt-1.5">
+          <SearchBar placeholder="Search..." />
+        </div>
+      
+        {/* Gear Settings Component */}
+        <div>
+          <Gear />
+        </div>
       </div>
     </header>
   );

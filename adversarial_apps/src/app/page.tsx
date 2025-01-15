@@ -29,8 +29,8 @@ export default function Home() {
 
             </main>
       
-        <footer className="text-white"> {/* dont add flex or it will mess upo sponsor logos* */}
-            <h1 className="mb-1 text-xl font-semibold text-center text-white">Sponsors</h1>
+        <footer> {/* dont add flex or it will mess upo sponsor logos* */}
+            <h1 className="mb-1 text-xl font-semibold text-center">Sponsors</h1>
             
             <div className="flex justify-center items-center gap-4">
             <figure className="p-2">
