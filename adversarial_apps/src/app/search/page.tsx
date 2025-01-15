@@ -16,13 +16,13 @@ export default function  Page({
 
     return (
         <>
-        <main>
+        <main aria-label="main-content">
             <h1 className={`text-4xl mt-12 ml-6 text-center`}>Search</h1>
 
           {/*search bar*/}
           <nav className="inset-0 flex items-center justify-center mt-9 gap-2 md:mt-8 ">
             <div className="w-2/5 rounded-sm"> 
-            <SearchBar placeholder="Search..."  />
+            <SearchBar placeholder="Search..." aria-label="Search for business partners"/>
             </div>
           </nav>
        

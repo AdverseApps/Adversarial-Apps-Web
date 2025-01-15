@@ -1,7 +1,7 @@
 export default function page(){
     return (
     <>
-        <main>
+        <main aria-label="main-content">
             <h1 className="text-6xl font-bold pl-5">CFR Title 15</h1>
             <h2 className="text-xl font-bold pl-5"><br />What is Title 15 about?</h2>
             <p className = "pl-5"><br />A CFR stands for Code of Federal Regulations and contains 
