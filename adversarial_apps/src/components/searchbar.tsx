@@ -92,11 +92,18 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
               <li
                 key={index}
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                tabIndex={0}
                 onClick={() => {
                   //REPLACE WITH HAVING THEM REDIRECTED TO RESULTS PAGE FOR THE ENTRY HERE
                   replace.push(`/search?query=${result.name}&cik=${result.cik}`);
                   setShowDropdown(false); // Hide dropdown after selection
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    replace.push(`/search?query=${result.name}&cik=${result.cik}`);
+                    setShowDropdown(false);
+                  }}
+              }
               >
               {result.name}
               </li>
