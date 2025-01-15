@@ -1,3 +1,8 @@
 # List of requirements For Python API
+
+# For Web/Data Handling
 requests
 beautifulsoup4
+
+# For Database Calls
+psycopg2-binary
