@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 import os
 from dotenv import load_dotenv
 
+import psycopg2
+
 def obtain_cik_number(search_term: str) -> dict:
     """
     Returns list of companies based on search and their CIK numbers
@@ -94,7 +96,53 @@ def add_user(username: str, password_hashed: str, company: str) -> dict:
     :return: dictionary with status of user addition
     """
 
+    connection = None
 
+    try:
+        # Connect to the PostgreSQL database using the URI
+        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+
+        # Check if the username exists
+        cursor.execute('SELECT username FROM "USERS" WHERE username = %s', (username,))
+        username_exists = cursor.fetchone() # fetches the first result from query
+
+        # if we get a result from the query, means we have a at least 1 user already with username
+        if username_exists:
+            return {"status": "error", "message": f"Username '{username}' already exists."}
+        else:
+            # if nothing, then we can add user since still unique
+
+            # Query, which inserts user info with information provided
+            # if username is in database, we get no result
+            query = """
+            INSERT INTO "public" . "USERS" (username, password, company, "isReviewer")
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT (username) DO NOTHING
+            RETURNING username;
+            """
+
+            # Execute the query with the provided data
+            cursor.execute(query, (username, password_hashed, company, False))
+
+            # RETURNING in query returns username, this gets the username from that return
+            result = cursor.fetchone()
+
+            if result:
+                print(f"Inserted user: {result[0]}")
+            else:
+                return {"status": "error", "message": f"No user inserted (conflict detected)."}
+
+            # Finalizes the query to the database to be saved
+            connection.commit()
+
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        # Ensure the connection is closed, as finished with code
+        if connection:
+            cursor.close()
+            connection.close()
 
     return {"status": "success", "message": f"User {username} added successfully"}
 
@@ -102,10 +150,12 @@ def add_user(username: str, password_hashed: str, company: str) -> dict:
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
 if __name__ == "__main__":
+
     # loads the environment variables from the .env file to be referenced
     load_dotenv()
-    database_url = os.environ.get('DATABASE_URL')
-    print(database_url)
+
+    print("test: ", os.getenv("DATABASE_URL"))
+
     try:
         # Read JSON data from stdin
         input_action_and_data = json.load(sys.stdin)
