@@ -1,6 +1,6 @@
 export default function page(){
     return (
-    <main>
+    <main aria-label="main-content">
         <h1 className="text-6xl font-bold pl-5">Cybersecurity Maturity Model Certification (CMMC)</h1>
         <h2 className="text-xl font-bold pl-5"><br />What is Cybersecurity Maturity Model Certification 
             (CMMC) 2.0? Is it replacing the need for NIST 800-171 compliance? </h2>
@@ -14,7 +14,7 @@ export default function page(){
             Third-Party Assessment Organization (C3PAO). Unlike CMMC, NIST 800-171 assessments can be self-reported 
             and are submitted to meet DoD contractor requirements.</p>
         <p className = "pl-5"><br />More information can be found here from the DoD&apos;s CIO website:
-            <a href="https://dodcio.defense.gov/cmmc/About/"> <u>CMMC 2.0 About Page</u></a></p>
+            <a href="https://dodcio.defense.gov/cmmc/About/" target="_blank"> <u>CMMC 2.0 About Page</u></a></p>
     </main>
     );
 }

@@ -15,8 +15,14 @@
     --foreground: #ffffff;
   }
 }
+/* Light mode styles */
+.light-mode {
+  --background: #ffffff; /* Light background color */
+  --foreground: #121212; /* Light text color */
+}
 
 body {
+  transition: background-color 0.3s, color 0.3s;
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
@@ -37,9 +43,9 @@ main {
 footer {
   
   padding: 1.5rem 0;
-  background-color: #121212; 
-  color: white;
-  
+  background-color: var(--background); /* Dynamic background */
+  color: var(--foreground); /* Dynamic text color */
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition */
 }
 @layer utilities {
   .text-balance {
