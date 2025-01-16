@@ -93,7 +93,7 @@ def add_user(username: str, password_hashed: str, company: str) -> dict:
     :param username: username of user
     :param password_hashed: hashed password of user
     :param company: company of user
-    :return: dictionary with status of user addition
+    :return: message indicating success or failure
     """
 
     connection = None
@@ -146,6 +146,39 @@ def add_user(username: str, password_hashed: str, company: str) -> dict:
 
     return {"status": "success", "message": f"User {username} added successfully"}
 
+def get_password(username: str) -> dict:
+    """
+    Retrieve hashed password for user based on username
+
+    :param username: username of user
+    :return: dictionary with hashed password
+    """
+
+    connection = None
+
+    try:
+        # Connect to the PostgreSQL database using the URI
+        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+
+        # Query to get the hashed password for the provided username
+        cursor.execute('SELECT password FROM "USERS" WHERE username = %s', (username,))
+        password = cursor.fetchone()
+
+        if password:
+            return {"status": "success", "password": password[0]}
+        else:
+            return {"status": "error", "message": f"Username '{username}' not found."}
+
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        # Ensure the connection is closed, as finished with code
+        if connection:
+            cursor.close()
+            connection.close()
+
+    return {"status": "error", "message": f"An error occurred retrieving password for '{username}'"}
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
@@ -173,6 +206,10 @@ if __name__ == "__main__":
             # Then the inputActionAndData is formatted as such:
             # { action: "add_user", username: YOUR_USERNAME, password_hashed: YOUR_PASSWORD, comnpany: YOUR_COMPANY }
             result = add_user(input_action_and_data.get("username"), input_action_and_data.get("password_hashed"), input_action_and_data.get("company"))
+        elif action == "get_password":
+            # Then the inputActionAndData is formatted as such:
+            # { action: "get_password", username: YOUR_USERNAME }
+            result = get_password(input_action_and_data.get("username"))
         else:
             # Process the input data
             result = {"status": "error", "message": "Invalid action"}
