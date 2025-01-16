@@ -5,6 +5,8 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 
+import os
+from dotenv import load_dotenv
 
 def obtain_cik_number(search_term: str) -> dict:
     """
@@ -59,6 +61,13 @@ def obtain_cik_number(search_term: str) -> dict:
 
 
 def get_sec_data(cik: str) -> dict:
+    """
+    Retrieve SEC json file for company based on given CIK number
+
+    :param cik: CIK number for company to retrieve data for
+    :return: dictionary with json data
+    """
+
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     headers = {
         "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
@@ -75,23 +84,45 @@ def get_sec_data(cik: str) -> dict:
             "message": f"Unable to retrieve data for CIK {cik} (Status Code: {response.status_code})",
         }
 
+def add_user(username: str, password_hashed: str, company: str) -> dict:
+    """
+    Add user to the system
+
+    :param username: username of user
+    :param password_hashed: hashed password of user
+    :param company: company of user
+    :return: dictionary with status of user addition
+    """
+
+
+
+    return {"status": "success", "message": f"User {username} added successfully"}
+
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
 if __name__ == "__main__":
+    # loads the environment variables from the .env file to be referenced
+    load_dotenv()
+    database_url = os.environ.get('DATABASE_URL')
+    print(database_url)
     try:
         # Read JSON data from stdin
         input_action_and_data = json.load(sys.stdin)
 
         # Each action corresponds to a different function, so setting action
-        action = input_action_and_data.get("action")
         # determines which API call is being made
+        action = input_action_and_data.get("action")
         if action == "obtain_cik_number":
             # Then the inputActionAndData is formatted as such:
             # { action: "obtain_cik_number", search_term: YOUR_SEARCH_TERM }
             result = obtain_cik_number(input_action_and_data.get("search_term"))
         elif action == "get_sec_data":
             result = get_sec_data(input_action_and_data.get("search_term"))
+        elif action == "add_user":
+            # Then the inputActionAndData is formatted as such:
+            # { action: "add_user", username: YOUR_USERNAME, password_hashed: YOUR_PASSWORD, comnpany: YOUR_COMPANY }
+            result = add_user(input_action_and_data.get("username"), input_action_and_data.get("password_hashed"), input_action_and_data.get("company"))
         else:
             # Process the input data
             result = {"status": "error", "message": "Invalid action"}
