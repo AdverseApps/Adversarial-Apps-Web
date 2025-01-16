@@ -1,0 +1,5 @@
+# .env file containing project specific environment variables
+# if hosting or deploying, must ensure all variables here are in environment variables on platform
+
+# used to establish postgres database connection
+DATABASE_URL=add_your_uri_connection_string_here

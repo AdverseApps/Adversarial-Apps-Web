@@ -6,3 +6,6 @@ beautifulsoup4
 
 # For Database Calls
 psycopg2-binary
+
+# Loads .env variables into environment
+python-dotenv
