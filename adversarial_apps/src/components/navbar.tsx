@@ -51,6 +51,10 @@ export default function NavBar() {
         <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
           <Link href="/search" className="text-white text-xl">Search</Link>
         </div>
+
+        <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
+          <Link href="/login" className="text-white text-xl">Login</Link>
+        </div>
       </nav>
 
       {/* Search Bar Component */}
