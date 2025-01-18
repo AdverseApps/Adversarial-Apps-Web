@@ -129,12 +129,11 @@ def add_user(username: str, password_hashed: str, company: str) -> dict:
             result = cursor.fetchone()
 
             if result:
+                # Finalizes the query to the database to be saved
+                connection.commit()
                 return {"status": "success", "message": f"User {result[0]} added successfully"}
             else:
                 return {"status": "error", "message": f"No user inserted (conflict detected)."}
-
-            # Finalizes the query to the database to be saved
-            connection.commit()
 
     except psycopg2.Error as e:
         print(f"Database error: {e}")
