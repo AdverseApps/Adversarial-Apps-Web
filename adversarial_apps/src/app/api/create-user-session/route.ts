@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        var { username, password }: AuthRequestBody = await req.json();
+        let { username, password }: AuthRequestBody = await req.json();
 
         if (!username || !password) {
             return NextResponse.json({ error: "Username and password are required." }, { status: 400 });

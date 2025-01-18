@@ -1,14 +1,13 @@
 import json
+import os
 import re
 import sys
 
+import psycopg2
 import requests
 from bs4 import BeautifulSoup
-
-import os
 from dotenv import load_dotenv
 
-import psycopg2
 
 def obtain_cik_number(search_term: str) -> dict:
     """
@@ -86,6 +85,7 @@ def get_sec_data(cik: str) -> dict:
             "message": f"Unable to retrieve data for CIK {cik} (Status Code: {response.status_code})",
         }
 
+
 def add_user(username: str, password_hashed: str, company: str) -> dict:
     """
     Add user to the system
@@ -105,11 +105,14 @@ def add_user(username: str, password_hashed: str, company: str) -> dict:
 
         # Check if the username exists
         cursor.execute('SELECT username FROM "USERS" WHERE username = %s', (username,))
-        username_exists = cursor.fetchone() # fetches the first result from query
+        username_exists = cursor.fetchone()  # fetches the first result from query
 
         # if we get a result from the query, means we have a at least 1 user already with username
         if username_exists:
-            return {"status": "error", "message": f"Username '{username}' already exists."}
+            return {
+                "status": "error",
+                "message": f"Username '{username}' already exists.",
+            }
         else:
             # if nothing, then we can add user since still unique
 
@@ -131,9 +134,15 @@ def add_user(username: str, password_hashed: str, company: str) -> dict:
             if result:
                 # Finalizes the query to the database to be saved
                 connection.commit()
-                return {"status": "success", "message": f"User {result[0]} added successfully"}
+                return {
+                    "status": "success",
+                    "message": f"User {result[0]} added successfully",
+                }
             else:
-                return {"status": "error", "message": f"No user inserted (conflict detected)."}
+                return {
+                    "status": "error",
+                    "message": f"No user inserted (conflict detected).",
+                }
 
     except psycopg2.Error as e:
         print(f"Database error: {e}")
@@ -142,6 +151,7 @@ def add_user(username: str, password_hashed: str, company: str) -> dict:
         if connection:
             cursor.close()
             connection.close()
+
 
 def get_password(username: str) -> dict:
     """
@@ -175,7 +185,11 @@ def get_password(username: str) -> dict:
             cursor.close()
             connection.close()
 
-    return {"status": "error", "message": f"An error occurred retrieving password for '{username}'"}
+    return {
+        "status": "error",
+        "message": f"An error occurred retrieving password for '{username}'",
+    }
+
 
 def add_remove_favorite(username: str, cik: int) -> dict:
     """
@@ -192,7 +206,10 @@ def add_remove_favorite(username: str, cik: int) -> dict:
                 user_id = get_user_id(username, cursor)
 
                 if not user_id:
-                    return {"status": "error", "message": f"User '{username}' not found."}
+                    return {
+                        "status": "error",
+                        "message": f"User '{username}' not found.",
+                    }
 
                 # company must exist in the database first before we can add it to favorites
                 cursor.execute('SELECT 1 FROM "COMPANIES" WHERE "CIK" = %s', (cik,))
@@ -203,7 +220,7 @@ def add_remove_favorite(username: str, cik: int) -> dict:
                     # do the the CIK in FAVORITES table is a foreign key to the CIK in COMPANIES table
                     cursor.execute(
                         'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
-                        (cik, False, 0)
+                        (cik, False, 0),
                     )
                     connection.commit()
 
@@ -255,11 +272,15 @@ def get_favorites(username: str) -> dict:
 
                 # If the user does not exist, return an error message
                 if not user_id:
-                    return {"status": "error", "message": f"User '{username}' not found."}
+                    return {
+                        "status": "error",
+                        "message": f"User '{username}' not found.",
+                    }
 
                 # Query to get the list of favorited companies
                 cursor.execute(
-                    'SELECT "companyCIK" FROM "FAVORITES" WHERE "userId" = %s', (user_id,)
+                    'SELECT "companyCIK" FROM "FAVORITES" WHERE "userId" = %s',
+                    (user_id,),
                 )
                 favorites = cursor.fetchall()
 
@@ -269,6 +290,7 @@ def get_favorites(username: str) -> dict:
                 }
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
+
 
 def get_user_id(username: str, cursor) -> int:
     """
@@ -290,6 +312,7 @@ def get_user_id(username: str, cursor) -> int:
         return user[0]
     except psycopg2.Error as e:
         return None
+
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
@@ -314,7 +337,11 @@ if __name__ == "__main__":
         elif action == "add_user":
             # Then the inputActionAndData is formatted as such:
             # { action: "add_user", username: YOUR_USERNAME, password_hashed: YOUR_PASSWORD, comnpany: YOUR_COMPANY }
-            result = add_user(input_action_and_data.get("username"), input_action_and_data.get("password_hashed"), input_action_and_data.get("company"))
+            result = add_user(
+                input_action_and_data.get("username"),
+                input_action_and_data.get("password_hashed"),
+                input_action_and_data.get("company"),
+            )
         elif action == "get_password":
             # Then the inputActionAndData is formatted as such:
             # { action: "get_password", username: YOUR_USERNAME }
@@ -322,7 +349,9 @@ if __name__ == "__main__":
         elif action == "add_remove_favorite":
             # Then the inputActionAndData is formatted as such:
             # { action: "add_favorite", username: YOUR_USERNAME, cik: YOUR_CIK }
-            result = add_remove_favorite(input_action_and_data.get("username"), input_action_and_data.get("cik"))
+            result = add_remove_favorite(
+                input_action_and_data.get("username"), input_action_and_data.get("cik")
+            )
         elif action == "get_favorites":
             # Then the inputActionAndData is formatted as such:
             # { action: "get_favorites", username: YOUR_USERNAME }

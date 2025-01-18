@@ -45,7 +45,7 @@ export default function SignupPage() {
 
         const formData = new FormData(event.currentTarget);
         const email = formData.get("email") as string;
-        var password = formData.get("password") as string;
+        let password = formData.get("password") as string;
         const confirmPassword = formData.get("confirm-password") as string;
 
         if (password !== confirmPassword) {
