@@ -2,22 +2,25 @@
 
 import { useState, useEffect } from 'react';
 
-export default function dashboard() {
+export default function Dashboard() {
     const [result, setResult] = useState<any>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [username, setUsername] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Function to check for valid JWT
+    // Function to check for valid JWT and fetch username
     const checkAuthentication = async () => {
         try {
-        const response = await fetch('/api/verify-login', { method: 'GET' });
+            const response = await fetch('/api/verify-login', { method: 'GET' });
 
-        if (response.ok) {
-            setIsAuthenticated(true); // User is authenticated
-        } else {
-            setIsAuthenticated(false);
-            setError('Authentication required');
-        }
+            if (response.ok) {
+                const data = await response.json();
+                setIsAuthenticated(true);
+                setUsername(data.user); // Set username from the API response
+            } else {
+                setIsAuthenticated(false);
+                setError('Authentication required');
+            }
         } catch (err) {
             setIsAuthenticated(false); // In case of any error, assume unauthenticated
             setError('Error verifying authentication');
@@ -30,6 +33,7 @@ export default function dashboard() {
 
             if (response.ok) {
                 setIsAuthenticated(false);
+                setUsername(null);
                 setResult(null);
                 setError(null);
             } else {
@@ -42,28 +46,28 @@ export default function dashboard() {
     };
 
     // Run checkAuthentication when component mounts
-    // to ensure user is authenticated to access the page
     useEffect(() => {
         checkAuthentication();
     }, []);
 
-
     if (!isAuthenticated) {
         return (
-        <div>
-            <h1>{error || 'Please log in to access this page.'}</h1>
-        </div>
+            <div>
+                <h1>{error || 'Please log in to access this page.'}</h1>
+            </div>
         );
     }
 
-        return (
-            <div>
+    return (
+        <div>
             <h1>Protected Page</h1>
             <p>Only accessible if you are logged in with a valid JWT.</p>
 
+            {/* Display username */}
+            <p>Welcome, {username}!</p>
+
             {/* Logout button */}
             <button onClick={logout}>Log out</button>
-
-            </div>
+        </div>
     );
 }
