@@ -103,6 +103,10 @@ export default function NavBar() {
             Search
           </Link>
         </div>
+
+        <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
+          <Link href="/login" className="text-white text-xl">Login</Link>
+        </div>
       </nav>
 
       

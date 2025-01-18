@@ -1,0 +1,88 @@
+'use client';
+import { FormEvent, useState } from "react";
+
+export default function SignupPage() {
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.currentTarget);
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+        const confirmPassword = formData.get("confirm-password") as string;
+
+        if (password !== confirmPassword) {
+            setError("Passwords must match!");
+            return;
+        }
+        setError(null);
+        console.log({ email, password });
+    };
+
+    return (
+        <main className="flex items-center justify-center">
+            <div className="w-full max-w-md p-8 bg-blue-900 rounded shadow-md">
+                <h2 className="text-2xl font-bold text-center text-white">Create your account</h2>
+                <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-white">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+                            placeholder="Enter your email"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-medium text-white">
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+                            placeholder="Enter your password"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="confirm-password" className="block text-sm font-medium text-white">
+                            Confirm Password
+                        </label>
+                        <input
+                            type="password"
+                            id="confirm-password"
+                            name="confirm-password"
+                            className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+                            placeholder="Confirm your password"
+                            required
+                        />
+                    </div>
+                    {error && (
+                        <div className="p-4 bg-red-500 rounded-md">
+                            <p className="text-sm white">{error}</p>
+                        </div>
+                    )}
+                    <button
+                        type="submit"
+                        className="w-full py-2 text-black bg-blue-300 rounded-md hover:bg-blue-400"
+                    >
+                        Sign up
+                    </button>
+                </form>
+                <p className="mt-4 text-sm text-center text-white">
+                    Already have an account?{" "}
+                    <a href="/login" className="text-blue-300 hover:underline">
+                        Sign in
+                    </a>
+                </p>
+            </div>
+        </main>
+    );
+}
