@@ -180,14 +180,126 @@ def get_password(username: str) -> dict:
 
     return {"status": "error", "message": f"An error occurred retrieving password for '{username}'"}
 
+def add_remove_favorite(username: str, cik: int) -> dict:
+    """
+    Add or remove a favorite company for the user.
+
+    :param username: Username of the user
+    :param cik: CIK number of the company
+    :return: Message indicating success or failure
+    """
+    try:
+        with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
+            with connection.cursor() as cursor:
+
+                user_id = get_user_id(username, cursor)
+
+                if not user_id:
+                    return {"status": "error", "message": f"User '{username}' not found."}
+
+                # company must exist in the database first before we can add it to favorites
+                cursor.execute('SELECT 1 FROM "VERIFIEDCOMPANIES" WHERE "CIK" = %s', (cik,))
+                company_exists = cursor.fetchone()
+
+                if not company_exists:
+                    # since company does not exist, we need to add it to the database before we can add it to favorites
+                    # do the the CIK in FAVORITES table is a foreign key to the CIK in COMPANIES table
+                    cursor.execute(
+                        'INSERT INTO "VERIFIEDCOMPANIES" ("CIK", "isVerified") VALUES (%s, %s)',
+                        (cik, False)
+                    )
+                    connection.commit()
+
+                # Check if the user has already favorited the company
+                cursor.execute(
+                    'SELECT 1 FROM "FAVORITES" WHERE "userId" = %s AND "companyCIK" = %s',
+                    (user_id, cik),
+                )
+                favorite_exists = cursor.fetchone()
+
+                if favorite_exists:
+                    # If the favorite exists, remove it
+                    cursor.execute(
+                        'DELETE FROM "FAVORITES" WHERE "userId" = %s AND "companyCIK" = %s',
+                        (user_id, cik),
+                    )
+                    connection.commit()
+                    return {
+                        "status": "success",
+                        "message": f"Removed company with CIK {cik} from favorites for {username}.",
+                    }
+                else:
+                    # If the favorite does not exist, add it
+                    cursor.execute(
+                        'INSERT INTO "FAVORITES" ("userId", "companyCIK") VALUES (%s, %s)',
+                        (user_id, cik),
+                    )
+                    connection.commit()
+                    return {
+                        "status": "success",
+                        "message": f"Added company with CIK {cik} to favorites for {username}.",
+                    }
+    except psycopg2.Error as e:
+        return {"status": "error", "message": f"Database error: {e}"}
+
+
+def get_favorites(username: str) -> dict:
+    """
+    Retrieve the list of favorited companies for the user.
+
+    :param username: Username of the user
+    :return: Dictionary containing the list of favorited companies
+    """
+    try:
+        with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
+            with connection.cursor() as cursor:
+
+                user_id = get_user_id(username, cursor)
+
+                # If the user does not exist, return an error message
+                if not user_id:
+                    return {"status": "error", "message": f"User '{username}' not found."}
+
+                # Query to get the list of favorited companies
+                cursor.execute(
+                    'SELECT "companyCIK" FROM "FAVORITES" WHERE "userId" = %s', (user_id,)
+                )
+                favorites = cursor.fetchall()
+
+                return {
+                    "status": "success",
+                    "favorites": [favorite[0] for favorite in favorites],
+                }
+    except psycopg2.Error as e:
+        return {"status": "error", "message": f"Database error: {e}"}
+
+def get_user_id(username: str, cursor) -> int:
+    """
+    Retrieve the user ID for the provided username.
+
+    :param username: Username of the user
+    :param cursor: Cursor object to execute the query (already connected to the database)
+    :return: User ID
+    """
+
+    try:
+        cursor.execute('SELECT id FROM "USERS" WHERE username = %s', (username,))
+        user = cursor.fetchone()
+
+        # if the entry is not found, then no user so no ID
+        if not user:
+            return None
+        # the id is the first element in the user row, which is what was fetched
+        return user[0]
+    except psycopg2.Error as e:
+        return None
+
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
 if __name__ == "__main__":
 
     # loads the environment variables from the .env file to be referenced
     load_dotenv()
-
-    print("test: ", os.getenv("DATABASE_URL"))
 
     try:
         # Read JSON data from stdin
@@ -210,6 +322,14 @@ if __name__ == "__main__":
             # Then the inputActionAndData is formatted as such:
             # { action: "get_password", username: YOUR_USERNAME }
             result = get_password(input_action_and_data.get("username"))
+        elif action == "add_remove_favorite":
+            # Then the inputActionAndData is formatted as such:
+            # { action: "add_favorite", username: YOUR_USERNAME, cik: YOUR_CIK }
+            result = add_remove_favorite(input_action_and_data.get("username"), input_action_and_data.get("cik"))
+        elif action == "get_favorites":
+            # Then the inputActionAndData is formatted as such:
+            # { action: "get_favorites", username: YOUR_USERNAME }
+            result = get_favorites(input_action_and_data.get("username"))
         else:
             # Process the input data
             result = {"status": "error", "message": "Invalid action"}
