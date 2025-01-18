@@ -71,8 +71,8 @@ export default function SignupPage() {
             return;
         }
 
-        // Redirect to a page after successful sign up
-        // window.location.href = '/';
+        // Redirect to login after successful sign up
+        window.location.href = '/login';
 
         setError(null); // Reset error after successful submission
     };
