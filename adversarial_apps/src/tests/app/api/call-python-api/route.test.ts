@@ -8,7 +8,9 @@ jest.mock('child_process', () => ({
 }));
 
 jest.mock('next/server', () => ({
-  NextRequest: jest.fn(),
+  NextRequest: jest.fn().mockImplementation(() => ({
+    json: jest.fn(),
+  })),
   NextResponse: {
     json: jest.fn(),
   },
@@ -21,11 +23,6 @@ describe('POST /run-python', () => {
 
   beforeEach(() => {
     mockSpawn = spawn as jest.Mock;
-
-    mockRequest = {
-      json: jest.fn(),
-    } as unknown as NextRequest;
-
     mockResponseJson = jest.spyOn(NextResponse, 'json');
   });
 
@@ -35,6 +32,10 @@ describe('POST /run-python', () => {
 
   it('should return the correct response when the Python script executes successfully', async () => {
     const inputActionAndData = { action: 'test', data: 'sample' };
+    const mockRequest = {
+      json: jest.fn().mockResolvedValue(inputActionAndData),
+      method: 'POST',
+    } as unknown as NextRequest;
     const pythonOutput = JSON.stringify({ result: 'success' });
 
     // Mock the request body
@@ -81,8 +82,12 @@ describe('POST /run-python', () => {
   });
 
   it('should handle Python script errors (stderr)', async () => {
-    const inputActionAndData = { action: 'test', data: 'sample' };
     const pythonError = 'Python error occurred';
+    const inputActionAndData = { action: 'test', data: 'sample' };
+    const mockRequest = {
+      json: jest.fn().mockResolvedValue(inputActionAndData),
+      method: 'POST',
+    } as unknown as NextRequest;
 
     // Mock the request body
     (mockRequest.json as jest.Mock).mockResolvedValue(inputActionAndData);
@@ -129,9 +134,12 @@ describe('POST /run-python', () => {
 
   it('should handle non-zero exit codes from the Python script', async () => {
     const inputActionAndData = { action: 'test', data: 'sample' };
-
-    // Mock the request body
+    const mockRequest = {
+      json: jest.fn().mockResolvedValue(inputActionAndData),
+      method: 'POST',
+    } as unknown as NextRequest;
     (mockRequest.json as jest.Mock).mockResolvedValue(inputActionAndData);
+    
 
     // Mock the child process
     const mockStdout = {
@@ -174,6 +182,10 @@ describe('POST /run-python', () => {
 
   it('should handle JSON parsing errors in stdout', async () => {
     const inputActionAndData = { action: 'test', data: 'sample' };
+    const mockRequest = {
+      json: jest.fn().mockResolvedValue(inputActionAndData),
+      method: 'POST',
+    } as unknown as NextRequest;
     const invalidJsonOutput = 'Invalid JSON output';
 
     // Mock the request body
