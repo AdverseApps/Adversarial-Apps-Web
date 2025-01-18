@@ -59,8 +59,10 @@ Wether you are on local host or deploying need some environment variables for th
 
 First, run the command below to create the .env file from the template. The template is used to show what environment variables are needed to be filled out by user, and should have non-vaild filler.
 
+The .env file must be stored in the adversarial_apps directory for next.js to see the environment variables.
+
 ```bash
-cp .template-env .env
+cp .template-env adversarial_apps/.env
 ```
 
 Once copied, add the appriopiate value for your set up for each of the following environment variables.
