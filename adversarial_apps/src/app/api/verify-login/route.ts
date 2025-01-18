@@ -1,7 +1,13 @@
+import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET;
+
+interface DecodedToken {
+    username: string;
+    exp: number;
+    iat: number; // issued at time
+}
 
 export async function GET(req: NextRequest) {
     const cookieToken = req.cookies.get('auth_token')?.value;
@@ -11,9 +17,9 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const decoded: any = jwt.verify(cookieToken, JWT_SECRET);
+        const decoded: DecodedToken = jwt.verify(cookieToken, JWT_SECRET) as DecodedToken;
         return NextResponse.json({ success: true, user: decoded.username }, { status: 200 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 }

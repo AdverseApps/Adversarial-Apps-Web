@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        let { username, password }: AuthRequestBody = await req.json();
+        const { username, password }: AuthRequestBody = await req.json();
 
         if (!username || !password) {
             return NextResponse.json({ error: "Username and password are required." }, { status: 400 });
@@ -54,8 +54,6 @@ export async function POST(req: NextRequest) {
         const storedPassword = await validatePassword(username);
 
         const isAuthenticated = await argon2.verify(storedPassword, password);
-
-        password = ""; // clear password from memory
 
         if (!isAuthenticated) {
             return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });

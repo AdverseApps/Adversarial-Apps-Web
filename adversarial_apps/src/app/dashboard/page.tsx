@@ -2,8 +2,14 @@
 
 import { useState, useEffect } from 'react';
 
+interface ApiResult {
+    status: 'success' | 'error';
+    data?: unknown;
+    message?: string;
+}
+
 export default function Dashboard() {
-    const [result, setResult] = useState<any>(null);
+    const [, setResult] = useState<ApiResult | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [username, setUsername] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -21,7 +27,7 @@ export default function Dashboard() {
                 setIsAuthenticated(false);
                 setError('Authentication required');
             }
-        } catch (err) {
+        } catch {
             setIsAuthenticated(false); // In case of any error, assume unauthenticated
             setError('Error verifying authentication');
         }

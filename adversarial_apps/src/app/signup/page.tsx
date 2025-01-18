@@ -64,8 +64,8 @@ export default function SignupPage() {
             password = "" // clear password from memory
             console.log("User signed up, JWT stored in cookie");
 
-        } catch (error: any) {
-            setError(error.message || "An error occurred, please try again.");
+        } catch (error: unknown) {
+            setError(error instanceof Error ? error.message : "An error occurred, please try again.");
             console.error("Error:", error);
             // return prevents sign up if there is an error
             return;
