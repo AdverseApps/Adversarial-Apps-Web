@@ -129,7 +129,7 @@ def add_user(username: str, password_hashed: str, company: str) -> dict:
             result = cursor.fetchone()
 
             if result:
-                print(f"Inserted user: {result[0]}")
+                return {"status": "success", "message": f"User {result[0]} added successfully"}
             else:
                 return {"status": "error", "message": f"No user inserted (conflict detected)."}
 
@@ -143,8 +143,6 @@ def add_user(username: str, password_hashed: str, company: str) -> dict:
         if connection:
             cursor.close()
             connection.close()
-
-    return {"status": "success", "message": f"User {username} added successfully"}
 
 def get_password(username: str) -> dict:
     """
@@ -198,15 +196,15 @@ def add_remove_favorite(username: str, cik: int) -> dict:
                     return {"status": "error", "message": f"User '{username}' not found."}
 
                 # company must exist in the database first before we can add it to favorites
-                cursor.execute('SELECT 1 FROM "VERIFIEDCOMPANIES" WHERE "CIK" = %s', (cik,))
+                cursor.execute('SELECT 1 FROM "COMPANIES" WHERE "CIK" = %s', (cik,))
                 company_exists = cursor.fetchone()
 
                 if not company_exists:
                     # since company does not exist, we need to add it to the database before we can add it to favorites
                     # do the the CIK in FAVORITES table is a foreign key to the CIK in COMPANIES table
                     cursor.execute(
-                        'INSERT INTO "VERIFIEDCOMPANIES" ("CIK", "isVerified") VALUES (%s, %s)',
-                        (cik, False)
+                        'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
+                        (cik, False, 0)
                     )
                     connection.commit()
 
