@@ -67,7 +67,8 @@ Once copied, add the appriopiate value for your set up for each of the following
 
 Environment Variables:
 
-- DATABASE_URI should be set to the DATABASE URI connection string you have for your database.
+- DATABASE_URL should be set to the DATABASE URI or URL connection string you have for your database.
+- JWT_SECRET should be set to a secure string that you create to use for encryption of the JWT for user sessions
 
 ### Running the Local Application
 
