@@ -13,7 +13,7 @@ To setup the local environment you will need a few tools and applications. The i
 
 #### Next.js Installation
 
-To install required packages for next.js to work, first install node. 
+To install required packages for next.js to work, first install node.
 
 Example:
 
@@ -39,7 +39,7 @@ pnpm install
 
 #### Python Installation
 
-This project uses Python 3 for the backend, however all backend scripts are local and no external api is used. This does require having python installed on system 
+This project uses Python 3 for the backend, however all backend scripts are local and no external api is used. This does require having python installed on system
 
 To install python 3 run:
 
@@ -52,6 +52,25 @@ Once you have python you will also need to install the required packages for the
 ```bash
 pip install -r requirements.txt
 ```
+
+### Add Environment Variables
+
+Wether you are on local host or deploying need some environment variables for the application.
+
+First, run the command below to create the .env file from the template. The template is used to show what environment variables are needed to be filled out by user, and should have non-vaild filler.
+
+The .env file must be stored in the adversarial_apps directory for next.js to see the environment variables.
+
+```bash
+cp .template-env adversarial_apps/.env
+```
+
+Once copied, add the appriopiate value for your set up for each of the following environment variables.
+
+Environment Variables:
+
+- DATABASE_URL should be set to the DATABASE URI or URL connection string you have for your database.
+- JWT_SECRET should be set to a secure string that you create to use for encryption of the JWT for user sessions
 
 ### Running the Local Application
 
@@ -94,4 +113,3 @@ You may also isolate it to the specific folder.
 ## Contributing
 
 To contribute to this application and the process for doing so, please view the [Contribution Guide](.github\CONTRIBUTING.md).
-

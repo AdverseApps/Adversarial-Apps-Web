@@ -1,23 +1,80 @@
 'use client';
 import { FormEvent, useState } from "react";
 
+// calls API to add user to the database
+async function addUserToDatabase(username: string, password: string) {
+    const data = { action: "add_user", username, password_hashed: password, company: null };
+    const response = await fetch('/api/call-python-api', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    const result = await response.json();
+
+    if (result.status === "success") {
+        return result.message;
+    } else {
+        throw new Error (result.message);
+    }
+}
+
+async function createUserSessionAPI(username: string, password: string) {
+    const response = await fetch('/api/create-user-session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+    });
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.error || 'Failed to create session');
+    }
+
+    return result;
+}
+
 export default function SignupPage() {
     const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const formData = new FormData(event.currentTarget);
         const email = formData.get("email") as string;
-        const password = formData.get("password") as string;
+        let password = formData.get("password") as string;
         const confirmPassword = formData.get("confirm-password") as string;
 
         if (password !== confirmPassword) {
             setError("Passwords must match!");
+            // return prevents sign up if passwords don't match
             return;
         }
-        setError(null);
-        console.log({ email, password });
+
+        try {
+            // Call function to add user to database
+            // the await ensures that we finish this before proceeding in case it errors
+            await addUserToDatabase(email, password);
+
+            // If user is successfully added, proceed to JWT creation
+            await createUserSessionAPI(email, password);
+            password = "" // clear password from memory
+            console.log("User signed up, JWT stored in cookie");
+
+        } catch (error: unknown) {
+            setError(error instanceof Error ? error.message : "An error occurred, please try again.");
+            console.error("Error:", error);
+            // return prevents sign up if there is an error
+            return;
+        }
+
+        // Redirect to login after successful sign up
+        window.location.href = '/login';
+
+        setError(null); // Reset error after successful submission
     };
 
     return (
