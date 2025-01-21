@@ -95,12 +95,14 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
                 tabIndex={0}
                 onClick={() => {
                   //REPLACE WITH HAVING THEM REDIRECTED TO RESULTS PAGE FOR THE ENTRY HERE
-                  replace.push(`/search?query=${result.name}&cik=${result.cik}`);
+                  console.log('Redirecting to:', `/company/${result.cik}`); //debugging
+                  replace.push(`/company/${result.cik}`);
                   setShowDropdown(false); // Hide dropdown after selection
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    replace.push(`/search?query=${result.name}&cik=${result.cik}`);
+                    console.log('Redirecting to:', `/company/${result.cik}`); //debugging
+                    replace.push(`/company/${result.cik}`);
                     setShowDropdown(false);
                   }}
               }
