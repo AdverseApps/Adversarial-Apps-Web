@@ -1,6 +1,7 @@
 'use client';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
+import { FetchCIKnumber } from '@/app/lib/data';
 
 export default function SearchBar({ placeholder }: { placeholder: string }) {
   return (
@@ -21,6 +22,7 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
 
 
     useEffect(() => {
+      const delayDebounceFn = setTimeout(() => {
       if (searchTerm) {
         console.log("Searching for:", searchTerm);
         fetchResults(searchTerm);
@@ -29,10 +31,14 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
         setResults([]);
         setShowDropdown(false);
       }
+    }, 300); // Delay of 300ms
+    return () => clearTimeout(delayDebounceFn); //debouncing to reduce unnecessary requests to the server
     }, [searchTerm]);
 
     async function fetchResults(query: string) {
+      //CAN POSSIBLLY REMOVE FOR THE LIB DATA ADDITION
         // Data will hold what will be given in the API body. [query] is what is typed in the box
+        console.log('Fetching CIK number...');
         const data = { action: "obtain_cik_number", search_term: query };
         const response = await fetch('/api/call-python-api', {
           method: 'Post',
@@ -52,7 +58,22 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
           
           setResults(companies);
       }
+/*
+LIB DATA ATTEMPT, WILL LOOK AT MORE LATER -Dami
+      try {
+        const companies = await FetchCIKnumber(query); // Fetch data using the imported function
+        if (companies) {
+          setResults(companies);
+        } else {
+          setResults([]); // Handle cases where no results are returned
+        }
+      } catch (error) {
+        console.error('Error fetching results:', error);
+        setResults([]); // Reset results on error
+      }
+        */
     }
+    
 
       function handleSearch(term: string) {
         if (term) {
