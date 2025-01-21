@@ -41,7 +41,7 @@ export async function FetchCIKnumber(query:string) {
         const domain = headersList.get('host');
         const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
 
-        const data = { action: "get_sec_data", search_term: query };
+        const data = { action: "obtain_cik_number", search_term: query };
         const response = await fetch(`${protocol}://${domain}/api/call-python-api`, {
         method: 'POST',
         headers: {
