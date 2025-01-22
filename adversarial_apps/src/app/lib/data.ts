@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 
-export async function FetchSecData(cik:string) {
+export async function FetchSecData(cik:string): Promise<{ status: string; company?: any; message?: string }> {
     
     try {
 
@@ -18,15 +18,20 @@ export async function FetchSecData(cik:string) {
         },
         body: JSON.stringify(data),
         });
+
+        if (!response.ok) {
+            return { status: "error", message: `Failed to fetch data: ${response.statusText}` };
+        }
+
         const result = await response.json();
         console.log(result);
-    if (result.status === "success")
-    {
-    return (result.data);
-    }
-    return (null);
+      
+        return (result);
+      
+      
 }catch (error) {
 console.error('Failed to fetch SEC data:', error);
+return { status: "error", message: "An unexpected error occurred." };
 }
 }
 
