@@ -80,6 +80,11 @@ LIB DATA ATTEMPT, WILL LOOK AT MORE LATER -Dami
           replace.push(`/search?query=${term}`);
         }
       }
+      
+      function sanitizeInput(input: string): string {
+        // removes special characters like <, >, ".
+        return input.replace(/<|>/g, "");
+      }
 
       return (
 
@@ -94,9 +99,10 @@ LIB DATA ATTEMPT, WILL LOOK AT MORE LATER -Dami
             className={`block w-full border border-gray-300 py-2 pl-4 pr-4 text-sm text-gray-500 placeholder-gray-500 focus:outline-none focus:border-gray-400 ${
               showDropdown ? 'rounded-t-3xl rounded-b-none' : 'rounded-3xl'
             }`}
+            
             placeholder={placeholder}
             value ={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(sanitizeInput(e.target.value))}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
               handleSearch(e.currentTarget.value);
