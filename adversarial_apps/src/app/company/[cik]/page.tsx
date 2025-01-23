@@ -56,17 +56,18 @@ export default async function page ({ params }: CompanyDetailsProps){
     </div>
   );
   }
-  const { name, 
-          formerNames, 
-          address, 
-          street2,
-          city,
-          zipCode,
-          stateOrCountryDescription, 
-          stateOfIncorporation, 
-          mostRecentFilingDate, 
-          phone, 
-          website 
+  const { 
+    name, 
+    formerNames, 
+    address, 
+    street2,
+    city,
+    zipCode,
+    stateOrCountryDescription, 
+    stateOfIncorporation, 
+    mostRecentFilingDate, 
+    phone, 
+    website 
   } = result.company;
 
 
@@ -113,7 +114,15 @@ export default async function page ({ params }: CompanyDetailsProps){
         </p>
         <br />
         <p>
-          <span className="font-semibold">Date of Last Filing:</span> {formatDate(mostRecentFilingDate) || "N/A"}
+          <span className="font-semibold">Date of Last Filing:</span> {" "}
+          {mostRecentFilingDate ?  (
+            <>
+            {formatDate(mostRecentFilingDate)}
+               
+            </>
+          ) : (
+            "N/A"
+          )}
         </p>
         <br />
         <p>

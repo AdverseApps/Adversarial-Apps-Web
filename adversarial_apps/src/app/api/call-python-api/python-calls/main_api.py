@@ -134,7 +134,7 @@ def get_sec_data(cik: str) -> dict:
 
             # If there are no filing dates, return 'N/A'
             if not filing_dates:
-                recent_filing_date = "N/A"
+                recent_filing_date = ""
             else:
                 # Sort the filing dates in descending order to get the most recent one
                 filing_dates_sorted = sorted(filing_dates, reverse=True)

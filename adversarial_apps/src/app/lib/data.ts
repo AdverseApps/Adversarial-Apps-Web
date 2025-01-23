@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 
 
-export async function FetchSecData(cik:string): Promise<{ status: string; company?: any; message?: string }> {
+export async function FetchSecData(cik:string)  {
     
     try {
 
@@ -27,7 +27,7 @@ export async function FetchSecData(cik:string): Promise<{ status: string; compan
         const result = await response.json();
         console.log(result);
       if(result.status === "success"){
-        return (result as any); //type assertion
+        return (result); //type assertion
       }
       return { status: "error", message: `Failed to fetch data: ${response.statusText}` };
 }catch (error) {
