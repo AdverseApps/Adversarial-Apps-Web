@@ -1,17 +1,45 @@
 'use client';
 import { FormEvent } from "react";
 
+// calls API to create user session
+async function createUserSessionAPI(username: string, password: string) {
+    const response = await fetch('/api/create-user-session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+    });
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.error || 'Failed to create session');
+    }
+
+    return result;
+}
+
 export default function LoginPage() {
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault(); 
-    
+        event.preventDefault();
+
         const formData = new FormData(event.currentTarget);
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
-    
-        console.log({ email, password }); 
+
+        // Call function to create user session
+        // the await ensures that we finish this before proceeding in case it errors
+        createUserSessionAPI(email, password)
+            .then(() => {
+                // Redirect to the dashboard
+                window.location.href = '/dashboard';
+                console.log('Session created successfully');
+            })
+            .catch((error) => {
+                console.error('Failed to create session:', error);
+            });
     };
-    
+
     return (
       <main className="flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-blue-900 rounded shadow-md">

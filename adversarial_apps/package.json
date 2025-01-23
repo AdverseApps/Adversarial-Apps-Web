@@ -11,6 +11,8 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
+    "argon2": "^0.41.1",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18"
@@ -35,6 +37,6 @@
     "whatwg-fetch": "^3.6.20"
   },
   "engines": {
-  "python": "3.13.0"
+    "python": "3.13.0"
   }
 }
