@@ -25,10 +25,10 @@ export async function FetchSecData(cik:string): Promise<{ status: string; compan
 
         const result = await response.json();
         console.log(result);
-      
+      if(result.status === "success"){
         return (result);
-      
-      
+      }
+      return { status: "error", message: `Failed to fetch data: ${response.statusText}` };
 }catch (error) {
 console.error('Failed to fetch SEC data:', error);
 return { status: "error", message: "An unexpected error occurred." };
