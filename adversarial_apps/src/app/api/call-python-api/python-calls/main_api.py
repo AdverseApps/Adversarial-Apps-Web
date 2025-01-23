@@ -1,7 +1,7 @@
+import html
 import json
 import re
 import sys
-import html
 
 import requests
 from bs4 import BeautifulSoup
