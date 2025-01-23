@@ -12,6 +12,15 @@ interface CompanyDetailsProps {
     toDate: string;
   }
 
+  function capitalizeWords(input: string | null | undefined): string {
+    if (!input) {
+      return ''; // Return an empty string if input is null or undefined
+    }
+    return input
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
 export default async function page ({ params }: CompanyDetailsProps){
     const { cik } = params;
 
@@ -50,12 +59,16 @@ export default async function page ({ params }: CompanyDetailsProps){
 const { name, 
         formerNames, 
         address, 
+        street2,
+        city,
+        zipCode,
         stateOrCountryDescription, 
         stateOfIncorporation, 
-        dateOfCreation, 
+        mostRecentFilingDate, 
         phone, 
         website 
 } = result.company;
+
 
 const formatDate = (date: string): string => {
   const parsedDate = new Date(date);
@@ -68,48 +81,58 @@ const formatDate = (date: string): string => {
     <div className="w-full max-w-xl text-left text-xl p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">Company Details</h2>
        <p>
-        <span className="font-semibold">Name:</span> {name || "N/A"}
+        <span className="font-semibold">Name:</span> {capitalizeWords(name) || "N/A"}
       </p>
-
+      
         {formerNames && formerNames.length > 0 && (
-          <div className="mt-4">
+          <div className=""><br />
           <h3 className="text-lg font-semibold">Former Names:</h3>
           <ul className="list-disc pl-5">
             {formerNames.map((item: FormerName, index: number) => (
               <li key={index}>
-                <span className="font-medium">{item.name}</span> (From: {formatDate((item.fromDate))} To: {formatDate(item.toDate)})
+                <span className="font-medium">{" "}{capitalizeWords(item.name)}</span> (From: {formatDate((item.fromDate))} To: {formatDate(item.toDate)})
               </li>
               ))}
           </ul>
         </div>
       )}
-
+      <br />
       <p>
-        <span className="font-semibold">Business Address:</span> {address || "N/A"}
+        <span className="font-semibold">Business Address:</span>  {capitalizeWords(address)?.replace(/,+$/, "") || "N/A"}
+        {street2 && `, ${capitalizeWords(street2).replace(/,+$/, "")}`}
+        {city && `, ${capitalizeWords(city).replace(/,+$/, "")}`}
+        {zipCode && `, ${zipCode}`}
       </p>
+      <br />
       <p>
         <span className="font-semibold">State or Country:</span> {stateOrCountryDescription || "N/A"}
       </p>
+      <br />
       <p>
         <span className="font-semibold">State of Incorporation:</span> {stateOfIncorporation || "N/A"}
       </p>
+      <br />
       <p>
-        <span className="font-semibold">Date of Creation:</span> {dateOfCreation || "N/A"}
+        <span className="font-semibold">Date of Last Filing:</span> {formatDate(mostRecentFilingDate) || "N/A"}
       </p>
+      <br />
       <p>
         <span className="font-semibold">Phone:</span> {phone || "N/A"}
       </p>
+      <br />
       <p>
         <span className="font-semibold">Website:</span>{" "}
         {website ? (
-          <a
-            href={website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 underline"
-          >
-            {website}
-          </a>
+          <><a
+              href={website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 underline"
+            >
+              {website}
+            </a>
+              <span className="font-semibold text-sm"> please note we do not verify any external website linked on this page, click on links at your own risk</span>
+            </>
         ) : (
           "N/A"
         )}
