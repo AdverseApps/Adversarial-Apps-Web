@@ -1,7 +1,6 @@
 'use client';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
-import { FetchCIKnumber } from '@/app/lib/data';
 
 export default function SearchBar({ placeholder }: { placeholder: string }) {
   return (
