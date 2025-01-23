@@ -120,12 +120,29 @@ def get_sec_data(cik: str) -> dict:
                 "name": data.get("name", "N/A"),  # Company name
                 "formerNames": data.get("formerNames", []),  # Former names array
                 "address": data.get("addresses", {}).get("business", {}).get("street1", "N/A"),
+                "street2": data.get("addresses", {}).get("business", {}).get("street2", "N/A"),
+                "city": data.get("addresses", {}).get("business", {}).get("city", "N/A"),
+                "zipCode": data.get("addresses", {}).get("business", {}).get("zipCode", "N/A"),
                 "stateOrCountryDescription": data.get("addresses", {}).get("business", {}).get("stateOrCountryDescription", "N/A"),
-                "stateOfIncorporation": data.get("stateOfIncorporation", "N/A"),
-                "dateOfCreation": data.get("fiscalYearEnd", "N/A"),  # Adjust field if needed
+                "stateOfIncorporation": data.get("stateOfIncorporationDescription", "N/A"),
                 "phone": data.get("phone", "N/A"),
                 "website": data.get("website", "N/A"),  # Assume there's a website field
             }
+
+            # Get all filing dates from the filings section
+            filing_dates = data.get("filings", {}).get("recent", {}).get("filingDate", [])
+
+            # If there are no filing dates, return 'N/A'
+            if not filing_dates:
+                recent_filing_date = "N/A"
+            else:
+                # Sort the filing dates in descending order to get the most recent one
+                filing_dates_sorted = sorted(filing_dates, reverse=True)
+                recent_filing_date = filing_dates_sorted[0]
+
+            # Add the most recent filing date to the company data
+            company_data["mostRecentFilingDate"] = recent_filing_date
+
             # Ensure proper formatting of `formerNames`
             if "formerNames" in company_data and company_data["formerNames"]:
                 
