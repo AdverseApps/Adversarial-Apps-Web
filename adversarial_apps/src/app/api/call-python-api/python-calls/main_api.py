@@ -9,11 +9,11 @@ from bs4 import BeautifulSoup
 def sanitize_search_term(search_term: str) -> str:
     
     # Validate the search term (e.g., allow only alphanumeric and a few specific characters)
-    if not re.match(r'^[A-Za-z0-9&\-.\s]+$', search_term):
+    if not re.match(r'^[A-Za-z0-9&\-.,\s]+$', search_term):
         raise ValueError("Invalid search term: only alphanumeric and a few special characters allowed.")
     
-    # Sanitize the input by removing unsafe characters, Allow only alphanumeric, &, -, ., and spaces
-    sanitized_term = re.sub(r'[^A-Za-z0-9&\-. ]', '', search_term)
+    # Sanitize the input by removing unsafe characters, Allow only alphanumeric, &, -, ., ,, and spaces
+    sanitized_term = re.sub(r'[^A-Za-z0-9&\-., ]', '', search_term)
 
     # Normalize multiple spaces to a single space
     sanitized_term = re.sub(r'\s+', ' ', sanitized_term)  
