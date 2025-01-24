@@ -102,7 +102,6 @@ def obtain_cik_number(search_term: str) -> dict:
 
 
 def get_sec_data(cik: str) -> dict:
-    
     """
     Retrieve SEC json file for company based on given CIK number
 
