@@ -18,8 +18,7 @@ const EducationSubNavBar = ({ isSubMenuOpen }: { isSubMenuOpen: boolean }) => {
       <ul className="flex space-x-6">
         <li><Link href="/education/cfr-title-15" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">CFR Title 15</Link></li>
         <li><Link href="/education/sam-compliance" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">SAM Compliance</Link></li>
-        <li><Link href="/education/due-diligence" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">Due Diligence</Link></li>
-        <li><Link href="/education/sbir" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">SBIR Contract</Link></li>
+        <li><Link href="/education/sbir-due-diligence" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">SBIR Due Diligence</Link></li>
         <li><Link href="/education/resources" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">Resources</Link></li>
         <li><Link href="/education/cmmc" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">CMMC 2.0</Link></li>
         <li><Link href="/education/foci" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">FOCI</Link></li>
