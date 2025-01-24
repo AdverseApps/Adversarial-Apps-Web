@@ -11,6 +11,8 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
+    "argon2": "^0.41.1",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18"
@@ -21,6 +23,7 @@
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -35,6 +38,6 @@
     "whatwg-fetch": "^3.6.20"
   },
   "engines": {
-  "python": "3.13.0"
+    "python": "3.13.0"
   }
 }

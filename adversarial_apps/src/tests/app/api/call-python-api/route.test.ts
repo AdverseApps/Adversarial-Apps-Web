@@ -8,7 +8,9 @@ jest.mock('child_process', () => ({
 }));
 
 jest.mock('next/server', () => ({
-  NextRequest: jest.fn(),
+  NextRequest: jest.fn().mockImplementation(() => ({
+    json: jest.fn(),
+  })),
   NextResponse: {
     json: jest.fn(),
   },
@@ -16,16 +18,10 @@ jest.mock('next/server', () => ({
 
 describe('POST /run-python', () => {
   let mockSpawn: jest.Mock;
-  let mockRequest: NextRequest;
   let mockResponseJson: jest.SpyInstance;
 
   beforeEach(() => {
     mockSpawn = spawn as jest.Mock;
-
-    mockRequest = {
-      json: jest.fn(),
-    } as unknown as NextRequest;
-
     mockResponseJson = jest.spyOn(NextResponse, 'json');
   });
 
@@ -34,11 +30,15 @@ describe('POST /run-python', () => {
   });
 
   it('should return the correct response when the Python script executes successfully', async () => {
-    const inputActionAndData = { action: 'test', data: 'sample' };
+    const inputData = { data: 'sample' };
+    const mockRequest = {
+      json: jest.fn().mockResolvedValue(inputData),
+      method: 'POST',
+    } as unknown as NextRequest;
     const pythonOutput = JSON.stringify({ result: 'success' });
 
     // Mock the request body
-    (mockRequest.json as jest.Mock).mockResolvedValue(inputActionAndData);
+    (mockRequest.json as jest.Mock).mockResolvedValue(inputData);
 
     // Mock the child process
     const mockStdout = {
@@ -75,17 +75,21 @@ describe('POST /run-python', () => {
     // Assertions
     expect(mockRequest.json).toHaveBeenCalledTimes(1);
     expect(mockSpawn).toHaveBeenCalledWith('python3', ['src/app/api/call-python-api/python-calls/main_api.py']);
-    expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputActionAndData));
+    expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputData));
     expect(mockProcess.stdin.end).toHaveBeenCalled();
     expect(mockResponseJson).toHaveBeenCalledWith(JSON.parse(pythonOutput), { status: 200 });
   });
 
   it('should handle Python script errors (stderr)', async () => {
-    const inputActionAndData = { action: 'test', data: 'sample' };
     const pythonError = 'Python error occurred';
+    const inputData = { data: 'sample' };
+    const mockRequest = {
+      json: jest.fn().mockResolvedValue(inputData),
+      method: 'POST',
+    } as unknown as NextRequest;
 
     // Mock the request body
-    (mockRequest.json as jest.Mock).mockResolvedValue(inputActionAndData);
+    (mockRequest.json as jest.Mock).mockResolvedValue(inputData);
 
     // Mock the child process
     const mockStdout = {
@@ -122,16 +126,19 @@ describe('POST /run-python', () => {
     // Assertions
     expect(mockRequest.json).toHaveBeenCalledTimes(1);
     expect(mockSpawn).toHaveBeenCalledWith('python3', ['src/app/api/call-python-api/python-calls/main_api.py']);
-    expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputActionAndData));
+    expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputData));
     expect(mockProcess.stdin.end).toHaveBeenCalled();
     expect(mockResponseJson).toHaveBeenCalledWith({ error: pythonError }, { status: 500 });
   });
 
   it('should handle non-zero exit codes from the Python script', async () => {
-    const inputActionAndData = { action: 'test', data: 'sample' };
-
-    // Mock the request body
-    (mockRequest.json as jest.Mock).mockResolvedValue(inputActionAndData);
+    const inputData = { data: 'sample' };
+    const mockRequest = {
+      json: jest.fn().mockResolvedValue(inputData),
+      method: 'POST',
+    } as unknown as NextRequest;
+    (mockRequest.json as jest.Mock).mockResolvedValue(inputData);
+    
 
     // Mock the child process
     const mockStdout = {
@@ -164,7 +171,7 @@ describe('POST /run-python', () => {
     // Assertions
     expect(mockRequest.json).toHaveBeenCalledTimes(1);
     expect(mockSpawn).toHaveBeenCalledWith('python3', ['src/app/api/call-python-api/python-calls/main_api.py']);
-    expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputActionAndData));
+    expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputData));
     expect(mockProcess.stdin.end).toHaveBeenCalled();
     expect(mockResponseJson).toHaveBeenCalledWith(
       { error: 'An error occurred while executing the script' },
@@ -173,11 +180,15 @@ describe('POST /run-python', () => {
   });
 
   it('should handle JSON parsing errors in stdout', async () => {
-    const inputActionAndData = { action: 'test', data: 'sample' };
+    const inputData = { data: 'sample' };
+    const mockRequest = {
+      json: jest.fn().mockResolvedValue(inputData),
+      method: 'POST',
+    } as unknown as NextRequest;
     const invalidJsonOutput = 'Invalid JSON output';
 
     // Mock the request body
-    (mockRequest.json as jest.Mock).mockResolvedValue(inputActionAndData);
+    (mockRequest.json as jest.Mock).mockResolvedValue(inputData);
 
     // Mock the child process
     const mockStdout = {
@@ -214,7 +225,7 @@ describe('POST /run-python', () => {
     // Assertions
     expect(mockRequest.json).toHaveBeenCalledTimes(1);
     expect(mockSpawn).toHaveBeenCalledWith('python3', ['src/app/api/call-python-api/python-calls/main_api.py']);
-    expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputActionAndData));
+    expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputData));
     expect(mockProcess.stdin.end).toHaveBeenCalled();
     expect(mockResponseJson).toHaveBeenCalledWith(
       { error: 'An error occurred while executing the script' },
