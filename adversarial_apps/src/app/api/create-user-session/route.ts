@@ -3,12 +3,6 @@ import { headers } from 'next/headers';
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
-if (!JWT_SECRET) {
-    throw new Error("Environment variable JWT_SECRET must be set.");
-}
-
 interface AuthRequestBody {
     username: string;
     password: string;
@@ -59,9 +53,15 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
         }
 
+        const jwtSecret = process.env.JWT_SECRET;
+
+        if (!jwtSecret) {
+            throw new Error("Environment variable JWT_SECRET must be set.");
+        }
+
         // Create and sign the JWT, username stored to identify user for api requests
         const payload = { username };
-        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "12h" });
+        const token = jwt.sign(payload, jwtSecret, { expiresIn: "12h" });
 
         // stores cookie with JWT token
         const isProduction = process.env.NODE_ENV === "production";
