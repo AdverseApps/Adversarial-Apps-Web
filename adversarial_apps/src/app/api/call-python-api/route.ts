@@ -1,15 +1,25 @@
-// File: /src/app/api/run-python/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
+import argon2 from 'argon2';
 
 export async function POST(req: NextRequest) {
+  if (req.method !== 'POST') {
+    return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
+  }
+
   try {
     // Parse the incoming JSON data from the request
     const inputActionAndData = await req.json();
 
     // Path to the Python script
     const scriptPath = 'src/app/api/call-python-api/python-calls/main_api.py';
-    
+
+    // checks if action is add_user, if so, hashes the password
+    if (inputActionAndData.action === "add_user") {
+      const password = inputActionAndData.password_hashed;
+      inputActionAndData.password_hashed = await argon2.hash(password);
+    }
+
     // Spawn a child process to run the Python script
     const pythonProcess = spawn('python3', [scriptPath]);
 
