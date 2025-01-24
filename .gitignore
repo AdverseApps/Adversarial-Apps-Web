@@ -1,2 +1,3 @@
 # Files here will be ignored from pushing. DO NOT PUSH THESE FILES
 .env
+adversarial_apps/pnpm-lock.yaml
