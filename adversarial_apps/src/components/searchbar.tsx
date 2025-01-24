@@ -21,6 +21,7 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
 
 
     useEffect(() => {
+      const delayDebounceFn = setTimeout(() => {
       if (searchTerm) {
         console.log("Searching for:", searchTerm);
         fetchResults(searchTerm);
@@ -29,10 +30,14 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
         setResults([]);
         setShowDropdown(false);
       }
+    }, 300); // Delay of 300ms
+    return () => clearTimeout(delayDebounceFn); //debouncing to reduce unnecessary requests to the server
     }, [searchTerm]);
 
     async function fetchResults(query: string) {
+      //CAN POSSIBLLY REMOVE FOR THE LIB DATA ADDITION
         // Data will hold what will be given in the API body. [query] is what is typed in the box
+        console.log('Fetching CIK number...');
         const data = { action: "obtain_cik_number", search_term: query };
         const response = await fetch('/api/call-python-api', {
           method: 'Post',
@@ -52,12 +57,32 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
           
           setResults(companies);
       }
+/*
+LIB DATA ATTEMPT, WILL LOOK AT MORE LATER -Dami
+      try {
+        const companies = await FetchCIKnumber(query); // Fetch data using the imported function
+        if (companies) {
+          setResults(companies);
+        } else {
+          setResults([]); // Handle cases where no results are returned
+        }
+      } catch (error) {
+        console.error('Error fetching results:', error);
+        setResults([]); // Reset results on error
+      }
+        */
     }
+    
 
       function handleSearch(term: string) {
         if (term) {
           replace.push(`/search?query=${term}`);
         }
+      }
+      
+      function sanitizeInput(input: string): string {
+        // removes special characters like <, >, ".
+        return input.replace(/<|>/g, "");
       }
 
       return (
@@ -73,9 +98,10 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
             className={`block w-full border border-gray-300 py-2 pl-4 pr-4 text-sm text-gray-500 placeholder-gray-500 focus:outline-none focus:border-gray-400 ${
               showDropdown ? 'rounded-t-3xl rounded-b-none' : 'rounded-3xl'
             }`}
+            
             placeholder={placeholder}
             value ={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(sanitizeInput(e.target.value))}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
               handleSearch(e.currentTarget.value);
@@ -95,12 +121,14 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
                 tabIndex={0}
                 onClick={() => {
                   //REPLACE WITH HAVING THEM REDIRECTED TO RESULTS PAGE FOR THE ENTRY HERE
-                  replace.push(`/search?query=${result.name}&cik=${result.cik}`);
+                  console.log('Redirecting to:', `/company/${result.cik}`); //debugging
+                  replace.push(`/company/${result.cik}`);
                   setShowDropdown(false); // Hide dropdown after selection
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    replace.push(`/search?query=${result.name}&cik=${result.cik}`);
+                    console.log('Redirecting to:', `/company/${result.cik}`); //debugging
+                    replace.push(`/company/${result.cik}`);
                     setShowDropdown(false);
                   }}
               }
