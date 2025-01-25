@@ -101,11 +101,9 @@ const HamburgerMenu = () => {
                 Login
               </Link>
             </li>
-            <li className="flex items-center space-x-2">
-              <Gear />
-              <span>Settings</span>
+            <li className="hover:bg-blue-800">
+              <Gear showGearIcon={false}/>
             </li>
-
           </ul>
         </div>
       )}
@@ -218,7 +216,7 @@ export default function NavBar() {
 
             {/* Gear Settings Component */}
             <div>
-              <Gear />
+              <Gear showGearIcon={true}/>
             </div>
           </div>
         </>
