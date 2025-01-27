@@ -77,7 +77,12 @@ describe('POST /run-python', () => {
     expect(mockSpawn).toHaveBeenCalledWith('python3', ['src/app/api/call-python-api/python-calls/main_api.py']);
     expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputData));
     expect(mockProcess.stdin.end).toHaveBeenCalled();
-    expect(mockResponseJson).toHaveBeenCalledWith(JSON.parse(pythonOutput), { status: 200 });
+    expect(mockResponseJson).toHaveBeenCalledWith(JSON.parse(pythonOutput), { status: 200, headers: {
+      'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
   });
 
   it('should handle Python script errors (stderr)', async () => {
@@ -128,7 +133,12 @@ describe('POST /run-python', () => {
     expect(mockSpawn).toHaveBeenCalledWith('python3', ['src/app/api/call-python-api/python-calls/main_api.py']);
     expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputData));
     expect(mockProcess.stdin.end).toHaveBeenCalled();
-    expect(mockResponseJson).toHaveBeenCalledWith({ error: pythonError }, { status: 500 });
+    expect(mockResponseJson).toHaveBeenCalledWith({ error: pythonError }, { status: 500, headers: {
+      'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
   });
 
   it('should handle non-zero exit codes from the Python script', async () => {
@@ -175,7 +185,12 @@ describe('POST /run-python', () => {
     expect(mockProcess.stdin.end).toHaveBeenCalled();
     expect(mockResponseJson).toHaveBeenCalledWith(
       { error: 'An error occurred while executing the script' },
-      { status: 500 }
+      { status: 500, headers: {
+        'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      }
     );
   });
 
@@ -229,7 +244,12 @@ describe('POST /run-python', () => {
     expect(mockProcess.stdin.end).toHaveBeenCalled();
     expect(mockResponseJson).toHaveBeenCalledWith(
       { error: 'An error occurred while executing the script' },
-      { status: 500 }
+      { status: 500, headers: {
+        'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      }
     );
   });
 });
