@@ -63,7 +63,6 @@ export async function POST(req: NextRequest) {
 
     // Handle any errors from stderr
     if (stderr) {
-      console.error('Python script error:', stderr);
       return NextResponse.json(
         { error: stderr },
         {
@@ -88,7 +87,6 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Execution error:', error);
     return NextResponse.json(
       { error: 'An error occurred while executing the script' },
       {
