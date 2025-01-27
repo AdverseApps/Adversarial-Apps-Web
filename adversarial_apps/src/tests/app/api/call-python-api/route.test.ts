@@ -17,7 +17,7 @@ jest.mock('next/server', () => ({
 }));
 
 const getCorsHeaders = () => ({
-  'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
+  'Access-Control-Allow-Origin': 'https://adverseapps.github.io',
   'Access-Control-Allow-Methods': 'POST',
 });
 
