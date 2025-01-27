@@ -2,17 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import argon2 from 'argon2';
 
+const getCorsHeaders = () => ({
+  'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+});
+
 export async function POST(req: NextRequest) {
   if (req.method !== 'POST') {
     return NextResponse.json(
       { error: 'Method not allowed' },
       {
         status: 405,
-        headers: {
-          'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
+        headers: getCorsHeaders(),
       }
     );
   }
@@ -63,15 +65,12 @@ export async function POST(req: NextRequest) {
 
     // Handle any errors from stderr
     if (stderr) {
+      console.error('Python script error:', stderr);
       return NextResponse.json(
         { error: stderr },
         {
           status: 500,
-          headers: {
-            'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
-          },
+          headers: getCorsHeaders(),
         }
       );
     }
@@ -80,22 +79,15 @@ export async function POST(req: NextRequest) {
     const data = JSON.parse(stdout); // Ensure that stdout contains valid JSON
     return NextResponse.json(data, {
       status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      headers: getCorsHeaders(),
     });
   } catch (error) {
+    console.error('Execution error:', error);
     return NextResponse.json(
       { error: 'An error occurred while executing the script' },
       {
         status: 500,
-        headers: {
-          'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
+        headers: getCorsHeaders(),
       }
     );
   }
@@ -106,11 +98,7 @@ export async function OPTIONS() {
     {},
     {
       status: 204,
-      headers: {
-        'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      headers: getCorsHeaders(),
     }
   );
 }
