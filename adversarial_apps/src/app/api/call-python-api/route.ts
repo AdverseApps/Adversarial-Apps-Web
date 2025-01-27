@@ -5,7 +5,6 @@ import argon2 from 'argon2';
 const getCorsHeaders = () => ({
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST',
-  'Access-Control-Allow-Headers': 'Content-Type, Accept',
 });
 
 export async function POST(req: NextRequest) {
