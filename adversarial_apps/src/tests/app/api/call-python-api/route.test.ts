@@ -16,6 +16,12 @@ jest.mock('next/server', () => ({
   },
 }));
 
+const getCorsHeaders = () => ({
+  'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+});
+
 describe('POST /run-python', () => {
   let mockSpawn: jest.Mock;
   let mockResponseJson: jest.SpyInstance;
@@ -77,11 +83,7 @@ describe('POST /run-python', () => {
     expect(mockSpawn).toHaveBeenCalledWith('python3', ['src/app/api/call-python-api/python-calls/main_api.py']);
     expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputData));
     expect(mockProcess.stdin.end).toHaveBeenCalled();
-    expect(mockResponseJson).toHaveBeenCalledWith(JSON.parse(pythonOutput), { status: 200, headers: {
-      'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      },
+    expect(mockResponseJson).toHaveBeenCalledWith(JSON.parse(pythonOutput), { status: 200, headers: getCorsHeaders(),
     });
   });
 
@@ -133,11 +135,7 @@ describe('POST /run-python', () => {
     expect(mockSpawn).toHaveBeenCalledWith('python3', ['src/app/api/call-python-api/python-calls/main_api.py']);
     expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputData));
     expect(mockProcess.stdin.end).toHaveBeenCalled();
-    expect(mockResponseJson).toHaveBeenCalledWith({ error: pythonError }, { status: 500, headers: {
-      'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      },
+    expect(mockResponseJson).toHaveBeenCalledWith({ error: pythonError }, { status: 500, headers: getCorsHeaders(),
     });
   });
 
@@ -185,11 +183,7 @@ describe('POST /run-python', () => {
     expect(mockProcess.stdin.end).toHaveBeenCalled();
     expect(mockResponseJson).toHaveBeenCalledWith(
       { error: 'An error occurred while executing the script' },
-      { status: 500, headers: {
-        'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        },
+      { status: 500, headers: getCorsHeaders(),
       }
     );
   });
@@ -244,11 +238,7 @@ describe('POST /run-python', () => {
     expect(mockProcess.stdin.end).toHaveBeenCalled();
     expect(mockResponseJson).toHaveBeenCalledWith(
       { error: 'An error occurred while executing the script' },
-      { status: 500, headers: {
-        'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        },
+      { status: 500, headers: getCorsHeaders(),
       }
     );
   });
