@@ -18,8 +18,8 @@ jest.mock('next/server', () => ({
 
 const getCorsHeaders = () => ({
   'Access-Control-Allow-Origin': 'https://adverseapps.github.io/Adversarial-Apps-Mobile-Playground',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'POST',
+  'Access-Control-Allow-Headers': 'Content-Type, Accept',
 });
 
 describe('POST /run-python', () => {
