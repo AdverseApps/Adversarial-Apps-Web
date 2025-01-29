@@ -46,7 +46,7 @@ export default function LoginPage() {
           <h2 className="text-2xl font-bold text-center text-white">Sign in to your account</h2>
           <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium white">
+              <label htmlFor="email" className="block text-sm font-medium text-white">
                 Email
               </label>
               <input
@@ -59,7 +59,7 @@ export default function LoginPage() {
                 />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium white">
+              <label htmlFor="password" className="block text-sm font-medium text-white">
                 Password
               </label>
               <input
