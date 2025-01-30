@@ -16,6 +16,11 @@ jest.mock('next/server', () => ({
   },
 }));
 
+const getCorsHeaders = () => ({
+  'Access-Control-Allow-Origin': 'https://adverseapps.github.io',
+  'Access-Control-Allow-Methods': 'POST',
+});
+
 describe('POST /run-python', () => {
   let mockSpawn: jest.Mock;
   let mockResponseJson: jest.SpyInstance;
@@ -77,7 +82,8 @@ describe('POST /run-python', () => {
     expect(mockSpawn).toHaveBeenCalledWith('python3', ['src/app/api/call-python-api/python-calls/main_api.py']);
     expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputData));
     expect(mockProcess.stdin.end).toHaveBeenCalled();
-    expect(mockResponseJson).toHaveBeenCalledWith(JSON.parse(pythonOutput), { status: 200 });
+    expect(mockResponseJson).toHaveBeenCalledWith(JSON.parse(pythonOutput), { status: 200, headers: getCorsHeaders(),
+    });
   });
 
   it('should handle Python script errors (stderr)', async () => {
@@ -128,7 +134,8 @@ describe('POST /run-python', () => {
     expect(mockSpawn).toHaveBeenCalledWith('python3', ['src/app/api/call-python-api/python-calls/main_api.py']);
     expect(mockProcess.stdin.write).toHaveBeenCalledWith(JSON.stringify(inputData));
     expect(mockProcess.stdin.end).toHaveBeenCalled();
-    expect(mockResponseJson).toHaveBeenCalledWith({ error: pythonError }, { status: 500 });
+    expect(mockResponseJson).toHaveBeenCalledWith({ error: pythonError }, { status: 500, headers: getCorsHeaders(),
+    });
   });
 
   it('should handle non-zero exit codes from the Python script', async () => {
@@ -175,7 +182,8 @@ describe('POST /run-python', () => {
     expect(mockProcess.stdin.end).toHaveBeenCalled();
     expect(mockResponseJson).toHaveBeenCalledWith(
       { error: 'An error occurred while executing the script' },
-      { status: 500 }
+      { status: 500, headers: getCorsHeaders(),
+      }
     );
   });
 
@@ -229,7 +237,8 @@ describe('POST /run-python', () => {
     expect(mockProcess.stdin.end).toHaveBeenCalled();
     expect(mockResponseJson).toHaveBeenCalledWith(
       { error: 'An error occurred while executing the script' },
-      { status: 500 }
+      { status: 500, headers: getCorsHeaders(),
+      }
     );
   });
 });

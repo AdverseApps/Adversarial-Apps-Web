@@ -2,9 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import argon2 from 'argon2';
 
+const getCorsHeaders = () => ({
+  'Access-Control-Allow-Origin': 'https://adverseapps.github.io',
+  'Access-Control-Allow-Methods': 'POST',
+});
+
 export async function POST(req: NextRequest) {
   if (req.method !== 'POST') {
-    return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
+    return NextResponse.json(
+      { error: 'Method not allowed' },
+      {
+        status: 405,
+        headers: getCorsHeaders(),
+      }
+    );
   }
 
   try {
@@ -54,15 +65,39 @@ export async function POST(req: NextRequest) {
     // Handle any errors from stderr
     if (stderr) {
       console.error('Python script error:', stderr);
-      return NextResponse.json({ error: stderr }, { status: 500 });
+      return NextResponse.json(
+        { error: stderr },
+        {
+          status: 500,
+          headers: getCorsHeaders(),
+        }
+      );
     }
 
     // Parse and return the Python script's output
     const data = JSON.parse(stdout); // Ensure that stdout contains valid JSON
-    return NextResponse.json(data, { status: 200 });
-
+    return NextResponse.json(data, {
+      status: 200,
+      headers: getCorsHeaders(),
+    });
   } catch (error) {
     console.error('Execution error:', error);
-    return NextResponse.json({ error: 'An error occurred while executing the script' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'An error occurred while executing the script' },
+      {
+        status: 500,
+        headers: getCorsHeaders(),
+      }
+    );
   }
+}
+
+export async function OPTIONS() {
+  return NextResponse.json(
+    {},
+    {
+      status: 204,
+      headers: getCorsHeaders(),
+    }
+  );
 }
