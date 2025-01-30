@@ -1,5 +1,6 @@
 
 import {FetchSecData} from '@/app/lib/data';
+import { QRCodeComponent } from '@/components/QR';
 
 interface CompanyDetailsProps {
     params: { cik: string };
@@ -146,13 +147,15 @@ export default async function page ({ params }: CompanyDetailsProps){
             "N/A"
           )}
         </p>
+
+        <QRCodeComponent companyName={name} cik={cik}/>
       </div>
       
 
 
       {/* Right side */}
       <div className="w-1/2 text-right text-xl p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">Risk Report Feature Coming Soon To This Page!</h2>
+        <h2 className="text-2xl font-bold mb-4">Risk Report Feature Coming Soon To This Page!</h2>        
       </div>
     </div>
   );
