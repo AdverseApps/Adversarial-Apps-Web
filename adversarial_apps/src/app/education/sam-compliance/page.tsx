@@ -18,7 +18,9 @@ export default function page(){
                 that have had contracts, both completed and ongoing, with the U.S. government.</p>
             
             <h2 className="text-xl font-bold pl-5"><br />How do I maintain SAM compliance?</h2>
-            <p className = "pl-5">More info on this later</p>
+            <p className = "pl-5">Simply renew your business registration annually, using your past registration
+                information. Any updates to business policies that are relevant to SAM should be updated
+                in SAM immediately.</p>
         </main>
     );
 }
