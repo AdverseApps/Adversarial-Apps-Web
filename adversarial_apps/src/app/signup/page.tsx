@@ -16,7 +16,7 @@ async function addUserToDatabase(username: string, password: string) {
     if (result.status === "success") {
         return result.message;
     } else {
-        throw new Error (result.message);
+        throw new Error(result.message);
     }
 }
 
@@ -51,6 +51,28 @@ export default function SignupPage() {
         if (password !== confirmPassword) {
             setError("Passwords must match!");
             // return prevents sign up if passwords don't match
+            return;
+        }
+
+        // Adding password validation
+        const errors: string[] = [];
+
+        if (password.length < 8) {
+            errors.push("Password must be at least 8 characters long.");
+        }
+        if (!/[A-Z]/.test(password)) {
+            errors.push("Password must include at least one uppercase letter.");
+        }
+        if (!/\d/.test(password)) {
+            errors.push("Password must include at least one number.");
+        }
+        if (!/[@$!%*?&]/.test(password)) {
+            errors.push("Password must include at least one special character (@$!%*?&).");
+        }
+
+        // Check if there are any password validation errors
+        if (errors.length > 0) {
+            setError(errors.join(" "));
             return;
         }
 
