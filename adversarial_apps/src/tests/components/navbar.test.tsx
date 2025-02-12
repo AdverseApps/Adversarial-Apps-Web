@@ -15,7 +15,7 @@ describe('NavBar', () => {
     expect(screen.getByRole('link', { name: /CFR Title 15/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /SAM Compliance/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /SBIR Due Diligence/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /CMMC 2\.0/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /CMMC/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /FOCI/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Resources/i })).toBeInTheDocument();
   });
