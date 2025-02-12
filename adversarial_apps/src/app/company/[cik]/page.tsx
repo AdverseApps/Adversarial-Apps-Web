@@ -1,6 +1,6 @@
-
 import {FetchSecData} from '@/app/lib/data';
 import { QRCodeComponent } from '@/components/QR';
+import { FavoriteButton }  from '@/components/FavoriteButton';
 
 interface CompanyDetailsProps {
     params: { cik: string };
@@ -24,9 +24,6 @@ interface CompanyDetailsProps {
 
 export default async function page ({ params }: CompanyDetailsProps){
     const { cik } = params;
-
-    
-      
 
     let result;
     try {
@@ -149,6 +146,7 @@ export default async function page ({ params }: CompanyDetailsProps){
         </p>
 
         <QRCodeComponent companyName={name} cik={cik}/>
+        <FavoriteButton cik={cik} />
       </div>
       
 
