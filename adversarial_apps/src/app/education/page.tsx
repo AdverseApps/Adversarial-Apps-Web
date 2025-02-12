@@ -1,25 +1,70 @@
+'use client';
+import React from "react";
 import Link from "next/link";
-export default function page(){
-    
+
+type ModuleProps = {
+    title: string;
+    children: React.ReactNode;
+};
+
+const Module: React.FC<ModuleProps> = ({ title, children }) => {
+    const id = title.replace(/\s+/g, '-').toLowerCase();
     return (
-        <>
-        <main>
-        {/*main text goes here*/}
-            <h1 className="text-6xl font-bold pl-5">Education</h1>
-            <p className="pl-5">Educate yourself on all things Government Compliance. 
-                Your Journey to secure business starts here!</p>
-                <p className="pl-5"><br /> Places to start: <br /></p>
-            
-            <ul className="list-disc pl-12">
-            <Link href = "education/cfr-title-15"><li>CFR Title 15</li></Link>
-            <Link href = "education/sam-compliance"><li>SAM Compliance</li></Link>
-            <Link href = "education/sbir-due-diligence"><li>SBIR Due Diligence</li></Link>
-            <Link href = "education/resources"><li>Resources</li></Link>
-            <Link href = "education/cmmc"><li>CMMC 2.0</li></Link>
-            <Link href = "education/foci"><li>FOCI</li></Link>
-            {/* Need to add links to each page here */}
-        </ul>
-        </main>
-        </>
+        <details className="module w-full max-w-lg mx-auto rounded-lg shadow-md overflow-hidden mb-4 border-2 border-solid">
+            <summary
+                id={`${id}-title`} 
+                className="module-header bg-blue-800 p-4 cursor-pointer flex justify-between items-center text-lg"
+                aria-expanded="false"
+                aria-controls={`${id}-content`}
+                onClick={(e) => {
+                    const details = e.currentTarget.parentElement as HTMLDetailsElement;
+                    e.currentTarget.setAttribute("aria-expanded", details.open.toString());
+                }}
+            >
+                {title}
+                <span className="arrow transition-transform">&#9660;</span>
+            </summary>
+            <div id={`${id}-content`} className="module-content p-4">{children}</div>
+        </details>
     );
-}
+};
+
+/* list of modules; can be further expanded later via adding new pages to each list */
+const ModulesContainer: React.FC = () => {
+    return (
+        <div className="modules-container pt-4">
+            <Module title="Module 1: CFR Title 15">
+                <ul className="list-none">
+                    <li><Link href = "education/cfr-title-15">CFR Title 15: Main Information</Link></li>
+                </ul>
+            </Module>
+            <Module title="Module 2: SAM Compliance">
+                <ul className="list-none">
+                    <li><Link href = "education/sam-compliance">SAM Compliance: Main Information</Link></li>
+                </ul>
+            </Module>
+            <Module title="Module 3: SBIR Due Diligence">
+                <ul className="list-none">
+                    <li><Link href = "education/sbir-due-diligence">SBIR Due Diligence: Main Information</Link></li>
+                </ul>
+            </Module>
+            <Module title="Module 4: CMMC">
+                <ul className="list-none">
+                    <li><Link href = "education/cmmc">CMMC 2.0: Main Information</Link></li>
+                </ul>
+            </Module>
+            <Module title="Module 5: FOCI">
+                <ul className="list-none">
+                    <li><Link href = "education/foci">FOCI: Main Information</Link></li>
+                </ul>
+            </Module>
+            <Module title="Module 6: Resources">
+                <ul className="list-none">
+                    <li><Link href = "education/resources">Forms & Links</Link></li>
+                </ul>
+            </Module>
+        </div>
+    );
+};
+
+export default ModulesContainer;
