@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function page(){
     return (
         <main aria-label="main-content">
@@ -52,6 +53,14 @@ export default function page(){
                 publication on May 23rd, 2024 with the subject &quot;Defense Small Business Innovation Research 
                 and Small Business Technology Transfer Due Diligence Program&quot;. See the link labeled &quot;SBIR 
                 Due Diligence Memorandum (May 2024)&quot; in Forms and Resources for more details.</p>
+            
+            {/* copy paste the below button(s) for each subpage */}
+            <div className="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
+                <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
+                        aria-label="Back to Education Hub">
+                    <Link href = "/education">Back to Education Hub</Link>
+                </button>
+            </div>
         </main>
     );
 }

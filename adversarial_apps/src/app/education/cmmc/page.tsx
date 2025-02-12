@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function page(){
     return (
     <main aria-label="main-content">
@@ -15,6 +16,14 @@ export default function page(){
             and are submitted to meet DoD contractor requirements.</p>
         <p className = "pl-5"><br />More information can be found here from the DoD&apos;s CIO website:
             <a href="https://dodcio.defense.gov/cmmc/About/" target="_blank"> <u>CMMC 2.0 About Page</u></a></p>
+
+        {/* copy paste the below button(s) for each subpage */}
+        <div className="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
+            <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
+                    aria-label="Back to Education Hub">
+                <Link href = "/education">Back to Education Hub</Link>
+            </button>
+        </div>
     </main>
     );
 }

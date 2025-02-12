@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function page(){
     return (
         <main aria-label="main-content">
@@ -21,6 +22,14 @@ export default function page(){
             <p className = "pl-5">Simply renew your business registration annually, using your past registration
                 information. Any updates to business policies that are relevant to SAM should be updated
                 in SAM immediately.</p>
+
+            {/* copy paste the below button(s) for each subpage */}
+            <div className="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
+                <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
+                        aria-label="Back to Education Hub">
+                    <Link href = "/education">Back to Education Hub</Link>
+                </button>
+            </div>
         </main>
     );
 }
