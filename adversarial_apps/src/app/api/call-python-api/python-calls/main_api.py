@@ -422,6 +422,7 @@ def get_user_id(username: str, cursor) -> int:
     except psycopg2.Error as e:
         return None
 
+
 def get_company_score(cik: int) -> dict:
     """
     Retrieve the risk score for a verified company based on the CIK number.
@@ -464,6 +465,7 @@ def get_company_score(cik: int) -> dict:
 
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
+
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
