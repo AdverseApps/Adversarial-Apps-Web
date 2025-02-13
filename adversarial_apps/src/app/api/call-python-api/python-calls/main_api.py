@@ -422,6 +422,48 @@ def get_user_id(username: str, cursor) -> int:
     except psycopg2.Error as e:
         return None
 
+def get_company_score(cik: int) -> dict:
+    """
+    Retrieve the risk score for a verified company based on the CIK number.
+
+    :param cik: CIK number of the company
+    :return: Dictionary containing the risk score
+    """
+    try:
+        with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
+            with connection.cursor() as cursor:
+
+                # Combined query to check if the company exists, is verified, and retrieve riskScore
+                cursor.execute(
+                    'SELECT "isVerified", "riskScore" FROM "COMPANIES" WHERE "CIK" = %s',
+                    (cik,),
+                )
+                result = cursor.fetchone()
+
+                # If the company is not found
+                if not result:
+                    return {
+                        "status": "error",
+                        "message": f"Company with CIK {cik} not found.",
+                    }
+
+                is_verified, risk_score = result
+
+                # the score must be verified and reviewed before being returned
+                if not is_verified:
+                    return {
+                        "status": "error",
+                        "message": f"Company with CIK {cik} is not verified.",
+                    }
+
+                # If company is verified, return the risk score
+                return {
+                    "status": "success",
+                    "riskScore": risk_score,
+                }
+
+    except psycopg2.Error as e:
+        return {"status": "error", "message": f"Database error: {e}"}
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
@@ -439,13 +481,13 @@ if __name__ == "__main__":
         action = input_action_and_data.get("action")
         if action == "obtain_cik_number":
             # Then the inputActionAndData is formatted as such:
-            # { action: "obtain_cik_number", search_term: YOUR_SEARCH_TERM }
+            # { "action": "obtain_cik_number", "search_term": YOUR_SEARCH_TERM }
             result = obtain_cik_number(input_action_and_data.get("search_term"))
         elif action == "get_sec_data":
             result = get_sec_data(input_action_and_data.get("search_term"))
         elif action == "add_user":
             # Then the inputActionAndData is formatted as such:
-            # { action: "add_user", username: YOUR_USERNAME, password_hashed: YOUR_PASSWORD, comnpany: YOUR_COMPANY }
+            # { "action": "add_user", "username": YOUR_USERNAME, "password_hashed": YOUR_PASSWORD, "comnpany": YOUR_COMPANY }
             result = add_user(
                 input_action_and_data.get("username"),
                 input_action_and_data.get("password_hashed"),
@@ -453,18 +495,22 @@ if __name__ == "__main__":
             )
         elif action == "get_password":
             # Then the inputActionAndData is formatted as such:
-            # { action: "get_password", username: YOUR_USERNAME }
+            # { "action": "get_password", "username": YOUR_USERNAME }
             result = get_password(input_action_and_data.get("username"))
         elif action == "add_remove_favorite":
             # Then the inputActionAndData is formatted as such:
-            # { action: "add_favorite", username: YOUR_USERNAME, cik: YOUR_CIK }
+            # { "action": "add_favorite", "username": YOUR_USERNAME, "cik": YOUR_CIK }
             result = add_remove_favorite(
                 input_action_and_data.get("username"), input_action_and_data.get("cik")
             )
         elif action == "get_favorites":
             # Then the inputActionAndData is formatted as such:
-            # { action: "get_favorites", username: YOUR_USERNAME }
+            # { "action": "get_favorites", "username": YOUR_USERNAME }
             result = get_favorites(input_action_and_data.get("username"))
+        elif action == "get_company_score":
+            # Then the inputActionAndData is formatted as such:
+            # { "action": "get_company_score", "cik": YOUR_CIK }
+            result = get_company_score(input_action_and_data.get("cik"))
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}
