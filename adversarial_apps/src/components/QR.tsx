@@ -45,7 +45,8 @@ export const QRCodeComponent = (props: QRCodeProps) => {
               <p className="text-black pb-2 text-center break-words max-w-full">{companyName}</p>
               <QRCode value={`https://adversarialapps.com/company/` + cik} className="rounded-lg" />
             </div>
-            <button className="bg-black text-white px-3 py-1 mt-4 rounded hover:bg-gray-800 transition-colors" onClick={closeModal}>Close</button>
+            <button className="bg-black text-white px-3 py-1 mt-4 rounded hover:bg-gray-800 transition-colors 
+              focus-visible:ring-blue-500 focus-visible:ring-4 focus-visible:ring-offset-4" onClick={closeModal}>Close</button>
           </div>
         </div>
       )}
