@@ -1,8 +1,10 @@
 import { headers } from 'next/headers';
 
+// ================================
+// ###### Server-Side Calls #######
+// ================================
 
 export async function FetchSecData(cik:string)  {
-    
     try {
 
         console.log('Fetching SEC data...');
@@ -73,3 +75,72 @@ export async function FetchCIKnumber(query:string) {
         console.error('Failed to fetch CIK number:', error);
     }
 }
+
+// Checks authentication and returns username or null
+export async function getUsername() {
+    try { 
+      const headersList = headers();
+      const domain = headersList.get("host");
+      const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  
+      const response = await fetch(`${protocol}://${domain}/api/verify-login`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: headersList.get("cookie") || "", 
+        },
+        credentials: "include",
+      });
+  
+      if (!response.ok) {
+        console.error(`Authentication fetch failed: ${response.statusText}`);
+        return { username: null };
+      }
+  
+      const { user } = await response.json();
+  
+      if (!user) {
+        return { username: null };
+      }
+  
+      return { username: user };
+    } catch (error) {
+      console.error("Failed to authenticate", error);
+      return { username: null };
+    }
+}
+
+export async function getFavorites(username: string) {
+    try {
+        const headersList = headers();
+        const domain = headersList.get("host");
+        const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+
+        const response = await fetch(`${protocol}://${domain}/api/call-python-api`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Cookie: headersList.get("cookie") || "", 
+        },
+        body: JSON.stringify({
+            action: "get_favorites",
+            username: username,
+        }),
+        credentials: "include",
+        });
+
+        if (!response.ok) {
+        console.error(`Favorites fetch failed: ${response.statusText}`);
+        return { favorites: [], error: response.statusText };
+        }
+
+        const data = await response.json();
+        console.log("Favorites Data:", data);
+
+        return { favorites: data.favorites || [] };
+    } catch (error) {
+        console.error("Error fetching favorites:", error);
+        return { favorites: [], error: "Unexpected error occurred." };
+    }
+}
+  
