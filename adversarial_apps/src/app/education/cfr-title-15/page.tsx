@@ -70,7 +70,7 @@ export default function page(){
                     </button>
                 </Link>
 
-                <Link href = "/education" passHref legacyBehavior>
+                <Link href = "/education/sam-compliance" passHref legacyBehavior>
                     <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
                         aria-label="Next Page">
                         Next Page

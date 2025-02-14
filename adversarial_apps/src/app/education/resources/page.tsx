@@ -25,7 +25,7 @@ export default function page(){
 
             {/* copy paste the below buttons for each subpage; make sure to relink */}
             <div className="container py-10 px-10 mx-0 min-w-full flex justify-center items-center space-x-4">
-                <Link href = "/education" passHref legacyBehavior>
+                <Link href = "/education/foci" passHref legacyBehavior>
                     <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
                         aria-label="Previous Page">
                         Previous Page
