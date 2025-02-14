@@ -1,5 +1,5 @@
 'use client';
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 
 type ModuleProps = {
@@ -9,27 +9,31 @@ type ModuleProps = {
 
 const Module: React.FC<ModuleProps> = ({ title, children }) => {
     const id = title.replace(/\s+/g, '-').toLowerCase();
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
-        <details className="module w-full max-w-lg mx-auto rounded-lg shadow-md overflow-hidden mb-4 border-2 border-solid text-white">
+        <details 
+            className={`module w-full max-w-lg mx-auto rounded-lg shadow-md overflow-hidden mb-4 border-2 border-solid text-white ${isOpen ? 'bg-gray-800' : 'bg-transparent'}`} 
+            open={isOpen}
+            onToggle={(e) => setIsOpen(e.currentTarget.open)}
+        >
             <summary
                 id={`${id}-title`} 
-                className="module-header bg-blue-900 p-4 cursor-pointer flex justify-between items-center text-lg"
-                aria-expanded="false"
+                className={`module-header bg-blue-900 p-4 cursor-pointer flex justify-between items-center text-lg focus:text-yellow-300 focus:font-bold`}
+                aria-expanded={isOpen} 
                 aria-controls={`${id}-content`}
-                onClick={(e) => {
-                    const details = e.currentTarget.parentElement as HTMLDetailsElement;
-                    e.currentTarget.setAttribute("aria-expanded", details.open.toString());
-                }}
             >
                 {title}
-                <span className="arrow transition-transform">&#9660;</span>
+                <span className={`arrow transition-transform ${isOpen ? "rotate-90" : "rotate-270"}`}>
+                    &#9654;
+                </span>
             </summary>
-            <div id={`${id}-content`} className="module-content p-4">{children}</div>
+            <div id={`${id}-content`} className="module-content p-4 bg-gray-800">{children}</div>
         </details>
     );
 };
 
-/* list of modules; can be further expanded later via adding new pages to each list */
+{/* list of modules; can be further expanded later via adding new pages to each list */}
 const ModulesContainer: React.FC = () => {
     return (
         <div className="modules-container pt-4">
