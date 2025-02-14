@@ -48,7 +48,7 @@ export default function SignupPage() {
         let password = formData.get("password") as string;
         const confirmPassword = formData.get("confirm-password") as string;
 
-        let pwValidationErrors: string[] = [];
+        const pwValidationErrors: string[] = [];
 
         if (password !== confirmPassword) {
             pwValidationErrors.push("Passwords must match!");
