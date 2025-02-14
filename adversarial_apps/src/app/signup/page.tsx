@@ -38,7 +38,7 @@ async function createUserSessionAPI(username: string, password: string) {
 }
 
 export default function SignupPage() {
-    const [error, setError] = useState<string | null>(null);
+    const [errors, setError] = useState<string[]>([]);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -48,31 +48,27 @@ export default function SignupPage() {
         let password = formData.get("password") as string;
         const confirmPassword = formData.get("confirm-password") as string;
 
+        let pwValidationErrors: string[] = [];
+
         if (password !== confirmPassword) {
-            setError("Passwords must match!");
-            // return prevents sign up if passwords don't match
-            return;
+            pwValidationErrors.push("Passwords must match!");
         }
-
-        // Adding password validation
-        const errors: string[] = [];
-
         if (password.length < 8) {
-            errors.push("Password must be at least 8 characters long.");
+            pwValidationErrors.push("Password must be at least 8 characters long.");
         }
         if (!/[A-Z]/.test(password)) {
-            errors.push("Password must include at least one uppercase letter.");
+            pwValidationErrors.push("Password must include at least one uppercase letter.");
         }
         if (!/\d/.test(password)) {
-            errors.push("Password must include at least one number.");
+            pwValidationErrors.push("Password must include at least one number.");
         }
         if (!/[@$!%*?&]/.test(password)) {
-            errors.push("Password must include at least one special character (@$!%*?&).");
+            pwValidationErrors.push("Password must include at least one special character (@$!%*?&).");
         }
 
         // Check if there are any password validation errors
-        if (errors.length > 0) {
-            setError(errors.join(" "));
+        if (pwValidationErrors.length > 0) {
+            setError(pwValidationErrors);
             return;
         }
 
@@ -87,7 +83,7 @@ export default function SignupPage() {
             console.log("User signed up, JWT stored in cookie");
 
         } catch (error: unknown) {
-            setError(error instanceof Error ? error.message : "An error occurred, please try again.");
+            setError([error instanceof Error ? error.message : "An error occurred, please try again."]);
             console.error("Error:", error);
             // return prevents sign up if there is an error
             return;
@@ -96,7 +92,7 @@ export default function SignupPage() {
         // Redirect to login after successful sign up
         window.location.href = '/login';
 
-        setError(null); // Reset error after successful submission
+        setError([]); // Reset error after successful submission
     };
 
     return (
@@ -143,9 +139,13 @@ export default function SignupPage() {
                             required
                         />
                     </div>
-                    {error && (
+                    {errors.length > 0 && (
                         <div className="p-4 bg-red-500 rounded-md">
-                            <p className="text-sm white">{error}</p>
+                            {errors.map((err, index) => (
+                                <p key={index} className="text-sm text-white">
+                                    {err}
+                                </p>
+                            ))}
                         </div>
                     )}
                     <button
