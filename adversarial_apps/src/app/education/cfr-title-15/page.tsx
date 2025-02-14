@@ -54,15 +54,30 @@ export default function page(){
                 permissions authorities have available to them to investigate ICTS cases and the penalties 
                 for not adhering to these requirements respectively.</p>
 
-            {/* copy paste the below button(s) for each subpage */}
-            <div className="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
-                <Link href = "/education">
+            {/* copy paste the below buttons for each subpage; make sure to relink */}
+            <div className="container py-10 px-10 mx-0 min-w-full flex justify-center items-center space-x-4">
+                <Link href = "/education" passHref legacyBehavior>
+                    <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
+                        aria-label="Previous Page">
+                        Previous Page
+                    </button>
+                </Link>
+
+                <Link href = "/education" passHref legacyBehavior>
                     <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
                         aria-label="Back to Education Hub">
                         Back to Education Hub
                     </button>
                 </Link>
+
+                <Link href = "/education" passHref legacyBehavior>
+                    <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
+                        aria-label="Next Page">
+                        Next Page
+                    </button>
+                </Link>
             </div>
+            
         </main>
     </>
     );

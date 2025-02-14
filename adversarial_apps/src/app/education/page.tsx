@@ -10,10 +10,10 @@ type ModuleProps = {
 const Module: React.FC<ModuleProps> = ({ title, children }) => {
     const id = title.replace(/\s+/g, '-').toLowerCase();
     return (
-        <details className="module w-full max-w-lg mx-auto rounded-lg shadow-md overflow-hidden mb-4 border-2 border-solid">
+        <details className="module w-full max-w-lg mx-auto rounded-lg shadow-md overflow-hidden mb-4 border-2 border-solid text-white">
             <summary
                 id={`${id}-title`} 
-                className="module-header bg-blue-800 p-4 cursor-pointer flex justify-between items-center text-lg"
+                className="module-header bg-blue-900 p-4 cursor-pointer flex justify-between items-center text-lg"
                 aria-expanded="false"
                 aria-controls={`${id}-content`}
                 onClick={(e) => {
