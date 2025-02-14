@@ -1,40 +1,59 @@
 'use client';
-import { useEffect, useState } from "react";
+
+import Link from "next/link";
+import { useState } from "react";
 
 interface Props {
     cik: string;
+    username: string;
+    favorites: string[];
 }
 
 export const FavoriteButton = (props: Props) => {
-    const { cik } = props;
+    const { cik, username, favorites } = props;
+    const [isFavorite, setIsFavorite] = useState(favorites.includes(cik));
+    const [showLoginMessage, setShowLoginMessage] = useState(false);
+    
+    // function for handling when the user clicks 'add to favorites' button
+    const handleClick = async () => {
+        // Checking if the user is logged in
+        if (username) {
+            try {
+                const response = await fetch('/api/call-python-api', {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "action": "add_remove_favorite", "username": username, "cik": cik
+                    }),
+                });
 
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [username, setUsername] = useState<string | null>(null);
-
-    // Function to check for valid JWT and fetch username
-    const checkAuthentication = async () => {
-        try {
-            const response = await fetch('/api/verify-login', { method: 'GET' });
-
-            if (response.ok) {
                 const data = await response.json();
-                setIsAuthenticated(true);
-                setUsername(data.user); // Set username from the API response
-            } else {
-                setIsAuthenticated(false);
-            }
-        } catch {
-            setIsAuthenticated(false); // In case of any error, assume unauthenticated
-        }
-    };
+                console.log(data.message);
 
-    useEffect(() => {
-        checkAuthentication();
-     }, []);
+                if (response.ok){
+                    setIsFavorite((prev) => !prev);
+                }
+            } catch (error) {
+                console.error("Error adding/removing favorite:", error);
+            }
+        } else {
+            setShowLoginMessage(true);
+            setTimeout(() => setShowLoginMessage(false), 3000); // Hide message after 3 seconds
+            return;
+        }
+    }
 
     return (
         <div>
-            <button className="px-4 py-2 bg-blue-900 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors flex items-center space-x-2 mt-2">Add to Favorites</button>
+            <button onClick={handleClick} className="px-4 py-2 bg-blue-900 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors flex items-center space-x-2 mt-2">
+                {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+            </button>
+
+            {/* Message if not logged in */}
+            {showLoginMessage && (
+                <div className="bg-gray-700 text-white px-4 py-2 rounded-md shadow-md mt-2">
+                Please <Link href="/login" className="underline text-blue-400 hover:text-blue-300 transition">log in</Link> or <Link href="/signup" className="underline text-blue-400 hover:text-blue-300 transition">sign up</Link> to add favorites.
+            </div>
+            )}
         </div>
     )
 }
