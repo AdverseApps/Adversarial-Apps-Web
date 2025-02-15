@@ -69,12 +69,15 @@ export default function Dashboard() {
         <div>
             <h1>Protected Page</h1>
             <p>Only accessible if you are logged in with a valid JWT.</p>
+            <br/>
 
             {/* Display username */}
             <p>Welcome, {username}!</p>
+            <br/>
 
             {/* Display Favorite Companies */}
             <UserFavoriteCompanies username={username}/>
+            <br/>
 
             {/* Logout button */}
             <button onClick={logout}>Log out</button>
