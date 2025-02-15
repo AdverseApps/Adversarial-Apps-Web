@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { UserFavoriteCompanies } from '@/components/UserFavoriteCompanies';
 
 interface ApiResult {
     status: 'success' | 'error';
@@ -71,6 +72,9 @@ export default function Dashboard() {
 
             {/* Display username */}
             <p>Welcome, {username}!</p>
+
+            {/* Display Favorite Companies */}
+            <UserFavoriteCompanies username={username}/>
 
             {/* Logout button */}
             <button onClick={logout}>Log out</button>
