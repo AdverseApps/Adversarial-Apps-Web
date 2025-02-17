@@ -11,6 +11,7 @@ interface ApiResult {
 export default function Dashboard() {
     const [, setResult] = useState<ApiResult | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [isReviewer, setIsReviewer] = useState<boolean>(false);
     const [username, setUsername] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -33,6 +34,24 @@ export default function Dashboard() {
         }
     };
 
+    // similar case to above, just checking isReviewer boolean value instead of full credentials
+    const checkReviewer = async () => {
+        try {
+            const response = await fetch('/api/verify-reviewer', { method: 'GET' });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data) { setIsReviewer(true); }
+            } else {
+                setIsReviewer(false);
+                setError('User is not reviewer');
+            }
+        } catch {
+            setIsReviewer(false); // In case of any error, assume regular user
+            setError('Error verifying reviewer attribute');
+        }
+    };
+
     const logout = async () => {
         try {
             const response = await fetch('/api/logout', { method: 'POST' });
@@ -51,9 +70,10 @@ export default function Dashboard() {
         }
     };
 
-    // Run checkAuthentication when component mounts
+    // Run checkAuthentication, checkReviewer when component mounts
     useEffect(() => {
         checkAuthentication();
+        checkReviewer();
     }, []);
 
     if (!isAuthenticated) {
@@ -64,16 +84,34 @@ export default function Dashboard() {
         );
     }
 
-    return (
-        <div>
-            <h1>Protected Page</h1>
-            <p>Only accessible if you are logged in with a valid JWT.</p>
+    // identical case to the code below, just with reviewer indication line
+    if (isReviewer) {
+        return (
+            <div>
+                <h1>Protected Page</h1>
+                <p>Only accessible if you are logged in with a valid JWT.</p>
+    
+                {/* Display username */}
+                <p>Welcome, {username}!</p>
+    
+                {/* Logout button */}
+                <button onClick={logout}>Log out</button>
+            </div>
+        );
+    }
 
-            {/* Display username */}
-            <p>Welcome, {username}!</p>
-
-            {/* Logout button */}
-            <button onClick={logout}>Log out</button>
-        </div>
-    );
+    else {
+        return (
+            <div>
+                <h1>Protected Page</h1>
+                <p>Only accessible if you are logged in with a valid JWT.</p>
+    
+                {/* Display username */}
+                <p>Welcome, {username}!</p>
+    
+                {/* Logout button */}
+                <button onClick={logout}>Log out</button>
+            </div>
+        );
+    }
 }
