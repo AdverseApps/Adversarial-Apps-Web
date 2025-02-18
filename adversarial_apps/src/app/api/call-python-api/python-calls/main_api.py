@@ -466,6 +466,64 @@ def get_company_score(cik: str) -> dict:
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
 
+def get_recent_ownerships(cik: str, pagination: int) -> dict:
+    """
+    Retrieve recent ownerships for a company based on the CIK number.
+
+    :param cik: CIK number of the company
+    :param pagination: Index for pagination
+    :return: Dictionary containing the list of recent ownerships
+    """
+
+    # obtains the .json file from the SEC website
+    url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+
+    headers = {
+        "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
+        "Accept-Encoding": "gzip, deflate",
+        "Host": "data.sec.gov",
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        try:
+            # Parse the JSON response
+            data = response.json()
+
+            recent = data.get("filings", {}).get("recent", {})
+            forms = recent.get("form", [])
+            filling_dates = recent.get("filingDate", [])
+            accession_numbers = recent.get("accessionNumber", [])
+
+            # Filter indices where the form value is "4"
+            form_indices = [i for i, form in enumerate(forms) if form == "4"]
+
+            # Create a list of dictionaries containing the relevant data
+            filtered_forms = [
+                {"fillingDate": filling_dates[i], "form": forms[i], "accessionNumber": accession_numbers[i]}
+                for i in form_indices
+            ]
+
+            # Paginate: Get the first 5 items for the given page
+            start_index = (pagination - 1) * 5
+            end_index = start_index + 5
+
+            # Return the paginated list of recent ownerships
+            return {
+                "status": "success",
+                "recentOwnerships": filtered_forms[start_index:end_index],
+            }
+
+        except KeyError as e:
+            return {"status": "error", "message": f"KeyError: {str(e)}"}
+        except Exception as e:
+            return {"status": "error", "message": f"An error occurred: {str(e)}"}
+    else:
+        return {
+            "status": "error",
+            "message": f"Unable to retrieve recent fillings for CIK {sanitized_cik} (Status Code: {response.status_code})",
+        }
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
@@ -513,6 +571,12 @@ if __name__ == "__main__":
             # Then the inputActionAndData is formatted as such:
             # { "action": "get_company_score", "cik": YOUR_CIK }
             result = get_company_score(input_action_and_data.get("cik"))
+        elif action == "get_recent_ownerships":
+            # Then the inputActionAndData is formatted as such:
+            # { "action": "get_recent_ownerships", "cik": YOUR_CIK, "pagination": YOUR_PAGINATION_INDEX }
+            result = get_recent_ownerships(
+                input_action_and_data.get("cik"), input_action_and_data.get("pagination")
+            )
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}
