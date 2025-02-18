@@ -58,6 +58,7 @@ export default function Dashboard() {
 
             if (response.ok) {
                 setIsAuthenticated(false);
+                setIsReviewer(false);
                 setUsername(null);
                 setResult(null);
                 setError(null);
