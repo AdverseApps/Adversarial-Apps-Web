@@ -488,7 +488,7 @@ def get_recent_ownerships(cik: str, pagination: int) -> dict:
 
     if response.status_code == 200:
         try:
-            # Parse the JSON response
+            # Parse the JSON response to grab form information
             data = response.json()
 
             recent = data.get("filings", {}).get("recent", {})
@@ -496,10 +496,11 @@ def get_recent_ownerships(cik: str, pagination: int) -> dict:
             filling_dates = recent.get("filingDate", [])
             accession_numbers = recent.get("accessionNumber", [])
 
-            # Filter indices where the form value is "4"
+            # Grabs all form 4 forms
             form_indices = [i for i, form in enumerate(forms) if form == "4"]
 
-            # Create a list of dictionaries containing the relevant data
+            # Connects forms 4 with their respective filling dates and accession numbers
+            # for ease of reference
             filtered_forms = [
                 {"fillingDate": filling_dates[i], "form": forms[i], "accessionNumber": accession_numbers[i]}
                 for i in form_indices
@@ -509,20 +510,60 @@ def get_recent_ownerships(cik: str, pagination: int) -> dict:
             start_index = (pagination - 1) * 5
             end_index = start_index + 5
 
+            # for each of the forms within the index range, grab data file and process xml
+            for form in filtered_forms[start_index:end_index]:
+                # each form stored at unique url based off cik without zeros
+                # and modified accession number in url following pattern below
+                url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{form['accessionNumber'].replace('-', '')}/{form['accessionNumber']}.txt"
+
+                headers = {
+                    "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
+                    "Accept-Encoding": "gzip, deflate",
+                    "Host": "www.sec.gov",
+                }
+
+                response = requests.get(url, headers=headers)
+
+                # if the request was successful, then we can parse the xml
+                if response.status_code == 200:
+                    # grabs all the content within <XML> tag which form 4 is stored in
+                    xml_content = re.search(r"<XML>(.*?)</XML>", response.text, re.DOTALL)
+
+                    # if the xml content is found, then we can parse it, and store it in the form dictionary to be returned
+                    if xml_content:
+
+                        # used to get the xml from the extraction above
+                        xml_string = xml_content.group(1)
+
+                        # uses beatifulsoup to parse the xml content
+                        soup = BeautifulSoup(xml_string, "lxml-xml")
+
+                        # grabs the owner information from the xml
+                        issuer = soup.find("issuerName").text
+                        reporter = soup.find("rptOwnerName").text
+
+                        # adds gathered information to the form dictionary to be saved to output
+                        form["issuer"] = issuer
+                        form["reporter"] = reporter
+
+                else:
+                    return {
+                        "status": "error",
+                        "message": f"Unable to retrieve ownership data for CIK {cik} (Status Code: {response.status_code})",
+                    }
+
             # Return the paginated list of recent ownerships
             return {
                 "status": "success",
                 "recentOwnerships": filtered_forms[start_index:end_index],
             }
 
-        except KeyError as e:
-            return {"status": "error", "message": f"KeyError: {str(e)}"}
         except Exception as e:
             return {"status": "error", "message": f"An error occurred: {str(e)}"}
     else:
         return {
             "status": "error",
-            "message": f"Unable to retrieve recent fillings for CIK {sanitized_cik} (Status Code: {response.status_code})",
+            "message": f"Unable to retrieve recent fillings for CIK {cik} (Status Code: {response.status_code})",
         }
 
 # the call-python-api will call it here, and provides the inputActionAndData

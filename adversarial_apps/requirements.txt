@@ -3,6 +3,7 @@
 # For Web/Data Handling
 requests
 beautifulsoup4
+lxml
 
 # For Database Calls
 psycopg2-binary
