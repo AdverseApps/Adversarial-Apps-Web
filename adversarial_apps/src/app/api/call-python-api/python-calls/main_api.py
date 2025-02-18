@@ -423,7 +423,7 @@ def get_user_id(username: str, cursor) -> int:
         return None
 
 
-def get_company_score(cik: int) -> dict:
+def get_company_score(cik: str) -> dict:
     """
     Retrieve the risk score for a verified company based on the CIK number.
 
