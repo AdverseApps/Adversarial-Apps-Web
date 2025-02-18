@@ -58,8 +58,22 @@ export const FavoriteButton = (props: Props) => {
 
             {/* Message if not logged in */}
             {showLoginMessage && (
-                <div className="bg-gray-700 text-white px-4 py-2 rounded-md shadow-md mt-2">
-                    Please <Link href="/login" className="underline text-blue-400 hover:text-blue-300 transition">log in</Link> or <Link href="/signup" className="underline text-blue-400 hover:text-blue-300 transition">sign up</Link> to add favorites.
+                <div className="bg-gray-700 text-white px-4 py-2 rounded-md shadow-md mt-2 flex justify-between items-center max-w-md">
+                    <span>
+                        Please <Link href="/login" className="underline text-blue-400 hover:text-blue-300 transition">log in</Link> or <Link href="/signup" className="underline text-blue-400 hover:text-blue-300 transition">sign up</Link> to add favorites.
+                    </span>
+                    <button 
+                        onClick={() => setShowLoginMessage(false)} 
+                        className="ml-4 text-white font-bold text-lg hover:text-gray-300"
+                    >
+                        <Image
+                            src="/x.png"
+                            alt="Close"
+                            width={18}
+                            height={20}
+                            className="cursor-pointer hover:opacity-80 invert               "
+                        />
+                    </button>
                 </div>
             )}
         </div>
