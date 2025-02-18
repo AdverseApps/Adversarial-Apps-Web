@@ -466,6 +466,7 @@ def get_company_score(cik: str) -> dict:
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
 
+
 def get_recent_ownerships(cik: str, pagination: int) -> dict:
     """
     Retrieve recent ownerships for a company based on the CIK number.
@@ -502,7 +503,11 @@ def get_recent_ownerships(cik: str, pagination: int) -> dict:
             # Connects forms 4 with their respective filling dates and accession numbers
             # for ease of reference
             filtered_forms = [
-                {"fillingDate": filling_dates[i], "form": forms[i], "accessionNumber": accession_numbers[i]}
+                {
+                    "fillingDate": filling_dates[i],
+                    "form": forms[i],
+                    "accessionNumber": accession_numbers[i],
+                }
                 for i in form_indices
             ]
 
@@ -527,7 +532,9 @@ def get_recent_ownerships(cik: str, pagination: int) -> dict:
                 # if the request was successful, then we can parse the xml
                 if response.status_code == 200:
                     # grabs all the content within <XML> tag which form 4 is stored in
-                    xml_content = re.search(r"<XML>(.*?)</XML>", response.text, re.DOTALL)
+                    xml_content = re.search(
+                        r"<XML>(.*?)</XML>", response.text, re.DOTALL
+                    )
 
                     # if the xml content is found, then we can parse it, and store it in the form dictionary to be returned
                     if xml_content:
@@ -565,6 +572,7 @@ def get_recent_ownerships(cik: str, pagination: int) -> dict:
             "status": "error",
             "message": f"Unable to retrieve recent fillings for CIK {cik} (Status Code: {response.status_code})",
         }
+
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
@@ -616,7 +624,8 @@ if __name__ == "__main__":
             # Then the inputActionAndData is formatted as such:
             # { "action": "get_recent_ownerships", "cik": YOUR_CIK, "pagination": YOUR_PAGINATION_INDEX }
             result = get_recent_ownerships(
-                input_action_and_data.get("cik"), input_action_and_data.get("pagination")
+                input_action_and_data.get("cik"),
+                input_action_and_data.get("pagination"),
             )
         else:
             # Process the input data_
