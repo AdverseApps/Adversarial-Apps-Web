@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
+
 import Image from "next/image";
 import SearchBar from "@/components/searchbar";
 import Link from "next/link";
@@ -29,7 +30,31 @@ const EducationSubNavBar = ({ isSubMenuOpen }: { isSubMenuOpen: boolean }) => {
 const HamburgerMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const hamburgerMenuRef = useRef<HTMLDivElement | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [username, setUsername] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
+  // Function to check for valid JWT and fetch username
+    const checkAuthentication = async () => {
+      try {
+          const response = await fetch('/api/verify-login', { method: 'GET' });
+
+          if (response.ok) {
+              const data = await response.json();
+              setIsAuthenticated(true);
+              console.log(true)
+              setUsername(data.user); // Set username from the API response
+              console.log(username)
+          } else {
+              setIsAuthenticated(false);
+              setError('Authentication required');
+          }
+      } catch {
+          setIsAuthenticated(false); // In case of any error, assume unauthenticated
+          setError('Error verifying authentication');
+      }
+  };
+  
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
   };
@@ -46,6 +71,10 @@ const HamburgerMenu = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    checkAuthentication();
+}, []);
 
   return (
     <div ref={hamburgerMenuRef} className="fixed right-0 top-0 p-4 z-50">
@@ -91,14 +120,25 @@ const HamburgerMenu = () => {
                 Search
               </Link>
             </li>
-            <li>
-              <Link
+              <li>
+              {isAuthenticated ? (
+            <Link
+            href="/dashboard"
+            className="block hover:bg-blue-800 rounded p-2"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            dashboard
+            </Link>
+          ) : (
+            <Link
                 href="/login"
                 className="block hover:bg-blue-800 rounded p-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Login
-              </Link>
+                 Login
+                 </Link>
+          )}
+           
             </li>
             <li className="hover:bg-blue-800">
               <Gear showGearIcon={false}/>
@@ -114,7 +154,31 @@ export default function NavBar() {
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const navRef = useRef<HTMLDivElement | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [username, setUsername] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
+  // Function to check for valid JWT and fetch username
+    const checkAuthentication = async () => {
+      try {
+          const response = await fetch('/api/verify-login', { method: 'GET' });
+
+          if (response.ok) {
+              const data = await response.json();
+              setIsAuthenticated(true);
+              console.log(true)
+              setUsername(data.user); // Set username from the API response
+              console.log(username)
+          } else {
+              setIsAuthenticated(false);
+              setError('Authentication required');
+          }
+      } catch {
+          setIsAuthenticated(false); // In case of any error, assume unauthenticated
+          setError('Error verifying authentication');
+      }
+  };
+  
   const handleResize = () => {
     setIsSmallScreen(window.innerWidth < 992);
   };
@@ -146,6 +210,10 @@ export default function NavBar() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    checkAuthentication();
+}, []);
 
   return (
     <header className="sticky top-0 bg-blue-900 grid grid-cols-3 items-center p-1 shadow-md border-b-2">
@@ -202,7 +270,15 @@ export default function NavBar() {
             </div>
 
             <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
-              <Link href="/login" className="text-white text-xl">Login</Link>
+              {isAuthenticated ? (
+            <Link aria-label="Go to dashboard page" href="/dashboard" className="text-white text-xl">
+              Dashboard
+            </Link>
+          ) : (
+            <Link  aria-label="Go to login page" href="/login">
+              Login
+            </Link>
+          )}
             </div>
           </nav>
 
