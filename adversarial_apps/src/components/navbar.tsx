@@ -1,10 +1,10 @@
-'use client';
-import { useState, useRef, useEffect } from 'react';
+"use client";
+import { useState, useRef, useEffect } from "react";
 
 import Image from "next/image";
 import SearchBar from "@/components/searchbar";
 import Link from "next/link";
-import Gear from "./gear"
+import Gear from "./gear";
 
 const EducationSubNavBar = ({ isSubMenuOpen }: { isSubMenuOpen: boolean }) => {
   return (
@@ -12,16 +12,59 @@ const EducationSubNavBar = ({ isSubMenuOpen }: { isSubMenuOpen: boolean }) => {
       id="education-submenu"
       role="menu"
       aria-labelledby="education-menu"
-      className={`absolute left-1/2 transform -translate-x-1/2 ${isSubMenuOpen ? 'block' : 'hidden'
-        } bg-blue-800 text-white rounded-lg p-4 mt-2 shadow-lg`}
+      className={`absolute left-1/2 transform -translate-x-1/2 ${
+        isSubMenuOpen ? "block" : "hidden"
+      } bg-blue-800 text-white rounded-lg p-4 mt-2 shadow-lg`}
     >
       <ul className="flex space-x-6">
-        <li><Link href="/education/cfr-title-15" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">CFR Title 15</Link></li>
-        <li><Link href="/education/sam-compliance" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">SAM Compliance</Link></li>
-        <li><Link href="/education/sbir-due-diligence" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">SBIR Due Diligence</Link></li>
-        <li><Link href="/education/resources" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">Resources</Link></li>
-        <li><Link href="/education/cmmc" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">CMMC 2.0</Link></li>
-        <li><Link href="/education/foci" className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap">FOCI</Link></li>
+        <li>
+          <Link
+            href="/education/cfr-title-15"
+            className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap"
+          >
+            CFR Title 15
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/education/sam-compliance"
+            className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap"
+          >
+            SAM Compliance
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/education/sbir-due-diligence"
+            className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap"
+          >
+            SBIR Due Diligence
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/education/resources"
+            className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap"
+          >
+            Resources
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/education/cmmc"
+            className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap"
+          >
+            CMMC 2.0
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/education/foci"
+            className="block py-1 hover:bg-blue-700 px-2 whitespace-nowrap"
+          >
+            FOCI
+          </Link>
+        </li>
       </ul>
     </div>
   );
@@ -35,46 +78,59 @@ const HamburgerMenu = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Function to check for valid JWT and fetch username
-    const checkAuthentication = async () => {
-      try {
-          const response = await fetch('/api/verify-login', { method: 'GET', credentials: 'include' });
+  const checkAuthentication = async () => {
+    try {
+      const response = await fetch("/api/verify-login", {
+        method: "GET",
+        credentials: "include",
+      });
 
-          if (response.ok) {
-              const data = await response.json();
-              setIsAuthenticated(true);
-              console.log(true)
-              setUsername(data.user); // Set username from the API response
-              console.log(username)
-          } else {
-              setIsAuthenticated(false);
-              setError('Authentication required');
-          }
-      } catch {
-          setIsAuthenticated(false); // In case of any error, assume unauthenticated
-          setError('Error verifying authentication');
+      if (response.ok) {
+        const data = await response.json();
+        setIsAuthenticated(true);
+
+        setUsername(data.user); // Set username from the API response
+      } else {
+        setIsAuthenticated(false);
+        setError("Authentication required");
       }
+    } catch {
+      setIsAuthenticated(false); // In case of any error, assume unauthenticated
+      setError("Error verifying authentication");
+    }
   };
-  
+
+  useEffect(() => {
+    console.log("Authentication state updated:", isAuthenticated);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    console.log("Username:", username);
+  }, [username]);
+
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (hamburgerMenuRef.current && !hamburgerMenuRef.current.contains(event.target as Node)) {
+    if (
+      hamburgerMenuRef.current &&
+      !hamburgerMenuRef.current.contains(event.target as Node)
+    ) {
       setIsMenuOpen(false);
     }
   };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   useEffect(() => {
     checkAuthentication();
-}, []);
+  }, []);
 
   return (
     <div ref={hamburgerMenuRef} className="fixed right-0 top-0 p-4 z-50">
@@ -120,28 +176,27 @@ const HamburgerMenu = () => {
                 Search
               </Link>
             </li>
-              <li>
+            <li>
               {isAuthenticated ? (
-            <Link
-            href="/dashboard"
-            className="block hover:bg-blue-800 rounded p-2"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            dashboard
-            </Link>
-          ) : (
-            <Link
-                href="/login"
-                className="block hover:bg-blue-800 rounded p-2"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                 Login
-                 </Link>
-          )}
-           
+                <Link
+                  href="/dashboard"
+                  className="block hover:bg-blue-800 rounded p-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  dashboard
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block hover:bg-blue-800 rounded p-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
             </li>
             <li className="hover:bg-blue-800">
-              <Gear showGearIcon={false}/>
+              <Gear showGearIcon={false} />
             </li>
           </ul>
         </div>
@@ -159,26 +214,34 @@ export default function NavBar() {
   const [error, setError] = useState<string | null>(null);
 
   // Function to check for valid JWT and fetch username
-    const checkAuthentication = async () => {
-      try {
-          const response = await fetch('/api/verify-login', { method: 'GET' });
+  const checkAuthentication = async () => {
+    try {
+      const response = await fetch("/api/verify-login", { method: "GET" });
 
-          if (response.ok) {
-              const data = await response.json();
-              setIsAuthenticated(true);
-              console.log(true)
-              setUsername(data.user); // Set username from the API response
-              console.log(username)
-          } else {
-              setIsAuthenticated(false);
-              setError('Authentication required');
-          }
-      } catch {
-          setIsAuthenticated(false); // In case of any error, assume unauthenticated
-          setError('Error verifying authentication');
+      if (response.ok) {
+        const data = await response.json();
+        setIsAuthenticated(true);
+      
+        setUsername(data.user); // Set username from the API response
+      
+      } else {
+        setIsAuthenticated(false);
+        setError("Authentication required");
       }
+    } catch {
+      setIsAuthenticated(false); // In case of any error, assume unauthenticated
+      setError("Error verifying authentication");
+    }
   };
-  
+
+  useEffect(() => {
+    console.log("Authentication state updated:", isAuthenticated);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    console.log("Username:", username);
+  }, [username]);
+
   const handleResize = () => {
     setIsSmallScreen(window.innerWidth < 992);
   };
@@ -202,18 +265,18 @@ export default function NavBar() {
   useEffect(() => {
     const navElement = navRef.current;
     if (navElement) {
-      navElement.addEventListener('focusout', closeSubMenu);
+      navElement.addEventListener("focusout", closeSubMenu);
     }
     return () => {
       if (navElement) {
-        navElement.removeEventListener('focusout', closeSubMenu);
+        navElement.removeEventListener("focusout", closeSubMenu);
       }
     };
   }, []);
 
   useEffect(() => {
     checkAuthentication();
-}, []);
+  }, []);
 
   return (
     <header className="sticky top-0 bg-blue-900 grid grid-cols-3 items-center p-1 shadow-md border-b-2">
@@ -237,7 +300,11 @@ export default function NavBar() {
         <>
           <nav className="flex justify-center space-x-6 relative" ref={navRef}>
             <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
-              <Link aria-label="Go to Home Page" href="/" className="text-white text-xl">
+              <Link
+                aria-label="Go to Home Page"
+                href="/"
+                className="text-white text-xl"
+              >
                 Home
               </Link>
             </div>
@@ -264,39 +331,48 @@ export default function NavBar() {
             </div>
 
             <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
-              <Link aria-label="Go to search page" href="/search" className="text-white text-xl">
+              <Link
+                aria-label="Go to search page"
+                href="/search"
+                className="text-white text-xl"
+              >
                 Search
               </Link>
             </div>
 
             <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
               {isAuthenticated ? (
-            <Link aria-label="Go to dashboard page" href="/dashboard" className="text-white text-xl">
-              Dashboard
-            </Link>
-          ) : (
-            <Link  aria-label="Go to login page" href="/login">
-              Login
-            </Link>
-          )}
+                <Link
+                  aria-label="Go to dashboard page"
+                  href="/dashboard"
+                  className="text-white text-xl"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link aria-label="Go to login page" href="/login">
+                  Login
+                </Link>
+              )}
             </div>
           </nav>
-
 
           <div className="flex justify-end mr-6 p-2 rounded-lg">
             {/* Search Bar Component */}
             <div className=" pt-1.5">
-              <SearchBar placeholder="Search..." aria-label="Search for business partners" />
+              <SearchBar
+                placeholder="Search..."
+                aria-label="Search for business partners"
+              />
             </div>
 
             {/* Gear Settings Component */}
             <div>
-              <Gear showGearIcon={true}/>
+              <Gear showGearIcon={true} />
             </div>
           </div>
         </>
       )}
-
     </header>
   );
 }
