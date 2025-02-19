@@ -221,9 +221,8 @@ export default function NavBar() {
       if (response.ok) {
         const data = await response.json();
         setIsAuthenticated(true);
-      
+
         setUsername(data.user); // Set username from the API response
-      
       } else {
         setIsAuthenticated(false);
         setError("Authentication required");
