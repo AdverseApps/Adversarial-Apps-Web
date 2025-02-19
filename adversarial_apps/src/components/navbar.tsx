@@ -37,7 +37,7 @@ const HamburgerMenu = () => {
   // Function to check for valid JWT and fetch username
     const checkAuthentication = async () => {
       try {
-          const response = await fetch('/api/verify-login', { method: 'GET' });
+          const response = await fetch('/api/verify-login', { method: 'GET', credentials: 'include' });
 
           if (response.ok) {
               const data = await response.json();
