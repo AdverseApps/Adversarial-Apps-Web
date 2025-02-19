@@ -211,7 +211,7 @@ export default function NavBar() {
   const navRef = useRef<HTMLDivElement | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   // Function to check for valid JWT and fetch username
   const checkAuthentication = async () => {
