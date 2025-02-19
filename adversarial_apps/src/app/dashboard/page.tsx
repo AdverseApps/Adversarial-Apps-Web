@@ -15,15 +15,13 @@ export default async function DashboardPage() {
 
   // 2. Verify and decode the JWT
   let username: string | null = null;
-  let isReviewer: boolean | null = false;
   try {
     const decoded = jwt.verify(
       cookieToken,
       process.env.JWT_SECRET!
     ) as JwtPayload;
-    if (decoded && typeof decoded === "object" && "username" in decoded && "isReviewer" in decoded) {
+    if (decoded && typeof decoded === "object" && "username" in decoded) {
       username = decoded.username as string;
-      isReviewer = decoded.isReviewer as boolean;
     } else {
       throw new Error("Invalid token structure");
     }
@@ -36,25 +34,6 @@ export default async function DashboardPage() {
     );
   }
 
-  // 3a. Check if the user is a reviewer; if so, execute this return
-  if(isReviewer)
-  {
-    return (
-      <div>
-        <h1>Protected Page</h1>
-        <p>Only accessible if you are logged in with a valid JWT.</p>
-  
-        {/* Display username */}
-        <p>Welcome, {username}! You are a reviewer!</p>
-  
-        {/* Logout button */}
-        {/* Only the logout button needs interactivity */}
-        <LogoutButton />
-      </div>
-    );
-  }
-
-  // 3b. ...If not, go to default
   return (
     <div>
       <h1>Protected Page</h1>
