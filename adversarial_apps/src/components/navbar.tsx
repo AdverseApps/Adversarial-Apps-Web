@@ -307,7 +307,7 @@ export default function NavBar() {
                   Dashboard
                 </Link>
               ) : (
-                <Link aria-label="Go to login page" href="/login">
+                <Link aria-label="Go to login page" href="/login" className="text-white text-xl">
                   Login
                 </Link>
               )}
