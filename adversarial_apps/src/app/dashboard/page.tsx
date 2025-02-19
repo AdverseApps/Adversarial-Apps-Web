@@ -1,118 +1,50 @@
-"use client";
+import { cookies } from "next/headers";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import LogoutButton from "@/components/logoutButton";
 
-import { useState, useEffect } from 'react';
+export default async function DashboardPage() {
+  // 1. Read the cookie directly from the request
+  const cookieToken = cookies().get("auth_token")?.value;
+  if (!cookieToken) {
+    return (
+      <div>
+        <h1>Authentication required</h1>
+      </div>
+    );
+  }
 
-interface ApiResult {
-    status: 'success' | 'error';
-    data?: unknown;
-    message?: string;
-}
-
-export default function Dashboard() {
-    const [, setResult] = useState<ApiResult | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [isReviewer, setIsReviewer] = useState<boolean>(false);
-    const [username, setUsername] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-
-    // Function to check for valid JWT and fetch username
-    const checkAuthentication = async () => {
-        try {
-            const response = await fetch('/api/verify-login', { method: 'GET' });
-
-            if (response.ok) {
-                const data = await response.json();
-                setIsAuthenticated(true);
-                setUsername(data.user); // Set username from the API response
-            } else {
-                setIsAuthenticated(false);
-                setError('Authentication required');
-            }
-        } catch {
-            setIsAuthenticated(false); // In case of any error, assume unauthenticated
-            setError('Error verifying authentication');
-        }
-    };
-
-    // similar case to above, just checking isReviewer boolean value instead of full credentials
-    const checkReviewer = async () => {
-        try {
-            const response = await fetch('/api/verify-reviewer', { method: 'GET' });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data) { setIsReviewer(true); }
-            } else {
-                setIsReviewer(false);
-                setError('User is not reviewer');
-            }
-        } catch {
-            setIsReviewer(false); // In case of any error, assume regular user
-            setError('Error verifying reviewer attribute');
-        }
-    };
-
-    const logout = async () => {
-        try {
-            const response = await fetch('/api/logout', { method: 'POST' });
-
-            if (response.ok) {
-                setIsAuthenticated(false);
-                setIsReviewer(false);
-                setUsername(null);
-                setResult(null);
-                setError(null);
-            } else {
-                setError('Error logging out');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            setError('Error logging out');
-        }
-    };
-
-    // Run checkAuthentication, checkReviewer when component mounts
-    useEffect(() => {
-        checkAuthentication();
-        checkReviewer();
-    }, []);
-
-    if (!isAuthenticated) {
-        return (
-            <div>
-                <h1>{error || 'Please log in to access this page.'}</h1>
-            </div>
-        );
+  // 2. Verify and decode the JWT
+  let username: string | null = null;
+  try {
+    const decoded = jwt.verify(
+      cookieToken,
+      process.env.JWT_SECRET!
+    ) as JwtPayload;
+    if (decoded && typeof decoded === "object" && "username" in decoded) {
+      username = decoded.username as string;
+    } else {
+      throw new Error("Invalid token structure");
     }
+  } catch (err) {
+    console.error("JWT verification failed:", err);
+    return (
+      <div>
+        <h1>Invalid or expired token. Please log in again.</h1>
+      </div>
+    );
+  }
 
-    // identical case to the code below, just with reviewer indication line
-    if (isReviewer) {
-        return (
-            <div>
-                <h1>Protected Page</h1>
-                <p>Only accessible if you are logged in with a valid JWT.</p>
-    
-                {/* Display username */}
-                <p>Welcome, {username}!</p>
-    
-                {/* Logout button */}
-                <button onClick={logout}>Log out</button>
-            </div>
-        );
-    }
+  return (
+    <div>
+      <h1>Protected Page</h1>
+      <p>Only accessible if you are logged in with a valid JWT.</p>
 
-    else {
-        return (
-            <div>
-                <h1>Protected Page</h1>
-                <p>Only accessible if you are logged in with a valid JWT.</p>
-    
-                {/* Display username */}
-                <p>Welcome, {username}!</p>
-    
-                {/* Logout button */}
-                <button onClick={logout}>Log out</button>
-            </div>
-        );
-    }
+      {/* Display username */}
+      <p>Welcome, {username}!</p>
+
+      {/* Logout button */}
+      {/* Only the logout button needs interactivity */}
+      <LogoutButton />
+    </div>
+  );
 }
