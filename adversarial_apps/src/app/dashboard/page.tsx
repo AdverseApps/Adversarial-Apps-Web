@@ -1,68 +1,38 @@
-"use client";
 
-import { useState, useEffect } from 'react';
+import { cookies } from 'next/headers';
+import jwt from 'jsonwebtoken';
+import LogoutButton from '@/components/logoutButton';
 
-interface ApiResult {
-    status: 'success' | 'error';
-    data?: unknown;
-    message?: string;
-}
+export default async function DashboardPage() {
+  // 1. Read the cookie directly from the request
+  const cookieToken = cookies().get('auth_token')?.value;
+  if (!cookieToken) {
+    return (
+      <div>
+        <h1>Authentication required</h1>
+      </div>
+    );
+  }
 
-export default function Dashboard() {
-    const [, setResult] = useState<ApiResult | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [username, setUsername] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-
-    // Function to check for valid JWT and fetch username
-    const checkAuthentication = async () => {
-        try {
-            const response = await fetch('/api/verify-login', { method: 'GET' });
-
-            if (response.ok) {
-                const data = await response.json();
-                setIsAuthenticated(true);
-                setUsername(data.user); // Set username from the API response
-            } else {
-                setIsAuthenticated(false);
-                setError('Authentication required');
-            }
-        } catch {
-            setIsAuthenticated(false); // In case of any error, assume unauthenticated
-            setError('Error verifying authentication');
-        }
-    };
-
-    const logout = async () => {
-        try {
-            const response = await fetch('/api/logout', { method: 'POST' });
-
-            if (response.ok) {
-                setIsAuthenticated(false);
-                setUsername(null);
-                setResult(null);
-                setError(null);
-            } else {
-                setError('Error logging out');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            setError('Error logging out');
-        }
-    };
-
-    // Run checkAuthentication when component mounts
-    useEffect(() => {
-        checkAuthentication();
-    }, []);
-
-    if (!isAuthenticated) {
-        return (
-            <div>
-                <h1>{error || 'Please log in to access this page.'}</h1>
-            </div>
-        );
+  // 2. Verify and decode the JWT
+  let username: string | null = null;
+  try {
+    const decoded = jwt.verify(cookieToken, process.env.JWT_SECRET!);
+    if (typeof decoded === 'object' && decoded && 'username' in decoded) {
+      username = (decoded as any).username;
+    } else {
+      throw new Error('Invalid token structure');
     }
+  } catch (err) {
+    console.error('JWT verification failed:', err);
+    return (
+      <div>
+        <h1>Invalid or expired token. Please log in again.</h1>
+      </div>
+    );
+  }
+
+
 
     return (
         <div>
@@ -73,7 +43,8 @@ export default function Dashboard() {
             <p>Welcome, {username}!</p>
 
             {/* Logout button */}
-            <button onClick={logout}>Log out</button>
+            {/* Only the logout button needs interactivity */}
+            <LogoutButton />
         </div>
     );
 }
