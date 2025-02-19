@@ -1,6 +1,8 @@
 import { cookies } from "next/headers";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import LogoutButton from "@/components/logoutButton";
+import { UserFavoriteCompanies } from '@/components/UserFavoriteCompanies';
+
 
 export default async function DashboardPage() {
   // 1. Read the cookie directly from the request
@@ -34,13 +36,19 @@ export default async function DashboardPage() {
     );
   }
 
-  return (
-    <div>
-      <h1>Protected Page</h1>
-      <p>Only accessible if you are logged in with a valid JWT.</p>
+    return (
+        <div>
+            <h1>Protected Page</h1>
+            <p>Only accessible if you are logged in with a valid JWT.</p>
+            <br/>
 
-      {/* Display username */}
-      <p>Welcome, {username}!</p>
+            {/* Display username */}
+            <p>Welcome, {username}!</p>
+            <br/>
+
+            {/* Display Favorite Companies */}
+            <UserFavoriteCompanies username={username}/>
+            <br/>
 
       {/* Logout button */}
       {/* Only the logout button needs interactivity */}
