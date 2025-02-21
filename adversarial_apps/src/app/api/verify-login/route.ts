@@ -5,7 +5,6 @@ const JWT_SECRET = process.env.JWT_SECRET!; // Ensure this is not undefined at r
 
 interface DecodedToken extends JwtPayload {
     username: string;
-    isReviewer: boolean;
 }
 
 export async function GET(req: NextRequest) {
@@ -18,11 +17,11 @@ export async function GET(req: NextRequest) {
     try {
         const decoded = jwt.verify(cookieToken, JWT_SECRET) as JwtPayload | DecodedToken;
 
-        if (typeof decoded !== 'object' || !decoded || !('username' in decoded) || !('isReviewer' in decoded)) {
+        if (typeof decoded !== 'object' || !decoded || !('username' in decoded)) {
             throw new Error("Invalid token structure");
         }
 
-        return NextResponse.json({ success: true, user: (decoded as DecodedToken).username, reviewer: (decoded as DecodedToken).isReviewer }, { status: 200 });
+        return NextResponse.json({ success: true, user: (decoded as DecodedToken).username}, { status: 200 });
     } catch {
         return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
