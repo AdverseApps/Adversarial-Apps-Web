@@ -314,7 +314,7 @@ def get_reviewer_status(username: str) -> dict:
 
         print(f"Querying for username: {username}")  # Debug log
 
-        cursor.execute('SELECT isReviewer FROM "USERS" WHERE username = %s', (username,))
+        cursor.execute('SELECT "isReviewer" FROM "USERS" WHERE username = %s', (username,))
         reviewerStatus = cursor.fetchone()
 
         print(f"Reviewer status fetched: {reviewerStatus}")  # Debug log
