@@ -302,6 +302,9 @@ def get_password(username: str) -> dict:
 def get_reviewer_status(username: str) -> dict:
     """
     Retrieve reviewer status for user based on username
+
+    :param username: username of user
+    :return: reviewer status value
     """
     connection = None
 
