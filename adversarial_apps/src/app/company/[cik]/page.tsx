@@ -1,6 +1,7 @@
 import { FetchSecData, getUsername, getFavorites } from '@/app/lib/data';
 import { QRCodeComponent } from '@/components/QR';
 import { FavoriteButton } from '@/components/FavoriteButton';
+import { RecentOwnership } from '@/components/RecentOwnership';
 
 interface CompanyDetailsProps {
   params: { cik: string };
@@ -154,6 +155,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           )}
         </p>
 
+        <RecentOwnership cik={cik} />
         <QRCodeComponent companyName={name} cik={cik} />
         <FavoriteButton cik={cik} username={username} favorites={favorites}/>
       </div>
