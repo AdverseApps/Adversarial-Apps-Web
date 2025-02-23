@@ -309,11 +309,13 @@ def get_reviewer_status(username: str) -> dict:
     connection = None
 
     try:
+        # Connect to the PostgreSQL database using the URI
         db_url = os.getenv("DATABASE_URL")
 
         connection = psycopg2.connect(db_url)
         cursor = connection.cursor()
 
+        # Query to get the hashed password for the provided username
         cursor.execute('SELECT "isReviewer" FROM "USERS" WHERE username = %s', (username,))
         reviewerStatus = cursor.fetchone()
 
@@ -323,8 +325,9 @@ def get_reviewer_status(username: str) -> dict:
             return {"status": "error", "message": f"Username '{username}' not found."}
 
     except psycopg2.Error as e:
-        return {"status": "error", "message": str(e)}  # Return actual error
+        return {"status": "error", "message": str(e)}
     finally:
+        # Ensure the connection is closed, as finished with code
         if connection:
             cursor.close()
             connection.close()
