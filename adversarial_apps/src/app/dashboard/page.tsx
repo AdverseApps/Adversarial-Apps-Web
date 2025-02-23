@@ -30,7 +30,6 @@ export default async function DashboardPage()
       cookieToken,
       process.env.JWT_SECRET!
     ) as DecodedToken;
-    console.log("Decoded = ",decoded);
     if (decoded && typeof decoded === "object" && "username" in decoded && "role" in decoded)
     {
       username = decoded.username as string;

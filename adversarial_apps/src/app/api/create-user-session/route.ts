@@ -33,7 +33,6 @@ async function validatePassword(username: string) {
 }
 
 async function getRole (username: string) {
-    console.log("hi");
     try
     {
         const data = { action: "get_reviewer_status", username };
@@ -50,9 +49,7 @@ async function getRole (username: string) {
         });
         
         const result = await response.json();
-        console.log("result = ", result);
         if (result.status === "success") {
-            console.log("hi");
             return result.reviewerStatus;
         } else {
             throw new Error (result.message);
@@ -95,12 +92,9 @@ export async function POST(req: NextRequest) {
         }
 
         // Create and sign the JWT, username stored to identify user for api requests
-        console.log("username = " ,username);
-        // const role = "true";
+        // role represents the user's reviewer status
         const role = await getRole(username);
         const payload = { username, role };
-        console.log("payload = " ,payload);
-        console.log("role = " ,role);
         const token = jwt.sign(payload, jwtSecret, { expiresIn: "12h" });
 
         // stores cookie with JWT token

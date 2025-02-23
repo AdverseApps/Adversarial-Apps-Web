@@ -299,6 +299,7 @@ def get_password(username: str) -> dict:
         "message": f"An error occurred retrieving password for '{username}'",
     }
 
+
 def get_reviewer_status(username: str) -> dict:
     """
     Retrieve reviewer status for user based on username
@@ -316,7 +317,9 @@ def get_reviewer_status(username: str) -> dict:
         cursor = connection.cursor()
 
         # Query to get the hashed password for the provided username
-        cursor.execute('SELECT "isReviewer" FROM "USERS" WHERE username = %s', (username,))
+        cursor.execute(
+            'SELECT "isReviewer" FROM "USERS" WHERE username = %s', (username,)
+        )
         reviewerStatus = cursor.fetchone()
 
         if reviewerStatus:
