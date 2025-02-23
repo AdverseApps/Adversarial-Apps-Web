@@ -467,6 +467,113 @@ def get_company_score(cik: str) -> dict:
         return {"status": "error", "message": f"Database error: {e}"}
 
 
+def get_recent_ownerships(cik: str, pagination: int) -> dict:
+    """
+    Retrieve recent ownerships for a company based on the CIK number.
+
+    :param cik: CIK number of the company
+    :param pagination: Index for pagination
+    :return: Dictionary containing the list of recent ownerships
+    """
+
+    # obtains the .json file from the SEC website
+    url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+
+    headers = {
+        "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
+        "Accept-Encoding": "gzip, deflate",
+        "Host": "data.sec.gov",
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        try:
+            # Parse the JSON response to grab form information
+            data = response.json()
+
+            recent = data.get("filings", {}).get("recent", {})
+            forms = recent.get("form", [])
+            filling_dates = recent.get("filingDate", [])
+            accession_numbers = recent.get("accessionNumber", [])
+
+            # Grabs all form 4 forms
+            form_indices = [i for i, form in enumerate(forms) if form == "4"]
+
+            # Connects forms 4 with their respective filling dates and accession numbers
+            # for ease of reference
+            filtered_forms = [
+                {
+                    "fillingDate": filling_dates[i],
+                    "form": forms[i],
+                    "accessionNumber": accession_numbers[i],
+                }
+                for i in form_indices
+            ]
+
+            # Paginate: Get the first 5 items for the given page
+            start_index = (pagination - 1) * 5
+            end_index = start_index + 5
+
+            # for each of the forms within the index range, grab data file and process xml
+            for form in filtered_forms[start_index:end_index]:
+                # each form stored at unique url based off cik without zeros
+                # and modified accession number in url following pattern below
+                url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{form['accessionNumber'].replace('-', '')}/{form['accessionNumber']}.txt"
+
+                headers = {
+                    "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
+                    "Accept-Encoding": "gzip, deflate",
+                    "Host": "www.sec.gov",
+                }
+
+                response = requests.get(url, headers=headers)
+
+                # if the request was successful, then we can parse the xml
+                if response.status_code == 200:
+                    # grabs all the content within <XML> tag which form 4 is stored in
+                    xml_content = re.search(
+                        r"<XML>(.*?)</XML>", response.text, re.DOTALL
+                    )
+
+                    # if the xml content is found, then we can parse it, and store it in the form dictionary to be returned
+                    if xml_content:
+
+                        # used to get the xml from the extraction above
+                        xml_string = xml_content.group(1)
+
+                        # uses beatifulsoup to parse the xml content
+                        soup = BeautifulSoup(xml_string, "lxml-xml")
+
+                        # grabs the owner information from the xml
+                        issuer = soup.find("issuerName").text
+                        reporter = soup.find("rptOwnerName").text
+
+                        # adds gathered information to the form dictionary to be saved to output
+                        form["issuer"] = issuer
+                        form["reporter"] = reporter
+
+                else:
+                    return {
+                        "status": "error",
+                        "message": f"Unable to retrieve ownership data for CIK {cik} (Status Code: {response.status_code})",
+                    }
+
+            # Return the paginated list of recent ownerships
+            return {
+                "status": "success",
+                "recentOwnerships": filtered_forms[start_index:end_index],
+            }
+
+        except Exception as e:
+            return {"status": "error", "message": f"An error occurred: {str(e)}"}
+    else:
+        return {
+            "status": "error",
+            "message": f"Unable to retrieve recent fillings for CIK {cik} (Status Code: {response.status_code})",
+        }
+
+
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
 if __name__ == "__main__":
@@ -513,6 +620,13 @@ if __name__ == "__main__":
             # Then the inputActionAndData is formatted as such:
             # { "action": "get_company_score", "cik": YOUR_CIK }
             result = get_company_score(input_action_and_data.get("cik"))
+        elif action == "get_recent_ownerships":
+            # Then the inputActionAndData is formatted as such:
+            # { "action": "get_recent_ownerships", "cik": YOUR_CIK, "pagination": YOUR_PAGINATION_INDEX }
+            result = get_recent_ownerships(
+                input_action_and_data.get("cik"),
+                input_action_and_data.get("pagination"),
+            )
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}
