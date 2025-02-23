@@ -304,7 +304,7 @@ def get_reviewer_status(username: str) -> dict:
     Retrieve reviewer status for user based on username
 
     :param username: username of user
-    :return: reviewer status value
+    :return: dictionary with reviewer status value
     """
     connection = None
 
@@ -323,7 +323,7 @@ def get_reviewer_status(username: str) -> dict:
             return {"status": "error", "message": f"Username '{username}' not found."}
 
     except psycopg2.Error as e:
-        return {"status": "error", "message": str(e)}  # ✅ Return actual error
+        return {"status": "error", "message": str(e)}  # Return actual error
     finally:
         if connection:
             cursor.close()
