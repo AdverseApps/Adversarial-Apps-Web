@@ -302,7 +302,6 @@ def get_password(username: str) -> dict:
 def get_reviewer_status(username: str) -> dict:
     """
     Retrieve reviewer status for user based on username
-    Based off of get_password
     """
     connection = None
 
@@ -321,7 +320,7 @@ def get_reviewer_status(username: str) -> dict:
             return {"status": "error", "message": f"Username '{username}' not found."}
 
     except psycopg2.Error as e:
-        return {"status": "error", "message": str(e)}  # Return actual error
+        return {"status": "error", "message": str(e)}  # ✅ Return actual error
     finally:
         if connection:
             cursor.close()
