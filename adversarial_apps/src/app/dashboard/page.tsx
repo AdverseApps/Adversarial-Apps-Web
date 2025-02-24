@@ -4,34 +4,48 @@ import LogoutButton from "@/components/logoutButton";
 import { UserFavoriteCompanies } from '@/components/UserFavoriteCompanies';
 
 
-export default async function DashboardPage() {
+interface DecodedToken extends JwtPayload {
+  username: string;
+  role: string;
+}
+
+export default async function DashboardPage()
+{
   // 1. Read the cookie directly from the request
   const cookieToken = cookies().get("auth_token")?.value;
-  if (!cookieToken) {
+
+  if (!cookieToken)
+  {
     return (
       <div>
         <h1>Authentication required</h1>
       </div>
     );
   }
-
+  
   // 2. Verify and decode the JWT
   let username: string | null = null;
-  try {
+  let role: string | null = null;
+  try
+  {
     const decoded = jwt.verify(
       cookieToken,
       process.env.JWT_SECRET!
-    ) as JwtPayload;
-    if (decoded && typeof decoded === "object" && "username" in decoded) {
+    ) as DecodedToken;
+    if (decoded && typeof decoded === "object" && "username" in decoded && "role" in decoded)
+    {
       username = decoded.username as string;
-    } else {
+      role = decoded.role as string;
+    } else
+    {
       throw new Error("Invalid token structure");
     }
-  } catch (err) {
+  } catch (err)
+  {
     console.error("JWT verification failed:", err);
     return (
       <div>
-        <h1>Invalid or expired token. Please log in again.</h1>
+        <h1> Invalid or expired token. Please log in again.</h1>
       </div>
     );
   }
@@ -49,6 +63,13 @@ export default async function DashboardPage() {
             {/* Display Favorite Companies */}
             <UserFavoriteCompanies username={username}/>
             <br/>
+
+      {role === "true" && (
+        <div>
+          <h2>Reviewer Features</h2>
+          <button>Special Reviewer Action</button>
+        </div>
+      )}
 
       {/* Logout button */}
       {/* Only the logout button needs interactivity */}

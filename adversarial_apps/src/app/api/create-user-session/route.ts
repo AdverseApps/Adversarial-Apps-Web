@@ -6,6 +6,7 @@ import argon2 from "argon2";
 interface AuthRequestBody {
     username: string;
     password: string;
+    role: string;
 }
 async function validatePassword(username: string) {
     const data = { action: "get_password", username };
@@ -31,6 +32,35 @@ async function validatePassword(username: string) {
     }
 }
 
+async function getRole (username: string) {
+    try
+    {
+        const data = { action: "get_reviewer_status", username };
+        const headersList = headers();
+        const domain = headersList.get('host');
+        const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+
+        const response = await fetch(`${protocol}://${domain}/api/call-python-api`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        if (result.status === "success") {
+            return result.reviewerStatus;
+        } else {
+            throw new Error (result.message);
+        }
+    } catch (error) {
+        console.error("error fetching role", error);
+        return "user";
+    }
+    
+}
+
 export async function POST(req: NextRequest) {
 
     if (req.method !== 'POST') {
@@ -43,6 +73,8 @@ export async function POST(req: NextRequest) {
         if (!username || !password) {
             return NextResponse.json({ error: "Username and password are required." }, { status: 400 });
         }
+
+        
 
         // grabs password from database, compares to input password to authenticate
         const storedPassword = await validatePassword(username);
@@ -60,7 +92,9 @@ export async function POST(req: NextRequest) {
         }
 
         // Create and sign the JWT, username stored to identify user for api requests
-        const payload = { username };
+        // role represents the user's reviewer status
+        const role = await getRole(username);
+        const payload = { username, role };
         const token = jwt.sign(payload, jwtSecret, { expiresIn: "12h" });
 
         // stores cookie with JWT token

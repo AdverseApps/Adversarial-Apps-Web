@@ -300,6 +300,47 @@ def get_password(username: str) -> dict:
     }
 
 
+def get_reviewer_status(username: str) -> dict:
+    """
+    Retrieve reviewer status for user based on username
+
+    :param username: username of user
+    :return: dictionary with reviewer status value
+    """
+    connection = None
+
+    try:
+        # Connect to the PostgreSQL database using the URI
+        db_url = os.getenv("DATABASE_URL")
+
+        connection = psycopg2.connect(db_url)
+        cursor = connection.cursor()
+
+        # Query to get the hashed password for the provided username
+        cursor.execute(
+            'SELECT "isReviewer" FROM "USERS" WHERE username = %s', (username,)
+        )
+        reviewerStatus = cursor.fetchone()
+
+        if reviewerStatus:
+            return {"status": "success", "reviewerStatus": reviewerStatus[0]}
+        else:
+            return {"status": "error", "message": f"Username '{username}' not found."}
+
+    except psycopg2.Error as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        # Ensure the connection is closed, as finished with code
+        if connection:
+            cursor.close()
+            connection.close()
+
+    return {
+        "status": "error",
+        "message": f"An error occurred retrieving reviewer status for '{username}'",
+    }
+
+
 def add_remove_favorite(username: str, cik: int) -> dict:
     """
     Add or remove a favorite company for the user.
@@ -606,6 +647,10 @@ if __name__ == "__main__":
             # Then the inputActionAndData is formatted as such:
             # { "action": "get_password", "username": YOUR_USERNAME }
             result = get_password(input_action_and_data.get("username"))
+        elif action == "get_reviewer_status":
+            # Then the inputActionAndData is formatted as such:
+            # { "action": "get_password", "username": YOUR_USERNAME }
+            result = get_reviewer_status(input_action_and_data.get("username"))
         elif action == "add_remove_favorite":
             # Then the inputActionAndData is formatted as such:
             # { "action": "add_favorite", "username": YOUR_USERNAME, "cik": YOUR_CIK }
