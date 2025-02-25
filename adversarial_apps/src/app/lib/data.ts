@@ -79,6 +79,7 @@ export async function FetchCIKnumber(query:string) {
 // Checks authentication and returns username or null
 export async function getUsername() {
     try { 
+      console.log("Getting Username:")
       const headersList = headers();
       const domain = headersList.get("host");
       const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
@@ -112,6 +113,7 @@ export async function getUsername() {
 
 export async function getFavorites(username: string) {
     try {
+      console.log("Getting Favorites:")
         const headersList = headers();
         const domain = headersList.get("host");
         const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
@@ -144,3 +146,34 @@ export async function getFavorites(username: string) {
     }
 }
   
+
+export async function getRiskScore(cik:string) {
+  try {
+    console.log("Getting Risk Score:")
+    const headersList = headers();
+    const domain = headersList.get("host");
+    const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+    
+    const data = { action: "get_company_score", cik };
+    const response = await fetch(`${protocol}://${domain}/api/call-python-api`, {
+      method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        });
+  
+        if (!response.ok) {
+          console.error(`risk score fetch failed: ${response.statusText}`);
+          
+          return { status: "error", message: `Failed to fetch risk score: ${response.statusText}` };
+        }
+        const result = await response.json();
+        console.log(result);
+      return (result);
+  }
+  catch(error){
+    console.error("Error fetching Risk Score:", error);
+    return { status: "error", message:  `An unexpected error occurred: ${error}`};
+  }
+}
