@@ -140,7 +140,7 @@ const HamburgerMenu = () => {
                 className="block hover:bg-blue-800 rounded p-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                About Us
+                About
               </Link>
             </li>
             <li>
@@ -303,6 +303,16 @@ export default function NavBar() {
                 className="text-white text-xl"
               >
                 Search
+              </Link>
+            </div>
+
+            <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
+              <Link
+                aria-label="Go to About Us page"
+                href="/about"
+                className="text-white text-xl"
+              >
+                About
               </Link>
             </div>
 
