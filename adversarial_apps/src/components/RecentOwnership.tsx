@@ -6,72 +6,119 @@ interface Props {
     cik: string;
 }
 
+// Type for the data being recieved from API
 interface FilingReport {
     accessionNumber: string;
-    filingDate: string;
+    fillingDate: string;
     form: string;
     issuer: string;
     reporter: string;
 }
 
-export const RecentOwnership = ( props: Props) => {
+export const RecentOwnership = (props: Props) => {
     const { cik } = props;
 
+    // State variables
     const [filings, setFilings] = useState<FilingReport[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState<number>(1);
+    const [hasMore, setHasMore] = useState<boolean>(true);
+    const [preloadedData, setPreloadedData] = useState<FilingReport[]>([]);
 
+    // Reset state variables when cik changes
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('/api/call-python-api', {
-                    method: "POST",
-                    body: JSON.stringify({ action: "get_recent_ownerships", "cik": cik, pagination: 1 }),
-                });
+        setFilings([]);
+        setPage(1);
+        setHasMore(true);
+        setPreloadedData([]);
+        fetchData(1, true);
+    }, [cik]);
 
-                const result = await response.json();
+    // Fetch data function
+    const fetchData = async (pageNum: number, isInitial: boolean = false, isPreload: boolean = false) => {
+        setLoading(true);
+        try {
+            const response = await fetch('/api/call-python-api', {
+                method: "POST",
+                body: JSON.stringify({ action: "get_recent_ownerships", cik, pagination: pageNum }),
+            });
 
-                if (response.ok && result.status === "success") {
+            const result = await response.json();
+
+            if (response.ok && result.status === "success") {
+                if (isInitial) {
                     setFilings(result.recentOwnerships);
+                } else if (isPreload) {
+                    // Pre loading data for instant update when view more is clicked
+                    setPreloadedData(result.recentOwnerships);
                 } else {
-                    setError("Failed to fetch recent ownership data.");
+                    setFilings(prev => [...prev, ...result.recentOwnerships]);
                 }
-            } catch (err) {
-                setError("Error fetching data: " + err);
-            } finally {
-                setLoading(false);
+                setHasMore(result.recentOwnerships.length === 5);
+            } else {
+                setError("Failed to fetch recent ownership data.");
+                setHasMore(false);
             }
-        };
+        } catch (err) {
+            setError("Error fetching data: " + err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchData();
-    }, [cik]); // Fetch data when `cik` changes
+    // Fetch and append preloaded data when "View More" is clicked
+    const fetchNextPage = () => {
+        if (preloadedData.length > 0) {
+            setHasMore(true);
+            setFilings(prev => [...prev, ...preloadedData]);
+            setPreloadedData([]);
+            const nextPage = page + 1;
+            setPage(nextPage);
+            fetchData(nextPage, false, true); // Preload next batch
+        } else {
+            setHasMore(false);
+        }
+    };
+
+    // Preload the next page when we get a new page
+    useEffect(() => {
+        if (hasMore) {
+            fetchData(page + 1, false, true);
+        }
+    }, [page]);
 
     return (
         <div>
+            <br />
             <h2>Recent Owners:</h2>
-            <br/>
-            {loading ? (
-                <p>Loading...</p>
-            ) : error ? (
-                <p style={{ color: "red" }}>Error: {error}</p>
-            ) : (
-                <ul>
-                    {filings.length > 0 ? (
-                        filings.map((filing, index) => (
-                            <li key={index}>
-                                <p>Filing date: {filing.filingDate}</p>
-                                <p>Accession Number: {filing.accessionNumber}</p>
-                                <p>Form: {filing.form}</p>
-                                <p>Issuer: {filing.issuer}</p>
-                                <p>Reporter: {filing.reporter}</p>
-                                <br/>
-                            </li>
-                        ))
-                    ) : (
-                        <p>No recent ownership records found.</p>
-                    )}
-                </ul>
+            <br />
+            {error && <p style={{ color: "red" }}>Error: {error}</p>}
+            <ul className="space-y-4">
+                {filings.length > 0 ? (
+                    filings.map((filing, index) => (
+                        <li key={index}>
+                            <p><strong>Filing Date:</strong> {filing.fillingDate}</p>
+                            <p><strong>Accession Number:</strong> {filing.accessionNumber}</p>
+                            <p><strong>Form:</strong> {filing.form}</p>
+                            <p><strong>Issuer:</strong> {filing.issuer}</p>
+                            <p><strong>Reporter:</strong> {filing.reporter}</p>
+                        </li>
+                    ))
+                ) : (
+                    !loading && <p className="text-gray-500">No recent ownership records found.</p>
+                )}
+            </ul>
+            {loading && <p>Loading...</p>}
+            {!loading && hasMore && (
+                <div>
+                    <button onClick={fetchNextPage} className="px-4 py-2 bg-blue-900 text-white rounded-md shadow-md 
+                    hover:bg-blue-600 transition-colors flex items-center space-x-2 mt-2">
+                        View More
+                    </button>
+                    <br />
+                </div>
             )}
         </div>
     );
-}
+};
