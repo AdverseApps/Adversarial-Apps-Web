@@ -135,6 +135,15 @@ const HamburgerMenu = () => {
               </Link>
             </li>
             <li>
+              <Link
+                href="/about"
+                className="block hover:bg-blue-800 rounded p-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                About Us
+              </Link>
+            </li>
+            <li>
               {isAuthenticated ? (
                 <Link
                   href="/dashboard"
