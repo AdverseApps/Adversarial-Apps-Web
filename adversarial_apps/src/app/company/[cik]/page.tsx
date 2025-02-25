@@ -1,4 +1,4 @@
-import { FetchSecData, getUsername, getFavorites } from '@/app/lib/data';
+import { FetchSecData, getUsername, getFavorites, getRiskScore } from '@/app/lib/data';
 import { QRCodeComponent } from '@/components/QR';
 import { FavoriteButton } from '@/components/FavoriteButton';
 
@@ -56,6 +56,21 @@ export default async function page({ params }: CompanyDetailsProps) {
       </div>
     );
   }
+
+  let riskScore;
+  try {
+    console.log(cik);
+    riskScore = await getRiskScore(cik);
+
+    if (!riskScore || typeof riskScore !== "object") {
+      throw new Error("Invalid response from FetchSecData.");
+    }
+} catch (error) {
+  console.error("Error in getting risk score:", error);
+}
+
+
+
   const {
     name,
     formerNames,
@@ -84,13 +99,13 @@ export default async function page({ params }: CompanyDetailsProps) {
 
 
   return (
+    <div>
     <div className="flex mt-6 ">
+      
       {/* Left side */}
       <div className="w-1/2 text-left text-xl p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">Company Details</h2>
-        <p>
-          <span className="font-semibold">Name:</span> {capitalizeWords(name) || "N/A"}
-        </p>
+        <h2 className="text-2xl font-bold mb-4">{capitalizeWords(name) || "N/A"}
+          </h2>
 
         {formerNames && formerNames.length > 0 && (
           <div className=""><br />
@@ -158,12 +173,24 @@ export default async function page({ params }: CompanyDetailsProps) {
         <FavoriteButton cik={cik} username={username} favorites={favorites}/>
       </div>
 
-
-
       {/* Right side */}
-      <div className="w-1/2 text-right text-xl p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">Risk Report Feature Coming Soon To This Page!</h2>
-      </div>
+     
+        <div className="w-1/2 text-right text-xl p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4">Risk Report Feature Coming Soon To This Page!</h2>
+           {/* Displaying simple risk score */}
+          {(riskScore.riskScore !== undefined && riskScore.riskScore !== null) ? (
+            <p>
+              <span className="font-semibold">Risk Score:</span> {riskScore.riskScore}
+            </p>
+          ) : (
+            <p>This Company has not yet been verified</p>
+          )}
+        </div>
+        </div>
+    <footer>
+       {/* Properly Citing the SEC*/}
+    <p>Company filing and financial data is provided by the U.S. Securities and Exchange Commission's EDGAR database </p>
+    </footer>
     </div>
   );
 }
