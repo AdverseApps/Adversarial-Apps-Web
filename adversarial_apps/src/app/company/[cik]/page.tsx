@@ -207,7 +207,7 @@ export default async function page({ params }: CompanyDetailsProps) {
         {/* Properly Citing the SEC*/}
         <p>
           Company filing and financial data is provided by the U.S. Securities
-          and Exchange Commission's EDGAR database{" "}
+          and Exchange Commission&apos;s EDGAR database{" "}
         </p>
       </footer>
     </div>
