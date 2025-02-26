@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function page(){
     return (
         <main aria-label="main-content">
@@ -45,6 +46,35 @@ export default function page(){
                     will get scored a five which indicates a risk. Every consecutive offending beneficial 
                     owner will increase that score by one.</li>
             </ol>
+            <ol className = "pl-5"><br /><b>Step 3: Check Remaining Beneficial Owners</b><br />
+                <li className = "pl-7">a. For the remaining beneficial owners with less than 20% 
+                    ownership, we then add the influence of all sub-20% shareholders together and 
+                    continue assessments like Step 2. We can consider this as the &quot;residual 
+                    beneficial owners&quot;.</li>
+                <li className = "pl-10">i.<b> If the sum is less than 20%,</b> then set a score for 
+                    the residual beneficial owners from zero to three based on scores of the major 
+                    beneficial owners from Step 2. This would mean that a three indicates nearly all 
+                    major beneficial owners received a five on their risk score, while a zero would 
+                    indicate very few beneficial owners went higher than a zero score.</li>
+                <li className = "pl-10">ii.<b> If the sum is greater or equal to 20%,</b> then we 
+                    treat this as a singular entity and evaluate it as we would a major beneficial 
+                    owner from Step 2. In addition, we would also take into account the scores of the 
+                    other major beneficial owners as we did above, but this time on a scale of zero to 
+                    five. Similar to the above step, a five would indicate nearly all 
+                    major beneficial owners received a five on their risk score, while a zero would 
+                    indicate very few beneficial owners went higher than a zero score.</li>
+            </ol>
+            <p className = "pl-5"><br />These individual scores are then combined to produce a result for 
+                the calculated risk scores seen on a company result page.</p>
+
+            <div className="container py-10 px-10 mx-0 min-w-full flex justify-center items-center space-x-4">
+                <Link href = "/" passHref legacyBehavior>
+                    <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
+                        aria-label="Back to Homepage">
+                        Back to Homepage
+                    </button>
+                </Link>
+            </div>
         </main>
     );
 }
