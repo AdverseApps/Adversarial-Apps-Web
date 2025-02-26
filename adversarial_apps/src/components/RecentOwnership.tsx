@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface Props {
     cik: string;
@@ -26,17 +26,8 @@ export const RecentOwnership = (props: Props) => {
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [preloadedData, setPreloadedData] = useState<FilingReport[]>([]);
 
-    // Reset state variables when cik changes
-    useEffect(() => {
-        setFilings([]);
-        setPage(1);
-        setHasMore(true);
-        setPreloadedData([]);
-        fetchData(1, true);
-    }, [cik]);
-
     // Fetch data function
-    const fetchData = async (pageNum: number, isInitial: boolean = false, isPreload: boolean = false) => {
+    const fetchData = useCallback(async (pageNum: number, isInitial: boolean = false, isPreload: boolean = false) => {
         setLoading(true);
         try {
             const response = await fetch('/api/call-python-api', {
@@ -50,7 +41,6 @@ export const RecentOwnership = (props: Props) => {
                 if (isInitial) {
                     setFilings(result.recentOwnerships);
                 } else if (isPreload) {
-                    // Pre loading data for instant update when view more is clicked
                     setPreloadedData(result.recentOwnerships);
                 } else {
                     setFilings(prev => [...prev, ...result.recentOwnerships]);
@@ -65,7 +55,7 @@ export const RecentOwnership = (props: Props) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [cik]); // Add `cik` as a dependency
 
     // Fetch and append preloaded data when "View More" is clicked
     const fetchNextPage = () => {
@@ -86,7 +76,16 @@ export const RecentOwnership = (props: Props) => {
         if (hasMore) {
             fetchData(page + 1, false, true);
         }
-    }, [page]);
+    }, [page, hasMore, fetchData]);
+
+    // Reset state variables when cik changes
+    useEffect(() => {
+        setFilings([]);
+        setPage(1);
+        setHasMore(true);
+        setPreloadedData([]);
+        fetchData(1, true);
+    }, [cik, fetchData]);
 
     return (
         <div>
@@ -106,7 +105,7 @@ export const RecentOwnership = (props: Props) => {
                         </li>
                     ))
                 ) : (
-                    !loading && <p className="text-gray-500">No recent ownership records found.</p>
+                    !loading && <p>No recent ownership records found.</p>
                 )}
             </ul>
             {loading && <p>Loading...</p>}
