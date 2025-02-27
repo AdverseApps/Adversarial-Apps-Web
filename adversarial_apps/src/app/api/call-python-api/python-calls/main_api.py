@@ -615,6 +615,67 @@ def get_recent_ownerships(cik: str, pagination: int) -> dict:
         }
 
 
+def verify_company(cik: str) -> dict:
+    """
+    Verify a company by its CIK. If the CIK doesn't exist in COMPANIES,
+    insert a new row with isVerified = TRUE. If it does exist and isVerified
+    is FALSE, update it to TRUE.
+
+    :param cik: The CIK number of the company
+    :return: A dictionary with status and message
+    """
+    connection = None
+    try:
+        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+
+        # 1. Check if the company exists in COMPANIES
+        cursor.execute(
+            'SELECT "CIK", "isVerified" FROM "COMPANIES" WHERE "CIK" = %s', (cik,)
+        )
+        row = cursor.fetchone()
+
+        if row:
+            # row = (CIK, isVerified)
+            _, is_verified = row
+            if not is_verified:
+                # 2a. If company exists but isVerified is FALSE, set it to TRUE
+                cursor.execute(
+                    'UPDATE "COMPANIES" SET "isVerified" = TRUE WHERE "CIK" = %s',
+                    (cik,),
+                )
+                connection.commit()
+                return {
+                    "status": "success",
+                    "message": f"Company with CIK {cik} has been verified (updated).",
+                }
+            else:
+                # If it's already verified, just inform the caller
+                return {
+                    "status": "success",
+                    "message": f"Company with CIK {cik} is already verified.",
+                }
+        else:
+            # 2b. If the company doesn't exist, insert it with isVerified = TRUE
+            cursor.execute(
+                'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
+                (cik, True, 0),
+            )
+            connection.commit()
+            return {
+                "status": "success",
+                "message": f"Company with CIK {cik} added and verified.",
+            }
+
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return {"status": "error", "message": f"Database error: {e}"}
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
 if __name__ == "__main__":
@@ -672,6 +733,10 @@ if __name__ == "__main__":
                 input_action_and_data.get("cik"),
                 input_action_and_data.get("pagination"),
             )
+        elif action == "verify_company":
+            # Expecting JSON like { "action": "verify_company", "cik": "0000123456" }
+            result = verify_company(input_action_and_data.get("cik"))
+
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}

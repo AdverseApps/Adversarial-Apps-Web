@@ -3,9 +3,11 @@ import {
   getUsername,
   getFavorites,
   getRiskScore,
+  verifyUser,
 } from "@/app/lib/data";
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import VerifyButton from "@/components/VerifyButton";
 import { RecentOwnership } from '@/components/RecentOwnership';
 
 interface CompanyDetailsProps {
@@ -76,6 +78,16 @@ export default async function page({ params }: CompanyDetailsProps) {
     console.error("Error in getting risk score:", error);
   }
 
+  let reviewerData;
+  try {
+    reviewerData = await verifyUser();
+    if (!reviewerData || typeof reviewerData !== "object") {
+      throw new Error("Invalid response from VerifyReviewer.");
+    }
+  } catch (error) {
+    console.error("Error in verifying user:", error);
+  }
+
   const {
     name,
     formerNames,
@@ -100,7 +112,9 @@ export default async function page({ params }: CompanyDetailsProps) {
   const { favorites } = await getFavorites(username);
   console.log(username);
   console.log(favorites);
+  // *** Server-side check for reviewer role ***
 
+  // reviewerData will be an object { username, role } or null
   return (
     <div>
       <div className="flex mt-6 ">
@@ -183,12 +197,14 @@ export default async function page({ params }: CompanyDetailsProps) {
             )}
           </p>
 
-        <RecentOwnership cik={cik} />
-        <QRCodeComponent companyName={name} cik={cik} />
-        <FavoriteButton cik={cik} username={username} favorites={favorites}/>
-      </div>
-
-
+          <RecentOwnership cik={cik} />
+          <QRCodeComponent companyName={name} cik={cik} />
+          <FavoriteButton cik={cik} username={username} favorites={favorites} />
+          {/* Render the "Verify Company" button only if user is a reviewer */}
+          {reviewerData && reviewerData.role === "true" && (
+            <VerifyButton cik={cik} />
+          )}
+        </div>
 
         {/* Right side */}
 
@@ -207,6 +223,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           )}
         </div>
       </div>
+
       <footer>
         {/* Properly Citing the SEC*/}
         <p>
