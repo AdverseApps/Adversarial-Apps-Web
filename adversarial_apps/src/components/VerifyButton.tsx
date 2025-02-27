@@ -11,36 +11,36 @@ interface VerifyButtonProps {
 export default function VerifyButton({ cik }: VerifyButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  
+
   const handleVerify = async () => {
     setLoading(true);
     try {
-      const data = { action: "verify_company", cik }
+      const data = { action: "verify_company", cik };
       // Call an API route to mark the company as verified, for example:
-      const response = await fetch(`/api/call-python-api`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        }
-      );
+      const response = await fetch(`/api/call-python-api`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to verify company');
+        throw new Error("Failed to verify company");
       }
 
       const result = await response.json();
 
-      if(result.status !== "success") {
-        toast.error(`Error verifying company: ${result.message || result.error}`);
+      if (result.status !== "success") {
+        toast.error(
+          `Error verifying company: ${result.message || result.error}`
+        );
         return;
       }
       // Optionally refresh or provide feedback
       toast.success(result.message || "Company verified successfully!");
       router.refresh();
-    }  catch (error: any) {
+    } catch (error: any) {
       console.error("Verification error:", error);
       toast.error("Error verifying company. Please try again later.");
     } finally {

@@ -630,7 +630,9 @@ def verify_company(cik: str) -> dict:
         cursor = connection.cursor()
 
         # 1. Check if the company exists in COMPANIES
-        cursor.execute('SELECT "CIK", "isVerified" FROM "COMPANIES" WHERE "CIK" = %s', (cik,))
+        cursor.execute(
+            'SELECT "CIK", "isVerified" FROM "COMPANIES" WHERE "CIK" = %s', (cik,)
+        )
         row = cursor.fetchone()
 
         if row:
@@ -640,29 +642,29 @@ def verify_company(cik: str) -> dict:
                 # 2a. If company exists but isVerified is FALSE, set it to TRUE
                 cursor.execute(
                     'UPDATE "COMPANIES" SET "isVerified" = TRUE WHERE "CIK" = %s',
-                    (cik,)
+                    (cik,),
                 )
                 connection.commit()
                 return {
                     "status": "success",
-                    "message": f"Company with CIK {cik} has been verified (updated)."
+                    "message": f"Company with CIK {cik} has been verified (updated).",
                 }
             else:
                 # If it's already verified, just inform the caller
                 return {
                     "status": "success",
-                    "message": f"Company with CIK {cik} is already verified."
+                    "message": f"Company with CIK {cik} is already verified.",
                 }
         else:
             # 2b. If the company doesn't exist, insert it with isVerified = TRUE
             cursor.execute(
                 'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
-                (cik, True, 0)
+                (cik, True, 0),
             )
             connection.commit()
             return {
                 "status": "success",
-                "message": f"Company with CIK {cik} added and verified."
+                "message": f"Company with CIK {cik} added and verified.",
             }
 
     except psycopg2.Error as e:
@@ -672,7 +674,7 @@ def verify_company(cik: str) -> dict:
         if connection:
             cursor.close()
             connection.close()
-            
+
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
@@ -734,7 +736,7 @@ if __name__ == "__main__":
         elif action == "verify_company":
             # Expecting JSON like { "action": "verify_company", "cik": "0000123456" }
             result = verify_company(input_action_and_data.get("cik"))
-    
+
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}

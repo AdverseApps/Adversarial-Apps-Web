@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
-import { cookies } from 'next/headers';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { cookies } from "next/headers";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 // ================================
 // ###### Server-Side Calls #######
@@ -206,7 +206,10 @@ export async function getRiskScore(cik: string) {
 }
 
 // Function to verify login status and reviewer status by reading and decoding the auth token.
-export async function verifyUser(): Promise<{ username: string; role: string } | null> {
+export async function verifyUser(): Promise<{
+  username: string;
+  role: string;
+} | null> {
   // 1. Read the cookie directly from the request.
   const cookieToken = cookies().get("auth_token")?.value;
   if (!cookieToken) {
@@ -216,10 +219,21 @@ export async function verifyUser(): Promise<{ username: string; role: string } |
 
   // 2. Verify and decode the JWT.
   try {
-    const decoded = jwt.verify(cookieToken, process.env.JWT_SECRET!) as DecodedToken;
-    if (decoded && typeof decoded === "object" && "username" in decoded && "role" in decoded) {
+    const decoded = jwt.verify(
+      cookieToken,
+      process.env.JWT_SECRET!
+    ) as DecodedToken;
+    if (
+      decoded &&
+      typeof decoded === "object" &&
+      "username" in decoded &&
+      "role" in decoded
+    ) {
       // Log successful decoding for debugging.
-      console.log("JWT successfully verified:", { username: decoded.username, role: decoded.role });
+      console.log("JWT successfully verified:", {
+        username: decoded.username,
+        role: decoded.role,
+      });
       // Return the decoded details.
       return { username: decoded.username, role: decoded.role };
     } else {

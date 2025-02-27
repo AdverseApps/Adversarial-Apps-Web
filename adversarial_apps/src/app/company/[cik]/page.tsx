@@ -78,9 +78,9 @@ export default async function page({ params }: CompanyDetailsProps) {
   }
 
   let reviewerData;
-  try{
-     reviewerData = await verifyUser();
-     if (!reviewerData || typeof reviewerData !== "object") {
+  try {
+    reviewerData = await verifyUser();
+    if (!reviewerData || typeof reviewerData !== "object") {
       throw new Error("Invalid response from VerifyReviewer.");
     }
   } catch (error) {
@@ -111,9 +111,9 @@ export default async function page({ params }: CompanyDetailsProps) {
   const { favorites } = await getFavorites(username);
   console.log(username);
   console.log(favorites);
-// *** Server-side check for reviewer role ***
+  // *** Server-side check for reviewer role ***
 
-// reviewerData will be an object { username, role } or null
+  // reviewerData will be an object { username, role } or null
   return (
     <div>
       <div className="flex mt-6 ">
@@ -221,7 +221,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           )}
         </div>
       </div>
-       
+
       <footer>
         {/* Properly Citing the SEC*/}
         <p>
