@@ -1,12 +1,7 @@
-import { JwtPayload } from "jsonwebtoken";
 import LogoutButton from "@/components/logoutButton";
 import { UserFavoriteCompanies } from "@/components/UserFavoriteCompanies";
 import { verifyUser } from "../lib/data";
 
-interface DecodedToken extends JwtPayload {
-  username: string;
-  role: string;
-}
 
 export default async function DashboardPage() {
   let userStatus;
