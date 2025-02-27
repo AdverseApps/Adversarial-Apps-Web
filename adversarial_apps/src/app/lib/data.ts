@@ -1,8 +1,16 @@
 import { headers } from "next/headers";
+import { cookies } from 'next/headers';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // ================================
 // ###### Server-Side Calls #######
 // ================================
+// Define your decoded token interface.
+
+interface DecodedToken extends JwtPayload {
+  username: string;
+  role: string;
+}
 
 export async function FetchSecData(cik: string) {
   try {
@@ -194,5 +202,31 @@ export async function getRiskScore(cik: string) {
       status: "error",
       message: `An unexpected error occurred: ${error}`,
     };
+  }
+}
+
+// Function to verify login status and reviewer status by reading and decoding the auth token.
+export async function verifyUser(): Promise<{ username: string; role: string } | null> {
+  // 1. Read the cookie directly from the request.
+  const cookieToken = cookies().get("auth_token")?.value;
+  if (!cookieToken) {
+    console.error("No auth_token cookie found.");
+    return null;
+  }
+
+  // 2. Verify and decode the JWT.
+  try {
+    const decoded = jwt.verify(cookieToken, process.env.JWT_SECRET!) as DecodedToken;
+    if (decoded && typeof decoded === "object" && "username" in decoded && "role" in decoded) {
+      // Log successful decoding for debugging.
+      console.log("JWT successfully verified:", { username: decoded.username, role: decoded.role });
+      // Return the decoded details.
+      return { username: decoded.username, role: decoded.role };
+    } else {
+      throw new Error("Invalid token structure");
+    }
+  } catch (err) {
+    console.error("JWT verification failed:", err);
+    return null;
   }
 }
