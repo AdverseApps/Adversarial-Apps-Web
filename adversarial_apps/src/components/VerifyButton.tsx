@@ -40,7 +40,7 @@ export default function VerifyButton({ cik }: VerifyButtonProps) {
       // Optionally refresh or provide feedback
       toast.success(result.message || "Company verified successfully!");
       router.refresh();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Verification error:", error);
       toast.error("Error verifying company. Please try again later.");
     } finally {
