@@ -675,6 +675,47 @@ def verify_company(cik: str) -> dict:
             cursor.close()
             connection.close()
 
+def send_password_reset_token(email: str) -> dict:
+    """
+    Verifies that the email exists (read-only) and generates a JWT reset token
+    with a 1-hour expiration.
+    """
+    import datetime
+    import jwt
+
+    JWT_SECRET = os.getenv("JWT_SECRET")
+    if not JWT_SECRET:
+        return {"status": "error", "message": "JWT_SECRET is not set."}
+
+    connection = None
+    try:
+        #print(f"Received email: {email}")  # Debug: log email value
+        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+        # Use the correct column name for email if needed.
+        cursor.execute('SELECT username FROM "USERS" WHERE username = %s', (email,))
+        user = cursor.fetchone()
+        if not user:
+            return {"status": "error", "message": "Email not found."}
+        
+        # Generate a token that expires in 1 hour
+        expiration = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
+        payload = {
+            "email": email,
+            "exp": expiration,
+            "action": "reset_password"
+        }
+        token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+        return {"status": "success", "token": token}
+    except Exception as e:
+        # Return the error details for debugging purposes
+        return {"status": "error", "message": f"Error generating token: {str(e)}"}
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
@@ -736,7 +777,8 @@ if __name__ == "__main__":
         elif action == "verify_company":
             # Expecting JSON like { "action": "verify_company", "cik": "0000123456" }
             result = verify_company(input_action_and_data.get("cik"))
-
+        elif action == "send_reset_token":
+            result = send_password_reset_token(input_action_and_data.get("email"))
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}
