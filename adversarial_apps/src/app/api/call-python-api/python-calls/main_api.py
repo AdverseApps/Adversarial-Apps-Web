@@ -3,11 +3,13 @@ import json
 import os
 import re
 import sys
+import jwt
 
 import psycopg2
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from argon2 import PasswordHasher
 
 
 def sanitize_search_term(search_term: str) -> str:
@@ -689,7 +691,6 @@ def send_password_reset_token(email: str) -> dict:
 
     connection = None
     try:
-        #print(f"Received email: {email}")  # Debug: log email value
         connection = psycopg2.connect(os.getenv("DATABASE_URL"))
         cursor = connection.cursor()
         # Use the correct column name for email if needed.
@@ -715,6 +716,46 @@ def send_password_reset_token(email: str) -> dict:
             cursor.close()
             connection.close()
 
+ph = PasswordHasher()
+
+def reset_password(email: str, token: str, new_password: str) -> dict:
+    JWT_SECRET = os.getenv("JWT_SECRET")
+    if not JWT_SECRET:
+        return {"status": "error", "message": "JWT_SECRET is not set."}
+    
+    try:
+        import jwt  # ensure jwt is imported
+        # Decode and verify the token
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        if payload.get("action") != "reset_password":
+            return {"status": "error", "message": "Invalid token action."}
+        if payload.get("email") != email:
+            return {"status": "error", "message": "Email does not match token."}
+    except jwt.ExpiredSignatureError:
+        return {"status": "error", "message": "Token expired."}
+    except Exception as e:
+        return {"status": "error", "message": f"Token error: {str(e)}"}
+    
+    # Hash the new password using argon2-cffi
+    try:
+        hashed_password = ph.hash(new_password)
+    except Exception as e:
+        return {"status": "error", "message": f"Error hashing password: {str(e)}"}
+    
+    # Update the password in the USERS table
+    connection = None
+    try:
+        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+        cursor.execute('UPDATE "USERS" SET password = %s WHERE username = %s', (hashed_password, email))
+        connection.commit()
+        return {"status": "success", "message": "Password reset successfully."}
+    except Exception as e:
+        return {"status": "error", "message": f"Database error: {str(e)}"}
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
 
 
 # the call-python-api will call it here, and provides the inputActionAndData
@@ -779,6 +820,12 @@ if __name__ == "__main__":
             result = verify_company(input_action_and_data.get("cik"))
         elif action == "send_reset_token":
             result = send_password_reset_token(input_action_and_data.get("email"))
+        elif action == "reset_password":
+            result = reset_password(
+                input_action_and_data.get("email"),
+                input_action_and_data.get("token"),
+                input_action_and_data.get("newPassword")
+            )
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}
