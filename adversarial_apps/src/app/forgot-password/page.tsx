@@ -2,18 +2,18 @@
 'use client';
 import { FormEvent, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
       const response = await fetch('/api/forgot-password', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
       const data = await response.json();
@@ -22,6 +22,8 @@ export default function ForgotPasswordPage() {
         toast.error(data.error || 'Failed to send reset token.');
       } else {
         toast.success(data.message || 'Reset token sent. Please check your email.');
+        // Navigate to the reset password page
+        router.push('/reset-password');
       }
     } catch (error) {
       console.error('Error submitting forgot password:', error);
