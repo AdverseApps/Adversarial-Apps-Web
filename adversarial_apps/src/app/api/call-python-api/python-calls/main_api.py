@@ -676,6 +676,43 @@ def verify_company(cik: str) -> dict:
             connection.close()
 
 
+def update_company_score (cik: str, risk_score: int) -> dict:
+    """
+    Update the risk score for a company based on the CIK number.
+
+    :param cik: CIK number of the company
+    :param risk_score: New risk score for the company
+    :return: Dictionary containing the updated risk score
+    """
+    try:
+        with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
+            with connection.cursor() as cursor:
+
+                # checks if company is in the database and if not adds them
+                cursor.execute('SELECT 1 FROM "COMPANIES" WHERE "CIK" = %s', (cik,))
+                company_exists = cursor.fetchone()
+
+                if not company_exists:
+                    cursor.execute(
+                        'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
+                        (cik, False, 0),
+                    )
+                    connection.commit()
+
+                # Update the risk score for the company and sets it to be verified
+                cursor.execute(
+                    'UPDATE "COMPANIES" SET "riskScore" = %s, "isVerified" = TRUE WHERE "CIK" = %s',
+                    (risk_score, cik),
+                )
+
+                return {
+                    "status": "success",
+                    "message": f"Risk score updated for company with CIK {cik}.",
+                }
+
+    except psycopg2.Error as e:
+        return {"status": "error", "message": f"Database error: {e}"}
+
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
 if __name__ == "__main__":
@@ -736,6 +773,13 @@ if __name__ == "__main__":
         elif action == "verify_company":
             # Expecting JSON like { "action": "verify_company", "cik": "0000123456" }
             result = verify_company(input_action_and_data.get("cik"))
+
+        elif action == "update_company_score":
+            # Expecting JSON like { "action": "update_company_score", "cik": "0000123456", "risk_score": 3 }
+            result = update_company_score(
+                input_action_and_data.get("cik"),
+                input_action_and_data.get("risk_score"),
+            )
 
         else:
             # Process the input data_
