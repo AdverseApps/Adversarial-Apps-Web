@@ -3,7 +3,6 @@ import json
 import os
 import re
 import sys
-import jwt
 
 import psycopg2
 import requests
