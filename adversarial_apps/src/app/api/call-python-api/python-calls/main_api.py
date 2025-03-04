@@ -6,9 +6,9 @@ import sys
 
 import psycopg2
 import requests
+from argon2 import PasswordHasher
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from argon2 import PasswordHasher
 
 
 def sanitize_search_term(search_term: str) -> str:
