@@ -63,7 +63,7 @@ export default async function DashboardPage() {
           favoritesData.map((item, index) => {
             const company = item.data?.company;
             return company ? (
-              <UserFavoriteCompanies key={index} cik={item.cik} company={company} />
+              <UserFavoriteCompanies key={index} cik={item.cik} company={company} username={userStatus.username}/>
             ) : null;
           })
         ) : (

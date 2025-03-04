@@ -49,11 +49,11 @@ export const QRCodeComponent = (props: QRCodeProps) => {
 
       {isModalOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center resize-none"
+          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center resize-none z-50"
           onClick={closeModal}
         >
           <div
-            className="bg-white p-4 rounded-lg flex flex-col items-center"
+            className="bg-white p-4 rounded-lg flex flex-col items-center z-50"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col items-center break-words">
