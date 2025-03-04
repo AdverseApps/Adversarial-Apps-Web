@@ -1,53 +1,58 @@
 'use client';
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-interface props {
-    username: string | null;
-}
+interface Company {
+    name?: string;
+    address?: string;
+    street2?: string;
+    city?: string;
+    zipCode?: string;
+    stateOrCountryDescription?: string;
+    stateOfIncorporation?: string;
+    mostRecentFilingDate?: string;
+    phone?: string;
+  }
+  
+  interface FavoriteCompanyProps {
+    cik: string;
+    company: Company;
+  }
 
 // Component for displaying favorites
-export const UserFavoriteCompanies = (props: props) => {
-    const { username } = props;
-    const [favorites, setFavorites] = useState<string[]>([]);
+export const UserFavoriteCompanies = ({ cik, company }: FavoriteCompanyProps) => {
+     const [isOpen, setIsOpen] = useState(false);
 
-    // getting favorites
-    const getFavorites = async (username: string | null) => {
-        if (!username) {
-            return;
-        }
-        const response = await fetch('/api/call-python-api', {
-            method: "POST",
-            body: JSON.stringify({
-                "action": "get_favorites", "username": username
-            }),
-        });
-        if (response.ok) {
-            const data = await response.json();
-            setFavorites(data.favorites);
-            console.log(data.favorites);
-        } else {
-            console.error("Error getting favorites");
-        }
-    }
+  const toggleAccordion = () => {
+    setIsOpen(!isOpen);
+  };
 
-    // calling function to get favorites
-    useEffect(() => {
-        getFavorites(username);
-    }, [username]);
+  const formattedAddress = company
+    ? `${company.address || "N/A"}${company.street2 ? `, ${company.street2}` : ""}, ${company.city || "N/A"}, ${company.stateOrCountryDescription || "N/A"} ${company.zipCode || "N/A"}`
+    : "N/A";
 
-    return (
-        <div className="bg-gray-700 rounded-xl p-4 shadow-md">
-            <h1 className="text-xl font-bold mb-4">Favorite Companies:</h1>
-            {favorites.length > 0 ? (
-                favorites.map((company, index) => (
-                    <p key={index} className="underline">
-                        <Link href={`/company/${company}`}>{company}</Link>
-                    </p>
-                ))
-            ) : (
-                <p>No favorite companies.</p>
-            )}
+  return (
+    <div className="mb-2 border border-gray-500 rounded-lg overflow-hidden">
+      {/* Accordion Header */}
+      <button
+        className="w-full bg-blue-900 p-4 flex justify-between items-center text-white font-semibold"
+        onClick={toggleAccordion}
+      >
+        <span>{company?.name || "Unknown Company"}</span>
+        <span>{isOpen ? "▲" : "▼"}</span>
+        
+      </button>
+
+      {/* Accordion Content */}
+      {isOpen && (
+        <div className="p-4 bg-blue-800 text-white">
+          <p><strong>CIK:</strong> {cik}</p>
+          <p><strong>Address:</strong> {formattedAddress}</p>
+          <p><strong>State of Incorporation:</strong> {company?.stateOfIncorporation || "N/A"}</p>
+          <p><strong>Phone:</strong> {company?.phone || "N/A"}</p>
+          <p><strong>Most Recent Filing Date:</strong> {company?.mostRecentFilingDate || "N/A"}</p>
         </div>
-    );
+      )}
+    </div>
+  );
 }
