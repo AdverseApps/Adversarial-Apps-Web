@@ -677,6 +677,7 @@ def verify_company(cik: str) -> dict:
             cursor.close()
             connection.close()
 
+
 def send_password_reset_token(email: str) -> dict:
     """
     Verifies that the email exists (read-only) and generates a JWT reset token
@@ -697,14 +698,12 @@ def send_password_reset_token(email: str) -> dict:
         user = cursor.fetchone()
         if not user:
             return {"status": "error", "message": "Email not found."}
-        
+
         # Generate a token that expires in 1 hour
-        expiration = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
-        payload = {
-            "email": email,
-            "exp": expiration,
-            "action": "reset_password"
-        }
+        expiration = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+            hours=1
+        )
+        payload = {"email": email, "exp": expiration, "action": "reset_password"}
         token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
         return {"status": "success", "token": token}
     except Exception as e:
@@ -715,15 +714,18 @@ def send_password_reset_token(email: str) -> dict:
             cursor.close()
             connection.close()
 
+
 ph = PasswordHasher()
+
 
 def reset_password(email: str, token: str, new_password: str) -> dict:
     JWT_SECRET = os.getenv("JWT_SECRET")
     if not JWT_SECRET:
         return {"status": "error", "message": "JWT_SECRET is not set."}
-    
+
     try:
         import jwt  # ensure jwt is imported
+
         # Decode and verify the token
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
         if payload.get("action") != "reset_password":
@@ -734,18 +736,21 @@ def reset_password(email: str, token: str, new_password: str) -> dict:
         return {"status": "error", "message": "Token expired."}
     except Exception as e:
         return {"status": "error", "message": f"Token error: {str(e)}"}
-    
+
     try:
         hashed_password = ph.hash(new_password)
     except Exception as e:
         return {"status": "error", "message": f"Error hashing password: {str(e)}"}
-    
+
     # Update the password in the USERS table
     connection = None
     try:
         connection = psycopg2.connect(os.getenv("DATABASE_URL"))
         cursor = connection.cursor()
-        cursor.execute('UPDATE "USERS" SET password = %s WHERE username = %s', (hashed_password, email))
+        cursor.execute(
+            'UPDATE "USERS" SET password = %s WHERE username = %s',
+            (hashed_password, email),
+        )
         connection.commit()
         return {"status": "success", "message": "Password reset successfully."}
     except Exception as e:
@@ -822,7 +827,7 @@ if __name__ == "__main__":
             result = reset_password(
                 input_action_and_data.get("email"),
                 input_action_and_data.get("token"),
-                input_action_and_data.get("newPassword")
+                input_action_and_data.get("newPassword"),
             )
         else:
             # Process the input data_
