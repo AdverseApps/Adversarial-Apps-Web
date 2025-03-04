@@ -32,10 +32,11 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleSubmit} className="p-8 bg-gray-800 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold text-white mb-4">Forgot Password</h2>
-        <label htmlFor="email" className="block text-white mb-2">
+    <main className="flex items-center justify-center">
+    <div className="w-full max-w-md p-8 bg-blue-900 rounded shadow-md">
+    <h2 className="text-2xl font-bold text-center text-white">Forgot Password</h2>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <label htmlFor="email" className="block text-sm font-medium text-white">
           Enter your email address
         </label>
         <input 
@@ -43,14 +44,15 @@ export default function ForgotPasswordPage() {
           id="email"
           value={email} 
           onChange={(e) => setEmail(e.target.value)} 
-          className="w-full p-2 mb-4 rounded border border-gray-300"
+          className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
           placeholder="your-email@example.com"
           required
         />
-        <button type="submit" className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+        <button type="submit" className="w-full py-2 text-black bg-blue-300 rounded-md hover:bg-blue-400">
           Send Reset Token
         </button>
       </form>
     </div>
+    </main>
   );
 }
