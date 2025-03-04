@@ -64,7 +64,7 @@ const ModulesContainer: React.FC = () => {
             <Module title="Module 5: FOCI">
                 <ul className="list-none">
                     <li><Link href = "education/foci/page">FOCI: Main Information</Link></li>
-                    <li><Link href = "education/foci/resources">FOCI: Main Information</Link></li>
+                    <li><Link href = "education/foci/resources">FOCI: Resources</Link></li>
                 </ul>
             </Module>
         </div>
