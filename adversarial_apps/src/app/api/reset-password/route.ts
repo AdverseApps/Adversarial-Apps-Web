@@ -1,6 +1,4 @@
-// app/api/reset-password/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import argon2 from 'argon2';
 import { headers } from 'next/headers';
 
 export async function POST(req: NextRequest) {
