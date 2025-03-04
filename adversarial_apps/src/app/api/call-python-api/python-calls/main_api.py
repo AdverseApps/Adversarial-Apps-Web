@@ -693,7 +693,6 @@ def send_password_reset_token(email: str) -> dict:
     try:
         connection = psycopg2.connect(os.getenv("DATABASE_URL"))
         cursor = connection.cursor()
-        # Use the correct column name for email if needed.
         cursor.execute('SELECT username FROM "USERS" WHERE username = %s', (email,))
         user = cursor.fetchone()
         if not user:
@@ -736,7 +735,6 @@ def reset_password(email: str, token: str, new_password: str) -> dict:
     except Exception as e:
         return {"status": "error", "message": f"Token error: {str(e)}"}
     
-    # Hash the new password using argon2-cffi
     try:
         hashed_password = ph.hash(new_password)
     except Exception as e:

@@ -1,4 +1,3 @@
-// app/forgot-password/page.tsx
 'use client';
 import { FormEvent, useState } from 'react';
 import { toast } from 'react-toastify';

@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Call the Python API with the new action "send_reset_token"
+    // Call the Python API with the action "send_reset_token"
     const data = { action: "send_reset_token", email };
     const headersList = headers();
     const domain = headersList.get('host');
@@ -20,9 +20,6 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(data)
     });
     const dbResult = await pythonResponse.json();
-
-    // Log the full response for debugging purposes
-    console.log('Python API response:', dbResult);
 
     if (dbResult.status !== "success") {
       // Forward the exact error message from the Python API to the client
@@ -36,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     // Setup Nodemailer transporter using environment variables
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST, // e.g., smtp.gmail.com
+      host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT || 587),
       auth: {
         user: process.env.SMTP_USER,
@@ -45,7 +42,7 @@ export async function POST(req: NextRequest) {
     });
 
     const mailOptions = {
-      from: process.env.SMTP_FROM_EMAIL, // your "from" email address
+      from: process.env.SMTP_FROM_EMAIL,
       to: email,
       subject: 'Your Password Reset Token',
       text: `Your password reset token is:\n\n${token}\n\nThis token is valid for 1 hour.`,
