@@ -36,17 +36,18 @@ export const UserFavoriteCompanies = (props: props) => {
         getFavorites(username);
     }, [username]);
 
-
     return (
-        <div>
-            <h1>Favorite Companies:</h1>
+        <div className="bg-gray-700 rounded-xl p-4 shadow-md">
+            <h1 className="text-xl font-bold mb-4">Favorite Companies:</h1>
             {favorites.length > 0 ? (
                 favorites.map((company, index) => (
-                    <p key={index} className="underline"><Link href={`/company/${company}`}>{company}</Link></p>
+                    <p key={index} className="underline">
+                        <Link href={`/company/${company}`}>{company}</Link>
+                    </p>
                 ))
             ) : (
                 <p>No favorite companies.</p>
             )}
         </div>
-    )
+    );
 }

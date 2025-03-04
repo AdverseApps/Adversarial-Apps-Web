@@ -1,7 +1,8 @@
 import LogoutButton from "@/components/logoutButton";
 import { UserFavoriteCompanies } from "@/components/UserFavoriteCompanies";
 import { verifyUser } from "../lib/data";
-
+import { FetchSecData, getFavorites } from "../lib/data";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   let userStatus;
@@ -27,14 +28,26 @@ export default async function DashboardPage() {
     );
   }
 
+  // Getting CIK of Favorites
+  const { favorites } = await getFavorites(userStatus.username);
+
+  // Getting company data
+  const favoritesData = await Promise.all(
+    favorites.map(async (cik: string) => {
+      try {
+        const result = await FetchSecData(cik);
+        return { cik, data: result };
+      } catch (error) {
+        console.error(`Error fetching SEC data for CIK ${cik}:`, error);
+        return { cik, data: null };
+      }
+    })
+  );
+
   return (
     <div>
-      <h1>Protected Page</h1>
-      <p>Only accessible if you are logged in with a valid JWT.</p>
-      <br />
-
       {/* Display username */}
-      <p>Welcome, {userStatus.username}!</p>
+      <p className="text-2xl font-bold">Welcome, {userStatus.username}!</p>
       <br />
 
       {/* Display Favorite Companies */}
@@ -47,6 +60,42 @@ export default async function DashboardPage() {
           <button>Special Reviewer Action</button>
         </div>
       )}
+      {/* Display Favorite Companies with SEC Data */}
+      <div className="bg-gray-700 rounded-xl p-4 shadow-md">
+        <h1 className="text-xl font-bold mb-4">Favorite Companies:</h1>
+        {favoritesData.length > 0 ? (
+          favoritesData.map((item, index) => {
+            const company = item.data?.company;
+            const formattedAddress = company
+              ? `${company.address || "N/A"}${company.street2 ? `, ${company.street2}` : ""}, ${company.city || "N/A"}, ${company.stateOrCountryDescription || "N/A"} ${company.zipCode || "N/A"}`
+              : "N/A";
+
+            return (
+              <div key={index} className="mb-4 p-4 border border-gray-500 rounded-lg">
+                <p className="underline text-lg font-semibold">
+                  <Link href={`/company/${item.cik}`}>CIK: {item.cik}</Link>
+                </p>
+
+                {company ? (
+                  <div>
+                    <p><strong>Name:</strong> {company.name || "N/A"}</p>
+                    <p><strong>Address:</strong> {formattedAddress}</p>
+                    <p><strong>State of Incorporation:</strong> {company.stateOfIncorporation || "N/A"}</p>
+                    <p><strong>Phone:</strong> {company.phone || "N/A"}</p>
+                    <p><strong>Most Recent Filing Date:</strong> {company.mostRecentFilingDate || "N/A"}</p>
+                  </div>
+                ) : (
+                  <p>No company data available</p>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <p>No favorite companies.</p>
+        )}
+      </div>
+
+
 
       {/* Logout button */}
       {/* Only the logout button needs interactivity */}
