@@ -4,6 +4,9 @@ export default function page(){
         <main aria-label="main-content">
             <h1 className="text-6xl font-bold pl-5">Forms and Resources</h1>
             
+            <p className = "pl-5"><br />Resource pages are subject to the addition or removal of content 
+                depending on relevance and effects of current legislation.</p>
+
             <p className = "pl-5"><br />CFR Title 15 Full Documentation:
                 <a href="https://www.ecfr.gov/current/title-15/" target="_blank"> <u>Click here for link</u></a></p>
             <p className = "pl-5"><br />CFR Title 15, Part 791 Documentation:
