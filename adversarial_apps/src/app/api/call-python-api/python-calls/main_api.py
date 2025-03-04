@@ -683,6 +683,7 @@ def send_password_reset_token(email: str) -> dict:
     with a 1-hour expiration.
     """
     import datetime
+
     import jwt
 
     JWT_SECRET = os.getenv("JWT_SECRET")
