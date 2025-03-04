@@ -1,6 +1,7 @@
 'use client';
 import Link from "next/link";
 import { useState } from "react";
+import { QRCodeComponent } from "./QR";
 
 interface Company {
     name?: string;
@@ -12,47 +13,54 @@ interface Company {
     stateOfIncorporation?: string;
     mostRecentFilingDate?: string;
     phone?: string;
-  }
-  
-  interface FavoriteCompanyProps {
+}
+
+interface FavoriteCompanyProps {
     cik: string;
     company: Company;
-  }
+}
 
 // Component for displaying favorites
 export const UserFavoriteCompanies = ({ cik, company }: FavoriteCompanyProps) => {
-     const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
-  const toggleAccordion = () => {
-    setIsOpen(!isOpen);
-  };
+    const toggleAccordion = () => {
+        setIsOpen(!isOpen);
+    };
 
-  const formattedAddress = company
-    ? `${company.address || "N/A"}${company.street2 ? `, ${company.street2}` : ""}, ${company.city || "N/A"}, ${company.stateOrCountryDescription || "N/A"} ${company.zipCode || "N/A"}`
-    : "N/A";
+    // Stopping accordion from opening when QR is clicked
+    const handleQRCodeClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); 
+    };
 
-  return (
-    <div className="mb-2 border border-gray-500 rounded-lg overflow-hidden">
-      {/* Accordion Header */}
-      <button
-        className="w-full bg-blue-900 p-4 flex justify-between items-center text-white font-semibold"
-        onClick={toggleAccordion}
-      >
-        <span>{company?.name || "Unknown Company"}</span>
-        <span>{isOpen ? "▲" : "▼"}</span>
-        
-      </button>
+    const formattedAddress = company
+        ? `${company.address || "N/A"}${company.street2 ? `, ${company.street2}` : ""}, ${company.city || "N/A"}, ${company.stateOrCountryDescription || "N/A"} ${company.zipCode || "N/A"}`
+        : "N/A";
 
-      {/* Accordion Content */}
-      {isOpen && (
-        <div className="p-4 bg-blue-800 text-white">
-          <p><strong>CIK:</strong> {cik}</p>
-          <p><strong>Address:</strong> {formattedAddress}</p>
-          <p><strong>State of Incorporation:</strong> {company?.stateOfIncorporation || "N/A"}</p>
-          <p><strong>Phone:</strong> {company?.phone || "N/A"}</p>
-          <p><strong>Most Recent Filing Date:</strong> {company?.mostRecentFilingDate || "N/A"}</p>
+    return (
+        <div className="mb-2 border border-gray-500 rounded-lg overflow-hidden">
+            {/* Accordion Header */}
+            <div
+                className="w-full bg-blue-900 p-4 flex justify-between items-center text-white font-semibold"
+                onClick={toggleAccordion}
+            >
+                <span>{company?.name || "Unknown Company"}</span>
+                <div onClick={handleQRCodeClick} className="cursor-pointer text-white">
+                    <QRCodeComponent companyName={company.name || ''} cik={cik} displayIconOnly={true} />
+                </div>
+                <span>{isOpen ? "▲" : "▼"}</span>
+            </div>
+
+            {/* Accordion Content */}
+            {isOpen && (
+                <div className="p-4 bg-blue-800 text-white">
+                    <p><strong>CIK:</strong> {cik}</p>
+                    <p><strong>Address:</strong> {formattedAddress}</p>
+                    <p><strong>State of Incorporation:</strong> {company?.stateOfIncorporation || "N/A"}</p>
+                    <p><strong>Phone:</strong> {company?.phone || "N/A"}</p>
+                    <p><strong>Most Recent Filing Date:</strong> {company?.mostRecentFilingDate || "N/A"}</p>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }
