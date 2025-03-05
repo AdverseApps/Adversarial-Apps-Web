@@ -1,7 +1,9 @@
+import html
 import re
+
 import requests
 from bs4 import BeautifulSoup
-import html
+
 
 def sanitize_and_validate_cik(cik: str) -> str:
     """
@@ -114,6 +116,7 @@ def get_sec_data(cik: str) -> dict:
             "message": f"Unable to retrieve data for CIK {sanitized_cik} (Status Code: {response.status_code})",
         }
 
+
 def get_recent_ownerships(cik: str, pagination: int) -> dict:
     """
     Retrieve recent ownerships for a company based on the CIK number.
@@ -220,6 +223,7 @@ def get_recent_ownerships(cik: str, pagination: int) -> dict:
             "message": f"Unable to retrieve recent fillings for CIK {cik} (Status Code: {response.status_code})",
         }
 
+
 def get_def_url(cik: str) -> str:
     """
     Retrieve the URL for the most recent DEF form for a company based on the CIK number.
@@ -234,7 +238,7 @@ def get_def_url(cik: str) -> str:
     headers = {
         "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
         "Accept": "application/json",
-        "Accept-Encoding": "gzip, deflate"
+        "Accept-Encoding": "gzip, deflate",
     }
 
     response = requests.get(url, headers=headers)
@@ -265,10 +269,7 @@ def get_def_url(cik: str) -> str:
             url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{filtered_forms[0]['accessionNumber'].replace('-', '')}/{filtered_forms[0]['accessionNumber']}"
 
             # returns the url as part of the success
-            return {
-                "status": "success",
-                "url": url
-            }
+            return {"status": "success", "url": url}
         except Exception as e:
             return {"status": "error", "message": f"An error occurred: {str(e)}"}
 
@@ -287,7 +288,7 @@ def get_total_common_stocks(cik: str) -> dict:
     headers = {
         "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
         "Accept": "application/json",
-        "Accept-Encoding": "gzip, deflate"
+        "Accept-Encoding": "gzip, deflate",
     }
 
     response = requests.get(url, headers=headers)
@@ -298,13 +299,12 @@ def get_total_common_stocks(cik: str) -> dict:
             data = response.json()
 
             # Grabs the total common stocks
-            total_common_stocks = data["facts"]["us-gaap"]["CommonStockSharesIssued"]["units"]["shares"][-1]["val"]
+            total_common_stocks = data["facts"]["us-gaap"]["CommonStockSharesIssued"][
+                "units"
+            ]["shares"][-1]["val"]
 
             # returns the total common stocks as part of the success
-            return {
-                "status": "success",
-                "totalCommonStocks": total_common_stocks
-            }
+            return {"status": "success", "totalCommonStocks": total_common_stocks}
 
         except Exception as e:
             return {"status": "error", "message": f"An error occurred: {str(e)}"}

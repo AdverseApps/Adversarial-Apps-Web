@@ -1,7 +1,9 @@
+import html
 import re
+
 import requests
 from bs4 import BeautifulSoup
-import html
+
 
 def sanitize_search_term(search_term: str) -> str:
     """
@@ -27,6 +29,7 @@ def sanitize_search_term(search_term: str) -> str:
     sanitized_term = html.escape(sanitized_term)
 
     return sanitized_term
+
 
 def obtain_cik_number(search_term: str) -> dict:
     """

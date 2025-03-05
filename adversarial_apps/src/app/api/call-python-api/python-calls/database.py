@@ -1,5 +1,7 @@
 import os
+
 import psycopg2
+
 
 def add_user(username: str, password_hashed: str, company: str) -> dict:
     """
@@ -314,8 +316,6 @@ def get_company_score(cik: str) -> dict:
         return {"status": "error", "message": f"Database error: {e}"}
 
 
-
-
 def verify_company(cik: str) -> dict:
     """
     Verify a company by its CIK. If the CIK doesn't exist in COMPANIES,
@@ -377,7 +377,7 @@ def verify_company(cik: str) -> dict:
             connection.close()
 
 
-def update_company_score (cik: str, risk_score: int) -> dict:
+def update_company_score(cik: str, risk_score: int) -> dict:
     """
     Update the risk score for a company based on the CIK number.
 
