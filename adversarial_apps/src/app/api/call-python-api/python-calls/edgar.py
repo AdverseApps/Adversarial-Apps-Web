@@ -219,3 +219,92 @@ def get_recent_ownerships(cik: str, pagination: int) -> dict:
             "status": "error",
             "message": f"Unable to retrieve recent fillings for CIK {cik} (Status Code: {response.status_code})",
         }
+
+def get_def_url(cik: str) -> str:
+    """
+    Retrieve the URL for the most recent DEF form for a company based on the CIK number.
+
+    :param cik: CIK number of the company
+    :return: URL for the DEF form
+    """
+
+    # obtains the .json file from the SEC website
+    url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+
+    headers = {
+        "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
+        "Accept": "application/json",
+        "Accept-Encoding": "gzip, deflate"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        try:
+            # Parse the JSON response to grab form information
+            data = response.json()
+
+            recent = data.get("filings", {}).get("recent", {})
+            forms = recent.get("form", [])
+            accession_numbers = recent.get("accessionNumber", [])
+
+            # Grabs the most recent DEF 14 A forms
+            form_indices = [i for i, form in enumerate(forms) if form == "DEF 14A"]
+
+            # Connects forms DEF with their respective accession numbers
+            # for ease of reference
+            filtered_forms = [
+                {
+                    "form": forms[i],
+                    "accessionNumber": accession_numbers[i],
+                }
+                for i in form_indices
+            ]
+
+            # url is based off cik without zeros and modified accession number in url following pattern below
+            url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{filtered_forms[0]['accessionNumber'].replace('-', '')}/{filtered_forms[0]['accessionNumber']}"
+
+            # returns the url as part of the success
+            return {
+                "status": "success",
+                "url": url
+            }
+        except Exception as e:
+            return {"status": "error", "message": f"An error occurred: {str(e)}"}
+
+
+def get_total_common_stocks(cik: str) -> dict:
+    """
+    Retrieve the total common stocks for a company based on the CIK number.
+
+    :param cik: CIK number of the company
+    :return: Dictionary containing the total common stocks
+    """
+
+    # obtains the .json file from the SEC website
+    url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
+
+    headers = {
+        "User-Agent": "JamesAllen <ja799793@ucf.edu> (Adversarial Apps)",
+        "Accept": "application/json",
+        "Accept-Encoding": "gzip, deflate"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        try:
+            # Parse the JSON response to grab form information
+            data = response.json()
+
+            # Grabs the total common stocks
+            total_common_stocks = data["facts"]["us-gaap"]["CommonStockSharesIssued"]["units"]["shares"][-1]["val"]
+
+            # returns the total common stocks as part of the success
+            return {
+                "status": "success",
+                "totalCommonStocks": total_common_stocks
+            }
+
+        except Exception as e:
+            return {"status": "error", "message": f"An error occurred: {str(e)}"}

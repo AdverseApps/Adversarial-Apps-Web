@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
 from search import obtain_cik_number
-from edgar import get_sec_data, get_recent_ownerships
+from edgar import get_sec_data, get_recent_ownerships, get_total_common_stocks, get_def_url
 from database import (
     add_user,
     get_password,
@@ -89,6 +89,12 @@ if __name__ == "__main__":
                 input_action_and_data.get("cik"),
                 input_action_and_data.get("risk_score"),
             )
+        elif action == "get_def_url":
+            # Expecting JSON like { "action": "get_def_url", "cik": "0000123456" }
+            result = get_def_url(input_action_and_data.get("cik"))
+        elif action == "get_total_common_stocks":
+            # Expecting JSON like { "action": "get_total_common_stocks", "cik": "0000123456" }
+            result = get_total_common_stocks(input_action_and_data.get("cik"))
 
         else:
             # Process the input data_
