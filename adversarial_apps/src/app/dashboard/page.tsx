@@ -1,8 +1,9 @@
 import LogoutButton from "@/components/logoutButton";
-import { UserFavoriteCompanies } from "@/components/UserFavoriteCompanies";
+import { FavoriteCompaniesAccordion } from "@/components/FavoriteCompaniesAccordion";
 import { verifyUser } from "../lib/data";
 import { FetchSecData, getFavorites, getRiskScore } from "../lib/data";
 import Link from "next/link";
+
 
 export default async function DashboardPage() {
   let userStatus;
@@ -63,7 +64,7 @@ export default async function DashboardPage() {
           favoritesData.map((item, index) => {
             const company = item.data?.company;
             return company ? (
-              <UserFavoriteCompanies key={index} cik={item.cik} company={company} username={userStatus.username}/>
+              <FavoriteCompaniesAccordion key={index} cik={item.cik} company={company} username={userStatus.username}/>
             ) : null;
           })
         ) : (

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { QRCodeComponent } from "./QR";
 import Image from "next/image";
 
+
 interface Company {
     name?: string;
     address?: string;
@@ -40,6 +41,7 @@ const RemoveFavorite = ({ username, cik, company }: { username: string; cik: str
             if (response.ok) {
                 console.log("Removed Successfully");
                 setIsModalOpen(false); // Close modal after successful removal
+                window.location.reload(); // refreshing page
             }
         } catch (error) {
             console.error("Error adding/removing favorite:", error);
@@ -85,7 +87,7 @@ const RemoveFavorite = ({ username, cik, company }: { username: string; cik: str
   };
 
 // Component for displaying favorites
-export const UserFavoriteCompanies = ({ cik, company, username }: FavoriteCompanyProps) => {
+export const FavoriteCompaniesAccordion = ({ cik, company, username }: FavoriteCompanyProps) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleAccordion = () => {
