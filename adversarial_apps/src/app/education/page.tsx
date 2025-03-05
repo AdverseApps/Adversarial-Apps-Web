@@ -36,35 +36,35 @@ const Module: React.FC<ModuleProps> = ({ title, children }) => {
 {/* list of modules; can be further expanded later via adding new pages to each list */}
 const ModulesContainer: React.FC = () => {
     return (
-        <div className="modules-container pt-4">
+        <div className="modules-container pt-4 justify-evenly align-middle">
             <Module title="Module 1: CFR Title 15">
                 <ul className="list-none">
-                    <li><Link href = "education/cfr-title-15">CFR Title 15: Main Information</Link></li>
+                    <li><Link href = "education/cfr-title-15/page">CFR Title 15: Main Information</Link></li>
+                    <li><Link href = "education/cfr-title-15/resources">CFR Title 15: Resources</Link></li>
                 </ul>
             </Module>
             <Module title="Module 2: SAM Compliance">
                 <ul className="list-none">
-                    <li><Link href = "education/sam-compliance">SAM Compliance: Main Information</Link></li>
+                    <li><Link href = "education/sam-compliance/page">SAM Compliance: Main Information</Link></li>
+                    <li><Link href = "education/sam-compliance/resources">SAM Compliance: Resources</Link></li>
                 </ul>
             </Module>
             <Module title="Module 3: SBIR Due Diligence">
                 <ul className="list-none">
-                    <li><Link href = "education/sbir-due-diligence">SBIR Due Diligence: Main Information</Link></li>
+                    <li><Link href = "education/sbir-due-diligence/page">SBIR Due Diligence: Main Information</Link></li>
+                    <li><Link href = "education/sbir-due-diligence/resources">SBIR Due Diligence: Resources</Link></li>
                 </ul>
             </Module>
             <Module title="Module 4: CMMC">
                 <ul className="list-none">
-                    <li><Link href = "education/cmmc">CMMC 2.0: Main Information</Link></li>
+                    <li><Link href = "education/cmmc/page">CMMC 2.0: Main Information</Link></li>
+                    <li><Link href = "education/cmmc/resources">CMMC 2.0: Resources</Link></li>
                 </ul>
             </Module>
             <Module title="Module 5: FOCI">
                 <ul className="list-none">
-                    <li><Link href = "education/foci">FOCI: Main Information</Link></li>
-                </ul>
-            </Module>
-            <Module title="Module 6: Resources">
-                <ul className="list-none">
-                    <li><Link href = "education/resources">Forms & Links</Link></li>
+                    <li><Link href = "education/foci/page">FOCI: Main Information</Link></li>
+                    <li><Link href = "education/foci/resources">FOCI: Resources</Link></li>
                 </ul>
             </Module>
         </div>
