@@ -85,7 +85,7 @@ const RemoveFavorite = ({ username, cik, company }: { username: string; cik: str
             )}
         </>
     );
-  };
+};
 
 // Component for displaying favorites
 export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }: FavoriteCompanyProps) => {
@@ -112,13 +112,16 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
                 onClick={toggleAccordion}
             >
                 <span>{company?.name || "Unknown Company"}</span>
+                {riskScore !== -1 && (
+                    <Image src={"/check.png"} alt="Verified Company" width={30} height={20} />
+                )}
+                <span>{riskScore === -1 ? "Unverified" : riskScore}</span>
+                <div onClick={handleQRCodeClick} className="cursor-pointer text-white">
+                    <RemoveFavorite username={username} cik={cik} company={company.name || "this company"} />
+                </div>
                 <div onClick={handleQRCodeClick} className="cursor-pointer text-white">
                     <QRCodeComponent companyName={company.name || ''} cik={cik} displayIconOnly={true} />
                 </div>
-                <div onClick={handleQRCodeClick} className="cursor-pointer text-white">
-                    <RemoveFavorite username={username} cik={cik} company={company.name || "this company"}/>
-                </div>
-                <span>{riskScore === -1 ? "Unverified" : riskScore}</span>
                 <span>{isOpen ? "▲" : "▼"}</span>
             </div>
 
