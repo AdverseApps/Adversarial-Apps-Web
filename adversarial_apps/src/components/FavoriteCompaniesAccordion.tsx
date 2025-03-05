@@ -21,6 +21,7 @@ interface FavoriteCompanyProps {
     cik: string;
     company: Company;
     username: string;
+    riskScore: number | null;
 }
 
 // function for handling when the user clicks 'add to favorites' button
@@ -87,7 +88,7 @@ const RemoveFavorite = ({ username, cik, company }: { username: string; cik: str
   };
 
 // Component for displaying favorites
-export const FavoriteCompaniesAccordion = ({ cik, company, username }: FavoriteCompanyProps) => {
+export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }: FavoriteCompanyProps) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleAccordion = () => {
@@ -117,6 +118,7 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username }: FavoriteC
                 <div onClick={handleQRCodeClick} className="cursor-pointer text-white">
                     <RemoveFavorite username={username} cik={cik} company={company.name || "this company"}/>
                 </div>
+                <span>{riskScore === -1 ? "Unverified" : riskScore}</span>
                 <span>{isOpen ? "▲" : "▼"}</span>
             </div>
 

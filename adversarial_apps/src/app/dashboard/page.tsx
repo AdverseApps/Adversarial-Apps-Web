@@ -37,10 +37,16 @@ export default async function DashboardPage() {
     favorites.map(async (cik: string) => {
       try {
         const result = await FetchSecData(cik);
-        return { cik, data: result };
+        
+        // Fetching risk score
+        const riskScoreData = await getRiskScore(cik);
+  
+        // Check if the status is 'success' or 'error'
+        const riskScore = riskScoreData.status === 'success' ? riskScoreData.riskScore : -1; // Return -1 if the company is not verified
+        return { cik, data: result, riskScore };
       } catch (error) {
-        console.error(`Error fetching SEC data for CIK ${cik}:`, error);
-        return { cik, data: null };
+        console.error(`Error fetching SEC data or risk score for CIK ${cik}:`, error);
+        return { cik, data: null, riskScore: -1 }; // In case of any error, return -1 for riskScore
       }
     })
   );
@@ -63,8 +69,9 @@ export default async function DashboardPage() {
         {favoritesData.length > 0 ? (
           favoritesData.map((item, index) => {
             const company = item.data?.company;
+            const riskScore = item.riskScore;
             return company ? (
-              <FavoriteCompaniesAccordion key={index} cik={item.cik} company={company} username={userStatus.username}/>
+              <FavoriteCompaniesAccordion key={index} cik={item.cik} company={company} username={userStatus.username} riskScore={riskScore}/>
             ) : null;
           })
         ) : (
