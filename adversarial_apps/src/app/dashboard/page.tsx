@@ -3,6 +3,7 @@ import { FavoriteCompaniesAccordion } from "@/components/FavoriteCompaniesAccord
 import { verifyUser } from "../lib/data";
 import { FetchSecData, getFavorites, getRiskScore } from "../lib/data";
 import Link from "next/link";
+import Image from "next/image";
 
 
 export default async function DashboardPage() {
@@ -37,10 +38,10 @@ export default async function DashboardPage() {
     favorites.map(async (cik: string) => {
       try {
         const result = await FetchSecData(cik);
-        
+
         // Fetching risk score
         const riskScoreData = await getRiskScore(cik);
-  
+
         // Check if the status is 'success' or 'error'
         const riskScore = riskScoreData.status === 'success' ? riskScoreData.riskScore : -1; // Return -1 if the company is not verified
         return { cik, data: result, riskScore };
@@ -52,7 +53,7 @@ export default async function DashboardPage() {
   );
 
   return (
-    <div>
+    <div className="p-8">
       {/* Display username */}
       <p className="text-2xl font-bold">Welcome, {userStatus.username}!</p>
       <br />
@@ -65,21 +66,30 @@ export default async function DashboardPage() {
       )}
       {/* Display Favorite Companies with SEC Data */}
       <div className="bg-gray-700 rounded-xl p-4 shadow-md">
-        <h1 className="text-xl font-bold mb-4">Favorite Companies:</h1>
+        {/* Headers */}
+        <div
+          className="w-full text-lg pb-4 flex justify-between items-center place-items-center text-white font-semibold grid grid-cols-6 gap-2"
+        >
+          <div></div>
+          <span>Company</span>
+          <span>Verified</span>
+          <span>Rating</span>
+          <span>Remove Favorite</span>
+          <span>QR Code</span>  
+        </div>
+
         {favoritesData.length > 0 ? (
           favoritesData.map((item, index) => {
             const company = item.data?.company;
             const riskScore = item.riskScore;
             return company ? (
-              <FavoriteCompaniesAccordion key={index} cik={item.cik} company={company} username={userStatus.username} riskScore={riskScore}/>
+              <FavoriteCompaniesAccordion key={index} cik={item.cik} company={company} username={userStatus.username} riskScore={riskScore} />
             ) : null;
           })
         ) : (
           <p>No favorite companies.</p>
         )}
       </div>
-
-
 
       {/* Logout button */}
       {/* Only the logout button needs interactivity */}

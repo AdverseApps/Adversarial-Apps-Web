@@ -108,12 +108,15 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
         <div className="mb-2 border border-gray-500 rounded-lg overflow-hidden">
             {/* Accordion Header */}
             <div
-                className="w-full bg-blue-900 p-4 flex justify-between items-center text-white font-semibold"
+                className="w-full bg-blue-900 p-4 flex justify-between items-center place-items-center text-white font-semibold cursor-pointer grid grid-cols-6 gap-2"
                 onClick={toggleAccordion}
             >
+                <span className="justify-self-start">{isOpen ? "▲" : "▼"}</span>
                 <span>{company?.name || "Unknown Company"}</span>
-                {riskScore !== -1 && (
+                {riskScore !== -1 ? (
                     <Image src={"/check.png"} alt="Verified Company" width={30} height={20} />
+                ) : (
+                    <div></div>
                 )}
                 <span>{riskScore === -1 ? "Unverified" : riskScore}</span>
                 <div onClick={handleQRCodeClick} className="cursor-pointer text-white">
@@ -122,12 +125,11 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
                 <div onClick={handleQRCodeClick} className="cursor-pointer text-white">
                     <QRCodeComponent companyName={company.name || ''} cik={cik} displayIconOnly={true} />
                 </div>
-                <span>{isOpen ? "▲" : "▼"}</span>
             </div>
 
             {/* Accordion Content */}
             {isOpen && (
-                <div className="p-4 bg-blue-800 text-white">
+                <div className="p-4 bg-blue-950 text-white">
                     <p><strong>CIK:</strong> {cik}</p>
                     <p><strong>Address:</strong> {formattedAddress}</p>
                     <p><strong>State of Incorporation:</strong> {company?.stateOfIncorporation || "N/A"}</p>
