@@ -64,6 +64,7 @@ export default async function DashboardPage() {
           <button>Special Reviewer Action</button>
         </div>
       )}
+      
       {/* Display Favorite Companies with SEC Data */}
       <div className="bg-gray-700 rounded-xl p-4 shadow-md">
         {/* Headers */}
@@ -78,6 +79,7 @@ export default async function DashboardPage() {
           <span>QR Code</span>  
         </div>
 
+        {/* Looping through each company */}
         {favoritesData.length > 0 ? (
           favoritesData.map((item, index) => {
             const company = item.data?.company;
@@ -92,8 +94,9 @@ export default async function DashboardPage() {
       </div>
 
       {/* Logout button */}
-      {/* Only the logout button needs interactivity */}
-      <LogoutButton />
+      <div className="flex items-center justify-center pt-2">
+        <LogoutButton />
+      </div>
     </div>
   );
 }

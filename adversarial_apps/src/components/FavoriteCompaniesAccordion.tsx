@@ -105,11 +105,20 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
         : "N/A";
 
     return (
-        <div className="mb-2 border border-gray-500 rounded-lg overflow-hidden">
+        <div className="mb-2 border border-gray-500 rounded-lg overflow-visible">
             {/* Accordion Header */}
             <div
-                className="w-full bg-blue-900 p-4 flex justify-between items-center place-items-center text-white font-semibold cursor-pointer grid grid-cols-6 gap-2"
+                className="rounded-lg focus-visible:ring-blue-500 focus-visible:ring-12 focus-visible:ring-offset-4 w-full 
+                bg-blue-900 p-4 flex justify-between items-center place-items-center text-white font-semibold 
+                cursor-pointer grid grid-cols-6 gap-2"
                 onClick={toggleAccordion}
+                tabIndex={0}  // Makes the div tabbable
+                role="button"  // Tells screen readers it's interactive
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        toggleAccordion(); // Open/close on Enter or Space
+                    }
+                }}
             >
                 <span className="justify-self-start">{isOpen ? "▲" : "▼"}</span>
                 <span>{company?.name || "Unknown Company"}</span>
@@ -129,7 +138,7 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
 
             {/* Accordion Content */}
             {isOpen && (
-                <div className="p-4 bg-blue-950 text-white">
+                <div className="p-4 bg-blue-950 text-white rounded-lg rounded-t-none">
                     <p><strong>CIK:</strong> {cik}</p>
                     <p><strong>Address:</strong> {formattedAddress}</p>
                     <p><strong>State of Incorporation:</strong> {company?.stateOfIncorporation || "N/A"}</p>
