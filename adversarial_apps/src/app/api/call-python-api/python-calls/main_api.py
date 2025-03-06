@@ -27,6 +27,7 @@ from edgar import (
 )
 from search import obtain_cik_number
 
+
 def send_password_reset_token(email: str) -> dict:
     """
     Verifies that the email exists (read-only) and generates a JWT reset token
