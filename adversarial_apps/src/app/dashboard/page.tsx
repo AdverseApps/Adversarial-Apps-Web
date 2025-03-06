@@ -2,9 +2,6 @@ import LogoutButton from "@/components/logoutButton";
 import { FavoriteCompaniesAccordion } from "@/components/FavoriteCompaniesAccordion";
 import { verifyUser } from "../lib/data";
 import { FetchSecData, getFavorites, getRiskScore } from "../lib/data";
-import Link from "next/link";
-import Image from "next/image";
-
 
 export default async function DashboardPage() {
   let userStatus;
@@ -64,7 +61,7 @@ export default async function DashboardPage() {
           <button>Special Reviewer Action</button>
         </div>
       )}
-      
+
       {/* Display Favorite Companies with SEC Data */}
       <div className="bg-gray-700 rounded-xl p-4 shadow-md">
         {/* Headers */}

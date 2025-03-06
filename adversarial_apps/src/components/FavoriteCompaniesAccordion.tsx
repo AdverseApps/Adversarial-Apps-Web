@@ -1,5 +1,4 @@
 'use client';
-import Link from "next/link";
 import { useState } from "react";
 import { QRCodeComponent } from "./QR";
 import Image from "next/image";
