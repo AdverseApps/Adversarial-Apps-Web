@@ -11,14 +11,23 @@ interface VerifyButtonProps {
 export default function VerifyUpdate({ cik }: VerifyButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [score, setScore] = useState<number>(0); // Create a state for risk score
+  const [score, setScore] = useState<number | "">(""); // Ensure controlled input
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission behavior
+
+    if (score === "" || isNaN(Number(score))) {
+        toast.error("Please enter a valid risk score between 0 and 100.");
+        return;
+    }
+    
     setLoading(true);
     
     try {
-      const data = { action: "update_company_score", cik, riskscore: score }; // Use state value
+      const data = { action: "update_company_score", cik, riskscore: Number(score) }; // Use state value
+
+      console.log("Submitting Data:", data);
+
       const response = await fetch(`/api/call-python-api`, {
         method: "POST",
         headers: {
@@ -61,7 +70,7 @@ export default function VerifyUpdate({ cik }: VerifyButtonProps) {
           min="0"
           max="100"
           value={score} // Bind state value
-          onChange={(e) => setScore(Number(e.target.value))} // Update state on input change
+          onChange={(e) => setScore(e.target.value ? Number(e.target.value) : "")} // Update state on input change
           className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
           placeholder="Input score..."
           required
