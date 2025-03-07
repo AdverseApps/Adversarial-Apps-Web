@@ -8,6 +8,7 @@ import {
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import VerifyButton from "@/components/VerifyButton";
+import VerifyUpdate from "@/components/VerifyUpdate";
 import { RecentOwnership } from '@/components/RecentOwnership';
 
 interface CompanyDetailsProps {
@@ -200,9 +201,12 @@ export default async function page({ params }: CompanyDetailsProps) {
           <RecentOwnership cik={cik} />
           <QRCodeComponent companyName={name} cik={cik} />
           <FavoriteButton cik={cik} username={username} favorites={favorites} />
-          {/* Render the "Verify Company" button only if user is a reviewer */}
+          {/* Render the "Verify Company" and "Update Score" buttons only if user is a reviewer */}
           {reviewerData && reviewerData.role === "true" && (
             <VerifyButton cik={cik} />
+          )}
+          {reviewerData && reviewerData.role === "true" && (
+            <VerifyUpdate cik={cik} />
           )}
         </div>
 
