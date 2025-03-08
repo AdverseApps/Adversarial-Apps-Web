@@ -53,6 +53,45 @@ export async function FetchSecData(cik: string) {
     return { status: "error", message: "An unexpected error occurred." };
   }
 }
+export async function FetchSamData(uei: string) {
+  try {
+    console.log("Fetching SAM data...");
+
+    const headersList = headers();
+    const domain = headersList.get("host");
+    const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+
+    const data = { action: "fetch_sam_data", uei };
+    const response = await fetch(
+      `${protocol}://${domain}/api/call-python-api`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }
+    );
+
+    if (!response.ok) {
+      return {
+        status: "error",
+        message: `Failed to fetch SAM data: ${response.statusText}`,
+      };
+    }
+
+    const result = await response.json();
+    console.log(result);
+    if (result.status === "success") {
+      return result; // Expected to contain { company: { ... } }
+    }
+    return {
+      status: "error",
+      message: `Failed to fetch SAM data: ${response.statusText}`,
+    };
+  } catch (error) {
+    console.error("Failed to fetch SAM data:", error);
+    return { status: "error", message: "An unexpected error occurred." };
+  }
+}
 
 export async function FetchCIKnumber(query: string) {
   try {
