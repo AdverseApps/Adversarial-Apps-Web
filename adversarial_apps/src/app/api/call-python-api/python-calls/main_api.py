@@ -100,6 +100,38 @@ def obtain_cik_number(search_term: str) -> dict:
     except Exception as e:
         return {"status": "error", "message": f"An error occurred: {str(e)}"}
 
+def samSearch(search_term: str) -> dict:
+    """
+    Searches the SAM entities stored in the database for companies matching the search term.
+    Returns only the company name and UEI.
+    """
+    try:
+        db_url = os.getenv("DATABASE_URL")
+        if not db_url:
+            return {"status": "error", "message": "DATABASE_URL not set."}
+        conn = psycopg2.connect(db_url)
+        cursor = conn.cursor()
+        # Search only by company name (case-insensitive), returning company_name and UEI.
+        cursor.execute("""
+            SELECT legal_business_name, entity_id
+            FROM sam_entities
+            WHERE legal_business_name ILIKE %s
+            LIMIT 10;
+        """, (f"%{search_term}%",))
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        results = []
+        for row in rows:
+            results.append({
+                "company_name": row[0],
+                "uei": row[1]
+            })
+        return {"status": "success", "results": results}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
 
 def get_sec_data(cik: str) -> dict:
     """
@@ -193,6 +225,50 @@ def get_sec_data(cik: str) -> dict:
             "status": "error",
             "message": f"Unable to retrieve data for CIK {sanitized_cik} (Status Code: {response.status_code})",
         }
+
+def FetchSamData(uei: str) -> dict:
+    """
+    Retrieves detailed SAM company data from the database using the Unique Entity ID (UEI).
+    """
+    import os
+    import psycopg2
+
+    db_url = os.getenv("DATABASE_URL")
+    if not db_url:
+        return {"status": "error", "message": "DATABASE_URL not set."}
+    
+    try:
+        conn = psycopg2.connect(db_url)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT legal_business_name, cage_code, country_code,
+                   state_or_province, city, zip_code, address_line1, address_line2,
+                   registration_date, expiration_date
+            FROM sam_entities
+            WHERE entity_id = %s
+            LIMIT 1;
+        """, (uei,))
+        row = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if row:
+            company = {
+                "company_name": row[0],
+                "cage_code": row[1],
+                "country_code": row[2],
+                "state_or_province": row[3],
+                "city": row[4],
+                "zip_code": row[5],
+                "address_line1": row[6],
+                "address_line2": row[7],
+                "registration_date": row[8] if row[8] else None,
+                "expiration_date": row[9] if row[9] else None
+            }
+            return {"status": "success", "company": company}
+        else:
+            return {"status": "error", "message": "No company found with the provided UEI."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 def add_user(username: str, password_hashed: str, company: str) -> dict:
@@ -696,6 +772,10 @@ if __name__ == "__main__":
             result = obtain_cik_number(input_action_and_data.get("search_term"))
         elif action == "get_sec_data":
             result = get_sec_data(input_action_and_data.get("search_term"))
+        elif action == "sam_search":
+            result = samSearch(input_action_and_data.get("search_term"))
+        elif action == "fetch_sam_data":
+            result = FetchSamData(input_action_and_data.get("uei"))
         elif action == "add_user":
             # Then the inputActionAndData is formatted as such:
             # { "action": "add_user", "username": YOUR_USERNAME, "password_hashed": YOUR_PASSWORD, "comnpany": YOUR_COMPANY }
