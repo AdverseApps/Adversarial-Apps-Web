@@ -2,6 +2,12 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 
+interface CompanyResult  {
+  name: string;
+  identifier: string; // For SEC: CIK; for SAM: UEI
+  source: 'SEC' | 'SAM';
+};
+
 export default function SearchBar({ placeholder }: { placeholder: string }) {
   return (
     <Suspense fallback={<div>Loading search bar...</div>}>
@@ -15,7 +21,7 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
     const searchParams = useSearchParams();
     const replace = useRouter();
     const [searchTerm, setSearchTerm] = useState('');
-    const [results, setResults] = useState<{ name: string; cik: string }[]>([]);
+    const [results, setResults] = useState<CompanyResult[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
 
 
@@ -24,7 +30,7 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
       const delayDebounceFn = setTimeout(() => {
       if (searchTerm) {
         console.log("Searching for:", searchTerm);
-        fetchResults(searchTerm);
+        fetchCombinedResults(searchTerm);
         setShowDropdown(true);
       } else {
         setResults([]);
@@ -34,8 +40,59 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
     return () => clearTimeout(delayDebounceFn); //debouncing to reduce unnecessary requests to the server
     }, [searchTerm]);
 
+
+    async function fetchCombinedResults(query: string) {
+      try {
+        // --- Fetch SEC/EDGAR results
+        const secData = { action: "obtain_cik_number", search_term: query };
+        const secResponse = await fetch('/api/call-python-api', {
+          method: 'Post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(secData)
+        });
+        
+        let secResults: CompanyResult[] = [];
+        if (secResponse.status === 200) {
+          const secResult = await secResponse.json();
+          secResults = (secResult.companies || []).map((company: any) => ({
+            name: company["Company Name"],
+            identifier: company["CIK"], // Using SEC's CIK
+            source: "SEC" as const,
+          }));
+        }
+  
+        // --- Fetch SAM results using SAM search endpoint
+        const samData = { action: "sam_search", search_term: query };
+        const samResponse = await fetch('/api/call-python-api', {
+          method: 'Post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(samData)
+        });
+        let samResults: CompanyResult[] = [];
+        if (samResponse.status === 200) {
+          const samResult = await samResponse.json();
+          samResults = (samResult.results || []).map((company: any) => ({
+            name: company.company_name,
+            identifier: company.uei, // Using Unique Entity ID for SAM
+            source: "SAM" as const,
+          }));
+        }
+  
+        // Combine results from both sources
+        setResults([...secResults, ...samResults]);
+      } catch (error) {
+        console.error('Error fetching combined results:', error);
+        setResults([]);
+      }
+    }
+
+    /*
+    SEC ONLY FETCH
     async function fetchResults(query: string) {
-      //CAN POSSIBLLY REMOVE FOR THE LIB DATA ADDITION
         // Data will hold what will be given in the API body. [query] is what is typed in the box
         console.log('Fetching CIK number...');
         const data = { action: "obtain_cik_number", search_term: query };
@@ -57,28 +114,24 @@ function SearchBarContent({ placeholder }: {placeholder: string}) {
           
           setResults(companies);
       }
-/*
-LIB DATA ATTEMPT, WILL LOOK AT MORE LATER -Dami
-      try {
-        const companies = await FetchCIKnumber(query); // Fetch data using the imported function
-        if (companies) {
-          setResults(companies);
-        } else {
-          setResults([]); // Handle cases where no results are returned
-        }
-      } catch (error) {
-        console.error('Error fetching results:', error);
-        setResults([]); // Reset results on error
-      }
-        */
-    }
-    
-
+    }  
+*/
       function handleSearch(term: string) {
         if (term) {
           replace.push(`/search?query=${term}`);
         }
       }
+
+      // Called when a user clicks a specific result in the dropdown
+  function handleResultClick(result: CompanyResult) {
+    // Redirect to the appropriate company details page based on source.
+    if (result.source === "SEC") {
+      replace.push(`/company/${result.identifier}`);
+    } else if (result.source === "SAM") {
+      replace.push(`/company/sam/${result.identifier}`);
+    }
+    setShowDropdown(false);
+  }
       
       function sanitizeInput(input: string): string {
         // removes special characters like <, >, ".
@@ -114,33 +167,21 @@ LIB DATA ATTEMPT, WILL LOOK AT MORE LATER -Dami
           {showDropdown && results.length > 0 && (
             <ul className="flex-none absolute w-full rounded-b-3xl border border-t-0 border-gray-300 bg-white shadow-lg text-gray-500"
             style={{ top: '100%' }}>
-            {results.map((result, index) => (
-              <li
-                key={index}
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                tabIndex={0}
-                onClick={() => {
-                  //REPLACE WITH HAVING THEM REDIRECTED TO RESULTS PAGE FOR THE ENTRY HERE
-                  console.log('Redirecting to:', `/company/${result.cik}`); //debugging
-                  replace.push(`/company/${result.cik}`);
-                  setShowDropdown(false); // Hide dropdown after selection
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    console.log('Redirecting to:', `/company/${result.cik}`); //debugging
-                    replace.push(`/company/${result.cik}`);
-                    setShowDropdown(false);
+              {results.map((result, index) => (
+                <li
+                  key={index}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  tabIndex={0}
+                  onClick={() => handleResultClick(result)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleResultClick(result);
                   }}
-              }
-              >
-              {result.name}
-              </li>
-              ))
-            }
+                >
+                  {result.name} <span className="text-xs italic">({result.source})</span>
+                </li>
+              ))}
             </ul>
-            )
-          }
-
+          )}
         </div>
       );
     }
