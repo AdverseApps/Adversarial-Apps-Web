@@ -1,115 +1,59 @@
-# Adversarial Apps Web Application
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Created by Conner Harbaugh, James Allen, Christopher Gagnier, Christian Rodriguez, and Oluwadamilola Ogboja.
+## Getting Started
 
-## About
-
-
-## Setting Up Local Environment
-
-To setup the local environment you will need a few tools and applications. The installation is a two part process, first let us focus on the Next.js part.
-
-### Installing Required Packages
-
-#### Next.js Installation
-
-To install required packages for next.js to work, first install node.
-
-Example:
+First, run the development server:
 
 ```bash
-brew install node
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Node usually has npm installed with it, but if not make sure to install it as well.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-We are using pnpm for this project, so install pnpm as seen below:
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```bash
-npm install -g pnpm
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Unit Testing
+
+Unit Testing is in GitHub Actions so testing locally isn't required.
+
+To allow for local testing. You must first install jest:
+```
+npm install --save-dev jest
 ```
 
-Once you have pnpm installed you will next need to install the local packages.
-
-NOTE: Make sure in the directory for the app, and not the root of the repository so it can reference the package.json file to get the packages needed.
-
-```bash
-pnpm install
+To run the testing environment locally, you can run:
 ```
-
-#### Python Installation
-
-This project uses Python 3 for the backend, however all backend scripts are local and no external api is used. This does require having python installed on system
-
-To install python 3 run:
-
-```bash
-brew install python3
+npm run test
 ```
+this will run all active tests in the "tests" directory.
+Expected to work out the box with `package.json`, `jest.setup`, and `jest.config` being up-to-date.
 
-Once you have python you will also need to install the required packages for the API to work. Run the command below:
-
-```bash
-pip install -r requirements.txt
+To investigate individual tests, you can run:
 ```
-
-### Add Environment Variables
-
-Wether you are on local host or deploying need some environment variables for the application.
-
-First, run the command below to create the .env file from the template. The template is used to show what environment variables are needed to be filled out by user, and should have non-vaild filler.
-
-The .env file must be stored in the adversarial_apps directory for next.js to see the environment variables.
-
-```bash
-cp .template-env adversarial_apps/.env
+npm run test-watch
 ```
+You can follow the prompts to decrease the scope of the tests.
 
-Once copied, add the appriopiate value for your set up for each of the following environment variables.
+## Learn More
 
-Environment Variables:
+To learn more about Next.js, take a look at the following resources:
 
-- DATABASE_URL should be set to the DATABASE URI or URL connection string you have for your database.
-- JWT_SECRET should be set to a secure string that you create to use for encryption of the JWT for user sessions
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### Running the Local Application
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-Now that all the packages are installed you should be able to run the application at localhost. It usually defaults to port 3000.
+## Deploy on Vercel
 
-Run the following command to launch the application.
-NOTE: Must be in the adversarial_apps folder (i.e. the folder of the next.js app) and NOT in the root of the repository when running.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-```bash
-pnpm run dev
-```
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-This will boot up the application, report any errors, and will update site live as you make changes. It will also tell you where the server is running on allowing you to go to that page to view the application.
-
-## Linting
-
-All the code must be linted to standardize formatting. We use Black & iSort for python files and ESLint for the Next.js component.
-
-ESLint comes provided as part of the required packages for application.
-You must use that version of ESLint. When you install the packages as seen above in README you will have ESLint and can run the following command:
-```bash
-npx eslint "src/**"
-```
-
-You can also run
-```bash
-npm run lint
-```
-
-Black and isort are ran as follows
-```bash
-black adversarial_apps
-isort adversarial_apps
-```
-
-Essentially just run the two commands and specify the root older of the project afterwards.
-
-You may also isolate it to the specific folder.
-
-## Contributing
-
-To contribute to this application and the process for doing so, please view the [Contribution Guide](.github\CONTRIBUTING.md).
