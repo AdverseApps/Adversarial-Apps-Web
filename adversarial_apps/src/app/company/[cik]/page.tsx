@@ -91,8 +91,19 @@ export default async function page({ params }: CompanyDetailsProps) {
   }
 
   // Only if the user is a reviewer, fetch additional SEC data.
-  let totalCommonStocks: any = null;
-  let defUrl: any = null;
+  interface TotalCommonStocksResponse {
+    status: "success" | "error";
+    totalCommonStocks?: number;
+    message?: string;
+  }
+  
+  interface DefUrlResponse {
+    status: "success" | "error";
+    url?: string;
+    message?: string;
+  }  
+  let totalCommonStocks: TotalCommonStocksResponse | null = null;
+  let defUrl: DefUrlResponse | null = null;
   if (reviewerData && reviewerData.role === "true") {
     try {
       totalCommonStocks = await getTotalCommonStocks(cik);
@@ -241,42 +252,42 @@ export default async function page({ params }: CompanyDetailsProps) {
           )}
 
           {/* Only display additional SEC API data for reviewer users */}
-{reviewerData && reviewerData.role === "true" && (
-  <div className="mt-4 text-left">
-    <h3 className="text-xl font-bold mb-2">Additional SEC Data</h3>
-    <p>
-      <span className="font-semibold">Total Common Stocks:</span>{" "}
-      {totalCommonStocks ? (
-        totalCommonStocks.status === "success" ? (
-          totalCommonStocks.totalCommonStocks  // Adjust field name as needed
-        ) : (
-          totalCommonStocks.message
-        )
-      ) : (
-        "N/A"
-      )}
-    </p>
-    <p>
-      <span className="font-semibold">DEF 14A URL:</span>{" "}
-      {defUrl ? (
-        defUrl.status === "success" ? (
-          <a
-            href={defUrl.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 underline"
-          >
-            {defUrl.url}
-          </a>
-        ) : (
-          defUrl.message
-        )
-      ) : (
-        "N/A"
-      )}
-    </p>
-  </div>
-)}
+        {reviewerData && reviewerData.role === "true" && (
+          <div className="mt-4 text-left">
+            <h3 className="text-xl font-bold mb-2">Additional SEC Data</h3>
+            <p>
+              <span className="font-semibold">Total Common Stocks:</span>{" "}
+              {totalCommonStocks ? (
+                totalCommonStocks.status === "success" ? (
+                  totalCommonStocks.totalCommonStocks
+                ) : (
+                  totalCommonStocks.message
+                )
+              ) : (
+                "N/A"
+              )}
+            </p>
+            <p>
+              <span className="font-semibold">DEF 14A URL:</span>{" "}
+              {defUrl ? (
+                defUrl.status === "success" ? (
+                  <a
+                    href={defUrl.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    {defUrl.url}
+                  </a>
+                ) : (
+                  defUrl.message
+                )
+              ) : (
+                "N/A"
+              )}
+            </p>
+          </div>
+        )}
         </div>
       </div>
 
