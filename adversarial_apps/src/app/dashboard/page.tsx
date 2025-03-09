@@ -51,44 +51,6 @@ export default async function DashboardPage() {
     })
   );
 
-  async function downloadExcelFile(username: string) {
-    try {
-      console.log("Downloading Excel file...");
-
-      const headersList = headers();
-      const domain = headersList.get("host");
-      const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
-
-      const data = { action: "generate_excel", username };
-
-      const response = await fetch(`${protocol}://${domain}/api/call-python-api`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.status === 200) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${username}_company_data.xlsx`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        console.log("File downloaded successfully.");
-      } else {
-        console.error("Failed to download file.");
-      }
-    } catch (error) {
-      console.error("Error downloading Excel file:", error);
-    }
-  }
-
 
   return (
     <div className="p-8">

@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from "react";
-
 export default function DownloadExcelButton({ username }: { username: string }) {
     const handleDownload = async () => {
         if (!username) {
