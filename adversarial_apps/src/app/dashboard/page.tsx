@@ -2,7 +2,6 @@ import LogoutButton from "@/components/logoutButton";
 import { FavoriteCompaniesAccordion } from "@/components/FavoriteCompaniesAccordion";
 import { verifyUser } from "../lib/data";
 import { FetchSecData, getFavorites, getRiskScore } from "../lib/data";
-import { headers } from "next/headers";
 import DownloadExcelButton from "@/components/downloadExcelButton";
 
 export default async function DashboardPage() {
