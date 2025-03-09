@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function DownloadExcelButton({ username }: { username: string }) {
     const handleDownload = async () => {
@@ -10,7 +10,7 @@ export default function DownloadExcelButton({ username }: { username: string }) 
         }
 
         try {
-            console.log(`Downloading Excel file for ${username}...`);
+            console.log(`Requesting Excel file generation for ${username}...`);
 
             const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
             const domain = window.location.host;
@@ -26,19 +26,34 @@ export default function DownloadExcelButton({ username }: { username: string }) 
             });
 
             if (response.status === 200) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
+                const result = await response.json(); // Parse JSON response
 
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `${username}_company_data.xlsx`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                if (result.status === "success" && result.file) {
+                    // Decode the Base64 string into binary data
+                    const byteCharacters = atob(result.file);  // Decode Base64 string
+                    const byteArray = new Uint8Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteArray[i] = byteCharacters.charCodeAt(i);
+                    }
 
-                console.log("File downloaded successfully.");
+                    // Create a Blob from the binary data
+                    const blob = new Blob([byteArray], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                    const url = window.URL.createObjectURL(blob);
+
+                    // Create a hidden anchor tag to trigger the download
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = result.filename || "download.xlsx";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    console.log("File downloaded successfully.");
+                } else {
+                    console.error("Error: Invalid response from server.");
+                }
             } else {
-                console.error("Failed to download file.");
+                console.error("Failed to request file generation.");
             }
         } catch (error) {
             console.error("Error downloading Excel file:", error);

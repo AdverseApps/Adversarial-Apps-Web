@@ -16,6 +16,7 @@ from database import (
     get_reviewer_status,
     update_company_score,
     verify_company,
+    generate_excel,
 )
 from dotenv import load_dotenv
 from edgar import (
@@ -99,7 +100,9 @@ if __name__ == "__main__":
         elif action == "get_total_common_stocks":
             # Expecting JSON like { "action": "get_total_common_stocks", "cik": "0000123456" }
             result = get_total_common_stocks(input_action_and_data.get("cik"))
-
+        elif action == "generate_excel":
+            # Expecting JSON like { "action": "generate_excel", "username": YOUR_USERNAME }
+            result = generate_excel(input_action_and_data.get("username"))
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}
