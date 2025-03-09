@@ -9,26 +9,27 @@ export default function page(){
                 all the codes and regulations published by the government 
                 from various departments.</p>
 
-            <p className = "pl-5"><br />What this law does is that it extends SBIR and STTR awards 
-                till 2025 instead of ending in 2022 which is what it was set to originally. 
-                More importantly to our project, it also established the Due Diligence Program. 
-                This program was established to assess the security risks associated with cybersecurity 
-                practices, patents, foreign adversaries and ownership, employees, and more for small businesses seeking awards 
-                through these programs for each federal head in charge of that process. It further requires that each small business 
-                disclose certain information in regard to foreign adversaries such as the ownership percentage for foreign adversaries, 
-                patent processing in foreign countries, and other such fields.</p>
+            <p className = "pl-5"><br />CFR Title 15 specifically states the purpose of the 
+                Office of the Secretary of Commerce and, among other established codifications, 
+                the authority it has over foreign trade. Many of its 
+                regulations detailed in Subtitle B regard different bureaus related to the 
+                Department of Commerce, such as the Bureau of the Census, the National Institute 
+                of Standards and Technology, and the International Trade Administration which name 
+                three of the fifteen government bodies affected by this title. We are mostly interested 
+                in the Bureau of Industry and Security, which is addressed in Chapter VII of Subtitle 
+                B, particularly the section that covers the technology supply chain in Part 791. </p>
 
             <h2 className="text-xl font-bold pl-5"><br />What is CFR Title 15, Part 791? 
                 A Concise Breakdown of Its Documentation and Its Relevance</h2>
 
-            <p className = "pl-5"><br />The goal of CFR Title 15 is to ensure that companies which will be 
-                contracted by the U.S. have no affiliation with foreign countries that the U.S. deems as adversaries. 
-                Specifically, this section will go over what is addressed in Part 791: <a href=
-                "https://www.ecfr.gov/current/title-15/subtitle-B/chapter-VII/subchapter-E/part-791" target="_blank"> <u>Part 791 Link</u></a></p>
+            <p className = "pl-5"><br />The goal of CFR Title 15 is to better regulate commerce and
+                foreign trade, which Part 791 in turn addresses potentially harmful technologies and 
+                U.S. adversaries that could affect the foreign supply chain. Please refer to the legal 
+                documentation shown in the resources page for information regarding parts other than Part 791.</p>
 
-            <p className = "pl-5"><br />Part 791.1 outlines the purpose of this section, which is to determine 
-                how CFR deals with software on a security front. It defines how authorities will handle software that 
-                involves information and communication technology or services (ICTS). Part 791.2 outlines the formal 
+            <p className = "pl-5"><br />Part 791.1 outlines the purpose of this section, including the 
+                procedures as to how the Secretary of Commerce will take actions regarding entities that 
+                are or involve information and communication technology or services (ICTS). Part 791.2 outlines the formal 
                 definitions of all terms within that section of the document; for our purposes, these formal terms are not 
                 important in the scope of an overview but are worth reviewing if you would like to read the original documentation.</p>
 
@@ -64,7 +65,7 @@ export default function page(){
                     </button>
                 </Link>
 
-                <Link href = "/education/sam-compliance" passHref legacyBehavior>
+                <Link href = "/education/cfr-title-15/resources" passHref legacyBehavior>
                     <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
                         aria-label="Next Page">
                         Next Page

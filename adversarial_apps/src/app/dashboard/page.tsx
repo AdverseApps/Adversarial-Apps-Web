@@ -1,7 +1,7 @@
 import LogoutButton from "@/components/logoutButton";
-import { UserFavoriteCompanies } from "@/components/UserFavoriteCompanies";
+import { FavoriteCompaniesAccordion } from "@/components/FavoriteCompaniesAccordion";
 import { verifyUser } from "../lib/data";
-
+import { FetchSecData, getFavorites, getRiskScore } from "../lib/data";
 
 export default async function DashboardPage() {
   let userStatus;
@@ -27,18 +27,32 @@ export default async function DashboardPage() {
     );
   }
 
+  // Getting CIK of Favorites
+  const { favorites } = await getFavorites(userStatus.username);
+
+  // Getting company data
+  const favoritesData = await Promise.all(
+    favorites.map(async (cik: string) => {
+      try {
+        const result = await FetchSecData(cik);
+
+        // Fetching risk score
+        const riskScoreData = await getRiskScore(cik);
+
+        // Check if the status is 'success' or 'error'
+        const riskScore = riskScoreData.status === 'success' ? riskScoreData.riskScore : -1; // Return -1 if the company is not verified
+        return { cik, data: result, riskScore };
+      } catch (error) {
+        console.error(`Error fetching SEC data or risk score for CIK ${cik}:`, error);
+        return { cik, data: null, riskScore: -1 }; // In case of any error, return -1 for riskScore
+      }
+    })
+  );
+
   return (
-    <div>
-      <h1>Protected Page</h1>
-      <p>Only accessible if you are logged in with a valid JWT.</p>
-      <br />
-
+    <div className="p-8">
       {/* Display username */}
-      <p>Welcome, {userStatus.username}!</p>
-      <br />
-
-      {/* Display Favorite Companies */}
-      <UserFavoriteCompanies username={userStatus.username} />
+      <p className="text-2xl font-bold">Welcome, {userStatus.username}!</p>
       <br />
 
       {userStatus && userStatus.role === "true" && (
@@ -48,9 +62,38 @@ export default async function DashboardPage() {
         </div>
       )}
 
+      {/* Display Favorite Companies with SEC Data */}
+      <div className="bg-gray-700 rounded-xl p-4 shadow-md">
+        {/* Headers */}
+        <div
+          className="w-full text-lg pb-4 flex justify-between items-center place-items-center text-white font-semibold grid grid-cols-6 gap-2"
+        >
+          <div></div>
+          <span>Company</span>
+          <span>Verified</span>
+          <span>Rating</span>
+          <span>Remove Favorite</span>
+          <span>QR Code</span>  
+        </div>
+
+        {/* Looping through each company */}
+        {favoritesData.length > 0 ? (
+          favoritesData.map((item, index) => {
+            const company = item.data?.company;
+            const riskScore = item.riskScore;
+            return company ? (
+              <FavoriteCompaniesAccordion key={index} cik={item.cik} company={company} username={userStatus.username} riskScore={riskScore} />
+            ) : null;
+          })
+        ) : (
+          <p>No favorite companies.</p>
+        )}
+      </div>
+
       {/* Logout button */}
-      {/* Only the logout button needs interactivity */}
-      <LogoutButton />
+      <div className="flex items-center justify-center pt-2">
+        <LogoutButton />
+      </div>
     </div>
   );
 }

@@ -198,7 +198,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           </p>
 
           <RecentOwnership cik={cik} />
-          <QRCodeComponent companyName={name} cik={cik} />
+          <QRCodeComponent companyName={name} cik={cik} displayIconOnly={false}/>
           <FavoriteButton cik={cik} username={username} favorites={favorites} />
           {/* Render the "Verify Company" button only if user is a reviewer */}
           {reviewerData && reviewerData.role === "true" && (
