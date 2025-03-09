@@ -10,13 +10,13 @@ from bs4 import BeautifulSoup
 from database import (
     add_remove_favorite,
     add_user,
+    generate_excel,
     get_company_score,
     get_favorites,
     get_password,
     get_reviewer_status,
     update_company_score,
     verify_company,
-    generate_excel,
 )
 from dotenv import load_dotenv
 from edgar import (

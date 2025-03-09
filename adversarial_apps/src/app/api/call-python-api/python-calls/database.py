@@ -1,12 +1,10 @@
+import base64
 import os
+from io import BytesIO
 
 import psycopg2
-
-from openpyxl import Workbook
-from io import BytesIO
-import base64
-
 from edgar import get_sec_data
+from openpyxl import Workbook
 
 
 def add_user(username: str, password_hashed: str, company: str) -> dict:
@@ -420,6 +418,7 @@ def update_company_score(cik: str, risk_score: int) -> dict:
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
 
+
 def generate_excel(username: str) -> dict:
     """
     Generate an Excel file, save it in memory, and return it as a Base64-encoded string.
@@ -446,16 +445,20 @@ def generate_excel(username: str) -> dict:
         company_data = get_sec_data(cik)
 
         if company_score["status"] == "success":
-            ws_company_data.append([cik, company_data["company"]["name"], company_score["riskScore"]])
+            ws_company_data.append(
+                [cik, company_data["company"]["name"], company_score["riskScore"]]
+            )
         else:
-            ws_company_data.append([cik, company_data["company"]["name"], "Not Verified"])
+            ws_company_data.append(
+                [cik, company_data["company"]["name"], "Not Verified"]
+            )
 
     excel_stream = BytesIO()
     wb.save(excel_stream)
     excel_stream.seek(0)  # Go to the beginning of the BytesIO stream
 
     # Convert the binary data to a Base64-encoded string
-    encoded_file = base64.b64encode(excel_stream.getvalue()).decode('utf-8')
+    encoded_file = base64.b64encode(excel_stream.getvalue()).decode("utf-8")
 
     return {
         "status": "success",
