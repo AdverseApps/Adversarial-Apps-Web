@@ -87,7 +87,7 @@ LIB DATA ATTEMPT, WILL LOOK AT MORE LATER -Dami
 
       return (
 
-        <div className="relative flex">
+        <div className="flex">
           <label htmlFor="search" className="sr-only">
             Search
           </label>
