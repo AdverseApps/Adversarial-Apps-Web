@@ -9,6 +9,8 @@ import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import VerifyButton from "@/components/VerifyButton";
 import { RecentOwnership } from '@/components/RecentOwnership';
+import { RiskScoreMeter } from "@/components/RiskScoreMeter";
+
 
 interface CompanyDetailsProps {
   params: { cik: string };
@@ -124,6 +126,7 @@ export default async function page({ params }: CompanyDetailsProps) {
             {capitalizeWords(name) || "N/A"}
           </h2>
 
+          {/* Former Names */}
           {formerNames && formerNames.length > 0 && (
             <div className="">
               <br />
@@ -198,8 +201,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           </p>
 
           <RecentOwnership cik={cik} />
-          <QRCodeComponent companyName={name} cik={cik} displayIconOnly={false}/>
-          <FavoriteButton cik={cik} username={username} favorites={favorites} />
+
           {/* Render the "Verify Company" button only if user is a reviewer */}
           {reviewerData && reviewerData.role === "true" && (
             <VerifyButton cik={cik} />
@@ -208,7 +210,10 @@ export default async function page({ params }: CompanyDetailsProps) {
 
         {/* Right side */}
 
+
         <div className="w-1/2 text-right text-xl p-6 rounded-lg shadow-md">
+          <QRCodeComponent companyName={name} cik={cik} displayIconOnly={false} />
+          <FavoriteButton cik={cik} username={username} favorites={favorites} />
           <h2 className="text-2xl font-bold mb-4">
             Risk Report Feature Coming Soon To This Page!
           </h2>
@@ -221,6 +226,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           ) : (
             <p>This Company has not yet been verified</p>
           )}
+          <RiskScoreMeter />
         </div>
       </div>
 
