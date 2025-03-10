@@ -425,7 +425,7 @@ def generate_excel(username: str) -> dict:
     """
     wb = Workbook()
     ws_company_data = wb.active
-    ws_company_data.title = f"{username} Company Data"
+    ws_company_data.title = f"Company Data"
 
     # updates deminsions of the columns
     ws_company_data.column_dimensions["A"].width = 15
