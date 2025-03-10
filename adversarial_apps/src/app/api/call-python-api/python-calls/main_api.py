@@ -7,6 +7,8 @@ import sys
 import psycopg2
 import requests
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+
 from database import (
     add_remove_favorite,
     add_user,
@@ -18,7 +20,6 @@ from database import (
     request_company_review,
     verify_company,
 )
-from dotenv import load_dotenv
 from edgar import (
     get_def_url,
     get_recent_ownerships,
