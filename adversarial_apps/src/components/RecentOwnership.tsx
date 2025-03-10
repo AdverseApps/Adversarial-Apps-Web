@@ -90,7 +90,7 @@ export const RecentOwnership = (props: Props) => {
     return (
         <div >
             <br />
-            <h2 className="text-2xl font-semibold text-gray-300 mb-4">Recent Owners:</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">Recent Owners:</h2>
             <br />
             {error && <p className="text-red-500">Error: {error}</p>}
 
@@ -99,19 +99,19 @@ export const RecentOwnership = (props: Props) => {
                     <table className="min-w-full divide-y divide-gray-700">
                         <thead className="bg-gray-700">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                     Filing Date
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                     Accession Number
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                     Form
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                     Issuer
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                     Reporter
                                 </th>
                             </tr>
@@ -119,19 +119,19 @@ export const RecentOwnership = (props: Props) => {
                         <tbody className="bg-gray-800 divide-y divide-gray-700">
                             {filings.map((filing, index) => (
                                 <tr key={index}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {filing.fillingDate}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {filing.accessionNumber}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {filing.form}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {filing.issuer}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {filing.reporter}
                                     </td>
                                 </tr>
@@ -140,7 +140,7 @@ export const RecentOwnership = (props: Props) => {
                     </table>
                 </div>
             ) : (
-                !loading && <p className="text-gray-300">No recent ownership records found.</p>
+                !loading && <p>No recent ownership records found.</p>
             )}
 
             {loading && <p className="text-gray-300">Loading...</p>}

@@ -122,9 +122,15 @@ export default async function page({ params }: CompanyDetailsProps) {
       <div className="flex flex-wrap gap-6 mt-6 box-border">
         {/* Left side */}
         <div className="w-full md:w-[calc(50%-1.5rem)] bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-navy-600 box-border">
-          <h2 className="text-3xl font-bold text-navy-300 mb-4">
-            {capitalizeWords(name) || "N/A"}
-          </h2>
+          <div className="flex items-center justify-between"> {/* Add flex container */}
+            <h2 className="text-3xl font-bold text-navy-300 mb-4">
+              {capitalizeWords(name) || "N/A"}
+            </h2>
+            <div className="flex items-center space-x-2"> {/* Wrap buttons */}
+              <QRCodeComponent companyName={name} cik={cik} displayIconOnly={false} />
+              <FavoriteButton cik={cik} username={username} favorites={favorites} />
+            </div>
+          </div>
 
           {/* Former Names */}
           {formerNames && formerNames.length > 0 && (
@@ -186,14 +192,11 @@ export default async function page({ params }: CompanyDetailsProps) {
         </div>
 
         {/* Right side */}
-        <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-gray-600 text-center box-border">
-          <QRCodeComponent companyName={name} cik={cik} displayIconOnly={false} />
-          <FavoriteButton cik={cik} username={username} favorites={favorites} />
+        <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white text-center box-border">
           {/* Displaying simple risk score */}
           {riskScore.riskScore !== undefined && riskScore.riskScore !== null ? (
             <div>
-              <RiskScoreMeter />
-              {riskScore.riskScore}
+              <RiskScoreMeter riskScore={riskScore.riskScore} />
             </div>
           ) : (
             <p>This Company has not yet been verified</p>
@@ -202,7 +205,7 @@ export default async function page({ params }: CompanyDetailsProps) {
         </div>
       </div>
 
-      <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-gray-600">
+      <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
         <RecentOwnership cik={cik} />
       </div>
 
