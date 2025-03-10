@@ -6,6 +6,7 @@ import sys
 
 import psycopg2
 import requests
+from argon2 import PasswordHasher
 from bs4 import BeautifulSoup
 from database import (
     add_remove_favorite,
@@ -26,6 +27,91 @@ from edgar import (
     get_total_common_stocks,
 )
 from search import obtain_cik_number
+
+
+def send_password_reset_token(email: str) -> dict:
+    """
+    Verifies that the email exists (read-only) and generates a JWT reset token
+    with a 1-hour expiration.
+    """
+    import datetime
+
+    import jwt
+
+    JWT_SECRET = os.getenv("JWT_SECRET")
+    if not JWT_SECRET:
+        return {"status": "error", "message": "JWT_SECRET is not set."}
+
+    connection = None
+    try:
+        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+        cursor.execute('SELECT username FROM "USERS" WHERE username = %s', (email,))
+        user = cursor.fetchone()
+        if not user:
+            return {"status": "error", "message": "Email not found."}
+
+        # Generate a token that expires in 1 hour
+        expiration = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+            hours=1
+        )
+        payload = {"email": email, "exp": expiration, "action": "reset_password"}
+        token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+        return {"status": "success", "token": token}
+    except Exception as e:
+        # Return the error details for debugging purposes
+        return {"status": "error", "message": f"Error generating token: {str(e)}"}
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+ph = PasswordHasher()
+
+
+def reset_password(email: str, token: str, new_password: str) -> dict:
+    JWT_SECRET = os.getenv("JWT_SECRET")
+    if not JWT_SECRET:
+        return {"status": "error", "message": "JWT_SECRET is not set."}
+
+    try:
+        import jwt  # ensure jwt is imported
+
+        # Decode and verify the token
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        if payload.get("action") != "reset_password":
+            return {"status": "error", "message": "Invalid token action."}
+        if payload.get("email") != email:
+            return {"status": "error", "message": "Email does not match token."}
+    except jwt.ExpiredSignatureError:
+        return {"status": "error", "message": "Token expired."}
+    except Exception as e:
+        return {"status": "error", "message": f"Token error: {str(e)}"}
+
+    try:
+        hashed_password = ph.hash(new_password)
+    except Exception as e:
+        return {"status": "error", "message": f"Error hashing password: {str(e)}"}
+
+    # Update the password in the USERS table
+    connection = None
+    try:
+        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+        cursor.execute(
+            'UPDATE "USERS" SET password = %s WHERE username = %s',
+            (hashed_password, email),
+        )
+        connection.commit()
+        return {"status": "success", "message": "Password reset successfully."}
+    except Exception as e:
+        return {"status": "error", "message": f"Database error: {str(e)}"}
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
@@ -87,7 +173,14 @@ if __name__ == "__main__":
         elif action == "verify_company":
             # Expecting JSON like { "action": "verify_company", "cik": "0000123456" }
             result = verify_company(input_action_and_data.get("cik"))
-
+        elif action == "send_reset_token":
+            result = send_password_reset_token(input_action_and_data.get("email"))
+        elif action == "reset_password":
+            result = reset_password(
+                input_action_and_data.get("email"),
+                input_action_and_data.get("token"),
+                input_action_and_data.get("newPassword"),
+            )
         elif action == "update_company_score":
             # Expecting JSON like { "action": "update_company_score", "cik": "0000123456", "risk_score": 3 }
             result = update_company_score(
