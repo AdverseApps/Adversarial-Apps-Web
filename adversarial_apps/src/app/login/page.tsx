@@ -84,12 +84,7 @@ export default function LoginPage() {
               Sign up
             </a>
           </p>
-          <p className="mt-2 text-sm text-center">
-            <a href="/forgot-password" className="text-blue-200 hover:underline">
-              Forgot Password?
-            </a>
-          </p>
         </div>
       </main>
     );
-}
+  }

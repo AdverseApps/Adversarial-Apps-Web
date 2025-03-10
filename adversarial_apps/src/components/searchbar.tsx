@@ -87,6 +87,7 @@ LIB DATA ATTEMPT, WILL LOOK AT MORE LATER -Dami
 
       return (
 
+        // Changing this to just "flex", does not display the results correctly.
         <div className="relative flex">
           <label htmlFor="search" className="sr-only">
             Search

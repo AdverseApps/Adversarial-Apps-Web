@@ -13,7 +13,3 @@ python-dotenv
 
 # For Creating Excel Sheet
 openpyxl
-
-# For Password Reset
-argon2-cffi
-PyJWT

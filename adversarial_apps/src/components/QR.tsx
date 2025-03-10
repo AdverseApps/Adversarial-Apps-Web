@@ -6,10 +6,11 @@ import Image from "next/image";
 interface QRCodeProps {
   companyName: string;
   cik: string;
+  displayIconOnly?: boolean;
 }
 
 export const QRCodeComponent = (props: QRCodeProps) => {
-  const { cik, companyName } = props;
+  const { cik, companyName, displayIconOnly } = props;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -18,27 +19,40 @@ export const QRCodeComponent = (props: QRCodeProps) => {
 
   return (
     <>
-      <button
-        onClick={openModal}
-        className="px-4 py-2 bg-blue-900 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors flex items-center space-x-2 mt-2"
-      >
-        <p>QR Code</p>
-        <Image
-          src="/QRCodeIcon.png"
-          alt="QR Code Icon"
-          width={30}
-          height={30}
-          className="invert"
-        />
-      </button>
+      {displayIconOnly ? (
+        // If displayIconOnly is true, render only the image as a button
+        <button onClick={openModal} className="p-1">
+          <Image
+            src="/QRCodeIcon.png"
+            alt="QR Code Icon"
+            width={30}
+            height={30}
+            className="cursor-pointer invert"
+          />
+        </button>
+      ) : (
+        // Full button with text and image
+        <button
+          onClick={openModal}
+          className="px-4 py-2 bg-blue-900 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors flex items-center space-x-2 mt-2"
+        >
+          <Image
+            src="/QRCodeIcon.png"
+            alt="QR Code Icon"
+            width={30}
+            height={30}
+            className="invert"
+          />
+        </button>
+      )}
 
       {isModalOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center resize-none"
+          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center resize-none z-50"
           onClick={closeModal}
         >
           <div
-            className="bg-white p-4 rounded-lg flex flex-col items-center"
+            className="bg-white p-4 rounded-lg flex flex-col items-center z-50"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col items-center break-words">
