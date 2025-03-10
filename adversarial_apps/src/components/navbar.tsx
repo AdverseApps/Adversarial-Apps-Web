@@ -6,6 +6,11 @@ import SearchBar from "@/components/searchbar";
 import Link from "next/link";
 import Gear from "./gear";
 
+/*
+
+// DEPRECATED CODE: Education Submenu no longer required.
+// Pages do not link to proper modules anymore.
+
 const EducationSubNavBar = ({ isSubMenuOpen }: { isSubMenuOpen: boolean }) => {
   return (
     <div
@@ -27,6 +32,7 @@ const EducationSubNavBar = ({ isSubMenuOpen }: { isSubMenuOpen: boolean }) => {
     </div>
   );
 };
+*/
 
 const HamburgerMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -292,8 +298,8 @@ export default function NavBar() {
               >
                 Education
               </Link>
-              {/* Submenu for education */}
-              <EducationSubNavBar isSubMenuOpen={isSubMenuOpen} />
+              {/* Submenu for education: NO LONGER NEEDED */}
+              {/* <EducationSubNavBar isSubMenuOpen={isSubMenuOpen} /> */}
             </div>
 
             <div className="hover:bg-blue-950 p-2 rounded-lg transition duration-200">
