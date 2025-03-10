@@ -36,7 +36,6 @@ export const QRCodeComponent = (props: QRCodeProps) => {
           onClick={openModal}
           className="px-4 py-2 bg-blue-900 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors flex items-center space-x-2 mt-2"
         >
-          <p>QR Code</p>
           <Image
             src="/QRCodeIcon.png"
             alt="QR Code Icon"
