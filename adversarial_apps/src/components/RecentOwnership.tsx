@@ -88,68 +88,31 @@ export const RecentOwnership = (props: Props) => {
     }, [cik, fetchData]);
 
     return (
-        <div >
+        <div>
             <br />
-            <h2 className="text-2xl font-semibold text-white mb-4">Recent Owners:</h2>
+            <h2>Recent Owners:</h2>
             <br />
-            {error && <p className="text-red-500">Error: {error}</p>}
-
-            {filings.length > 0 ? (
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-700">
-                        <thead className="bg-gray-700">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                    Filing Date
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                    Accession Number
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                    Form
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                    Issuer
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                    Reporter
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-gray-800 divide-y divide-gray-700">
-                            {filings.map((filing, index) => (
-                                <tr key={index}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        {filing.fillingDate}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        {filing.accessionNumber}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        {filing.form}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        {filing.issuer}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        {filing.reporter}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            ) : (
-                !loading && <p>No recent ownership records found.</p>
-            )}
-
-            {loading && <p className="text-gray-300">Loading...</p>}
+            {error && <p style={{ color: "red" }}>Error: {error}</p>}
+            <ul className="space-y-4">
+                {filings.length > 0 ? (
+                    filings.map((filing, index) => (
+                        <li key={index}>
+                            <p><strong>Filing Date:</strong> {filing.fillingDate}</p>
+                            <p><strong>Accession Number:</strong> {filing.accessionNumber}</p>
+                            <p><strong>Form:</strong> {filing.form}</p>
+                            <p><strong>Issuer:</strong> {filing.issuer}</p>
+                            <p><strong>Reporter:</strong> {filing.reporter}</p>
+                        </li>
+                    ))
+                ) : (
+                    !loading && <p>No recent ownership records found.</p>
+                )}
+            </ul>
+            {loading && <p>Loading...</p>}
             {!loading && hasMore && (
                 <div>
-                    <button
-                        onClick={fetchNextPage}
-                        className="px-4 py-2 bg-blue-900 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors flex items-center space-x-2 mt-2"
-                    >
+                    <button onClick={fetchNextPage} className="px-4 py-2 bg-blue-900 text-white rounded-md shadow-md 
+                    hover:bg-blue-600 transition-colors flex items-center space-x-2 mt-2">
                         View More
                     </button>
                     <br />

@@ -1,10 +1,6 @@
-import base64
 import os
-from io import BytesIO
 
 import psycopg2
-from edgar import get_sec_data
-from openpyxl import Workbook
 
 
 def add_user(username: str, password_hashed: str, company: str) -> dict:
@@ -417,51 +413,3 @@ def update_company_score(cik: str, risk_score: int) -> dict:
 
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
-
-
-def generate_excel(username: str) -> dict:
-    """
-    Generate an Excel file, save it in memory, and return it as a Base64-encoded string.
-    """
-    wb = Workbook()
-    ws_company_data = wb.active
-    ws_company_data.title = f"Company Data"
-
-    # updates deminsions of the columns
-    ws_company_data.column_dimensions["A"].width = 15
-    ws_company_data.column_dimensions["B"].width = 35
-    ws_company_data.column_dimensions["C"].width = 15
-
-    ws_company_data.append(["CIK", "Company Name", "Risk Score"])
-
-    # Get the list of favorited companies for the user
-    favorites = get_favorites(username)
-
-    # displays the data in the excel sheet
-    for cik in favorites["favorites"]:
-        # Get the company name and risk score
-        company_score = get_company_score(cik)
-
-        company_data = get_sec_data(cik)
-
-        if company_score["status"] == "success":
-            ws_company_data.append(
-                [cik, company_data["company"]["name"], company_score["riskScore"]]
-            )
-        else:
-            ws_company_data.append(
-                [cik, company_data["company"]["name"], "Not Verified"]
-            )
-
-    excel_stream = BytesIO()
-    wb.save(excel_stream)
-    excel_stream.seek(0)  # Go to the beginning of the BytesIO stream
-
-    # Convert the binary data to a Base64-encoded string
-    encoded_file = base64.b64encode(excel_stream.getvalue()).decode("utf-8")
-
-    return {
-        "status": "success",
-        "file": encoded_file,  # Return the Base64-encoded file
-        "filename": f"{username}_company_data.xlsx",  # Optional: filename for download
-    }

@@ -266,7 +266,7 @@ def get_def_url(cik: str) -> str:
             ]
 
             # url is based off cik without zeros and modified accession number in url following pattern below
-            url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{filtered_forms[0]['accessionNumber'].replace('-', '')}"
+            url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{filtered_forms[0]['accessionNumber'].replace('-', '')}/{filtered_forms[0]['accessionNumber']}"
 
             # returns the url as part of the success
             return {"status": "success", "url": url}
