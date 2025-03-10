@@ -4,8 +4,6 @@ import {
   getFavorites,
   getRiskScore,
   verifyUser,
-  getTotalCommonStocks,
-  getDefUrl,
 } from "@/app/lib/data";
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
@@ -88,33 +86,6 @@ export default async function page({ params }: CompanyDetailsProps) {
     }
   } catch (error) {
     console.error("Error in verifying user:", error);
-  }
-
-  // Only if the user is a reviewer, fetch additional SEC data.
-  interface TotalCommonStocksResponse {
-    status: "success" | "error";
-    totalCommonStocks?: number;
-    message?: string;
-  }
-  
-  interface DefUrlResponse {
-    status: "success" | "error";
-    url?: string;
-    message?: string;
-  }  
-  let totalCommonStocks: TotalCommonStocksResponse | null = null;
-  let defUrl: DefUrlResponse | null = null;
-  if (reviewerData && reviewerData.role === "true") {
-    try {
-      totalCommonStocks = await getTotalCommonStocks(cik);
-    } catch (error) {
-      console.error("Error fetching total common stocks:", error);
-    }
-    try {
-      defUrl = await getDefUrl(cik);
-    } catch (error) {
-      console.error("Error fetching DEF 14A URL:", error);
-    }
   }
 
   const {
@@ -227,7 +198,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           </p>
 
           <RecentOwnership cik={cik} />
-          <QRCodeComponent companyName={name} cik={cik} displayIconOnly={false}/>
+          <QRCodeComponent companyName={name} cik={cik} />
           <FavoriteButton cik={cik} username={username} favorites={favorites} />
           {/* Render the "Verify Company" button only if user is a reviewer */}
           {reviewerData && reviewerData.role === "true" && (
@@ -250,44 +221,6 @@ export default async function page({ params }: CompanyDetailsProps) {
           ) : (
             <p>This Company has not yet been verified</p>
           )}
-
-          {/* Only display additional SEC API data for reviewer users */}
-        {reviewerData && reviewerData.role === "true" && (
-          <div className="mt-4 text-left">
-            <h3 className="text-xl font-bold mb-2">Additional SEC Data</h3>
-            <p>
-              <span className="font-semibold">Total Common Stocks:</span>{" "}
-              {totalCommonStocks ? (
-                totalCommonStocks.status === "success" ? (
-                  totalCommonStocks.totalCommonStocks
-                ) : (
-                  totalCommonStocks.message
-                )
-              ) : (
-                "N/A"
-              )}
-            </p>
-            <p>
-              <span className="font-semibold">DEF 14A URL:</span>{" "}
-              {defUrl ? (
-                defUrl.status === "success" ? (
-                  <a
-                    href={defUrl.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 underline"
-                  >
-                    {defUrl.url}
-                  </a>
-                ) : (
-                  defUrl.message
-                )
-              ) : (
-                "N/A"
-              )}
-            </p>
-          </div>
-        )}
         </div>
       </div>
 

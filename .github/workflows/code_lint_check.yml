@@ -32,4 +32,4 @@ jobs:
 
       - name: Check isort (Python import sorter)
         run: |
-          isort --check-only --profile black .
+          isort --check-only .
