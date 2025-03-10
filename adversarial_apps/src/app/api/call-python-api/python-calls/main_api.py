@@ -28,6 +28,7 @@ from edgar import (
 )
 from search import obtain_cik_number
 
+
 def send_password_reset_token(email: str) -> dict:
     """
     Verifies that the email exists (read-only) and generates a JWT reset token
@@ -110,6 +111,7 @@ def reset_password(email: str, token: str, new_password: str) -> dict:
         if connection:
             cursor.close()
             connection.close()
+
 
 # the call-python-api will call it here, and provides the inputActionAndData
 # which then determines which part of the API to run
