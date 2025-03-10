@@ -9,6 +9,31 @@ export default function Gear({ showGearIcon }: { showGearIcon: boolean }) {
 
   const [isLightMode, setIsLightMode] = useState(false);
 
+  // Checking Authentication for logoff button
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const checkAuthentication = async () => {
+    try {
+      const response = await fetch("/api/verify-login", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        console.log("checking auth");
+        const data = await response.json();
+        setIsAuthenticated(true);
+
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch {
+      setIsAuthenticated(false); 
+    }
+  };
+  useEffect(() => {
+    checkAuthentication();
+  }, []);
+
   // Toggle light mode
   const toggleLightMode = () => {
     setIsLightMode(!isLightMode);
@@ -118,7 +143,7 @@ export default function Gear({ showGearIcon }: { showGearIcon: boolean }) {
               >
                 {isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
               </button>
-              <Logout />
+              {isAuthenticated && (<Logout />)}
               <button
                 onClick={() => setIsOpen(false)}
                 className="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
