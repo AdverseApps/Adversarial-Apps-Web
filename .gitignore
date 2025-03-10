@@ -1,3 +1,4 @@
 # Files here will be ignored from pushing. DO NOT PUSH THESE FILES
 .env
 adversarial_apps/pnpm-lock.yaml
+adversarial_apps/src/app/api/call-python-api/python-calls/__pycache__
