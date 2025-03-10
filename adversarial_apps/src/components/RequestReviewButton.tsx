@@ -25,7 +25,6 @@ export default function RequestReviewButton({
   const isLoggedIn = Boolean(username);
   // For regular users, role should be false.
   const isRegularUser = isLoggedIn && role === "false";
-   
 
   const handleRequestReview = async () => {
     // Handle case if user is not logged in
