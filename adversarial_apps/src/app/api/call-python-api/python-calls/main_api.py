@@ -15,8 +15,8 @@ from database import (
     get_password,
     get_reviewer_status,
     update_company_score,
-    verify_company,
     request_company_review,
+    verify_company,
 )
 from dotenv import load_dotenv
 from edgar import (
