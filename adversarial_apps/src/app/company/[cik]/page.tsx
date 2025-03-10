@@ -9,6 +9,7 @@ import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import VerifyButton from "@/components/VerifyButton";
 import { RecentOwnership } from '@/components/RecentOwnership';
+import RequestReviewButton from '@/components/RequestReviewButton';
 
 interface CompanyDetailsProps {
   params: { cik: string };
@@ -204,6 +205,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           {reviewerData && reviewerData.role === "true" && (
             <VerifyButton cik={cik} />
           )}
+          <RequestReviewButton cik={cik} username={username || null} role={reviewerData?.role || null} />
         </div>
 
         {/* Right side */}

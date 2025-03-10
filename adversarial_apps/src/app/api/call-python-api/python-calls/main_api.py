@@ -16,6 +16,7 @@ from database import (
     get_reviewer_status,
     update_company_score,
     verify_company,
+    request_company_review,
 )
 from dotenv import load_dotenv
 from edgar import (
@@ -99,6 +100,11 @@ if __name__ == "__main__":
         elif action == "get_total_common_stocks":
             # Expecting JSON like { "action": "get_total_common_stocks", "cik": "0000123456" }
             result = get_total_common_stocks(input_action_and_data.get("cik"))
+        elif action == "request_company_review":
+            result = request_company_review(
+            input_action_and_data.get("username"),
+            input_action_and_data.get("cik")
+        )
 
         else:
             # Process the input data_
