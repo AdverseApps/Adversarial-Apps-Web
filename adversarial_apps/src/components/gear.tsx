@@ -9,6 +9,28 @@ export default function Gear({ showGearIcon }: { showGearIcon: boolean }) {
 
   const [isLightMode, setIsLightMode] = useState(false);
 
+  // Checking Authentication for logoff button
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const checkAuthentication = async () => {
+    try {
+      const response = await fetch("/api/verify-login", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch {
+      setIsAuthenticated(false); 
+    }
+  };
+  useEffect(() => {
+    checkAuthentication();
+  }, []);
+
   // Toggle light mode
   const toggleLightMode = () => {
     setIsLightMode(!isLightMode);
@@ -39,6 +61,43 @@ export default function Gear({ showGearIcon }: { showGearIcon: boolean }) {
     }
   }, [isLightMode]);
 
+  // Logout functionality
+  const Logout = () => {
+    const handleLogout = async () => {
+      try {
+        try {
+          console.log("logging out...");
+          const response = await fetch("/api/logout",
+            {
+              method: 'POST',
+              credentials: 'include'  // Ensures cookies are sent with the request
+            });
+  
+          if (!response.ok) {
+            throw new Error("Failed to log out");
+          }
+          setIsOpen(false);
+          window.location.href = "/"
+        } catch (error) {
+          console.error("Error logging out:", error);
+          throw error; // Ensure the error is handled by the caller
+        }
+      } catch (error) {
+        console.error('Error logging out:', error);
+        alert('Error logging out');
+      }
+    };
+  
+    return (
+      <button
+        onClick={handleLogout}
+        className="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+      >
+        Log out
+      </button>
+    )
+  }
+
   return (
     <>
       <button
@@ -48,11 +107,11 @@ export default function Gear({ showGearIcon }: { showGearIcon: boolean }) {
       >
         {showGearIcon ? (
           <Image
-          src="/gear_settings_white.png" //image
-          alt="Settings"
-          width={32} // Adjust dimensions as needed
-          height={32} // Adjust dimensions as needed
-        />
+            src="/gear_settings_white.png" //image
+            alt="Settings"
+            width={32} // Adjust dimensions as needed
+            height={32} // Adjust dimensions as needed
+          />
         ) : (<p>Settings</p>)}
       </button>
       {isOpen && (
@@ -81,6 +140,7 @@ export default function Gear({ showGearIcon }: { showGearIcon: boolean }) {
               >
                 {isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
               </button>
+              {isAuthenticated && (<Logout />)}
               <button
                 onClick={() => setIsOpen(false)}
                 className="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
@@ -88,6 +148,7 @@ export default function Gear({ showGearIcon }: { showGearIcon: boolean }) {
               >
                 Close
               </button>
+
             </div>
           </div>
         </div>
