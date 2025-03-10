@@ -10,6 +10,7 @@ import {
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import VerifyButton from "@/components/VerifyButton";
+import UpdateCompany from "@/components/UpdateCompany";
 import { RecentOwnership } from '@/components/RecentOwnership';
 import { RiskScoreMeter } from "@/components/RiskScoreMeter";
 
@@ -217,6 +218,9 @@ export default async function page({ params }: CompanyDetailsProps) {
             <div className="mt-4">
               <VerifyButton cik={cik} />
             </div>
+          )}
+          {reviewerData && reviewerData.role === "true" && (
+            <UpdateCompany cik={cik} />
           )}
         </div>
 
