@@ -11,6 +11,28 @@ export default function ResetPasswordPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    // Validate new password
+    const pwValidationErrors: string[] = [];
+    if (newPassword.length < 8) {
+      pwValidationErrors.push("Password must be at least 8 characters long.");
+    }
+    if (!/[A-Z]/.test(newPassword)) {
+      pwValidationErrors.push("Password must include at least one uppercase letter.");
+    }
+    if (!/\d/.test(newPassword)) {
+      pwValidationErrors.push("Password must include at least one number.");
+    }
+    if (!/[@$!%*?&]/.test(newPassword)) {
+      pwValidationErrors.push("Password must include at least one special character (@$!%*?&).");
+    }
+
+    // If there are any validation errors, display them and abort submission
+    if (pwValidationErrors.length > 0) {
+      toast.error(pwValidationErrors.join(" "));
+      return;
+    }
+
     try {
       const response = await fetch('/api/reset-password', {
         method: 'POST',
@@ -33,38 +55,38 @@ export default function ResetPasswordPage() {
 
   return (
     <main className="flex items-center justify-center">
-    <div className="w-full max-w-md p-8 bg-blue-900 rounded shadow-md">
-    <h2 className="text-2xl font-bold text-white mb-4">Reset Password</h2>
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        <label className="block text-sm font-medium text-white">Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
-          required
-        />
-        <label className="block text-sm font-medium text-white">Reset Token</label>
-        <input
-          type="text"
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
-          className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
-          required
-        />
-        <label className="block text-sm font-medium text-white">New Password</label>
-        <input
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
-          required
-        />
-        <button type="submit" className="w-full py-2 bg-blue-500 text-white rounded">
-          Reset Password
-        </button>
-      </form>
-    </div>
+      <div className="w-full max-w-md p-8 bg-blue-900 rounded shadow-md">
+        <h2 className="text-2xl font-bold text-white mb-4">Reset Password</h2>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <label className="block text-sm font-medium text-white">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+            required
+          />
+          <label className="block text-sm font-medium text-white">Reset Token</label>
+          <input
+            type="text"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+            required
+          />
+          <label className="block text-sm font-medium text-white">New Password</label>
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+            required
+          />
+          <button type="submit" className="w-full py-2 bg-blue-500 text-white rounded">
+            Reset Password
+          </button>
+        </form>
+      </div>
     </main>
   );
 }
