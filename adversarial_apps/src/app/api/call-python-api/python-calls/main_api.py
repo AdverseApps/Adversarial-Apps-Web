@@ -102,9 +102,8 @@ if __name__ == "__main__":
             result = get_total_common_stocks(input_action_and_data.get("cik"))
         elif action == "request_company_review":
             result = request_company_review(
-            input_action_and_data.get("username"),
-            input_action_and_data.get("cik")
-        )
+                input_action_and_data.get("username"), input_action_and_data.get("cik")
+            )
 
         else:
             # Process the input data_
