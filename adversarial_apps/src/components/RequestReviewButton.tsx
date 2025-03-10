@@ -62,15 +62,11 @@ export default function RequestReviewButton({
           result.message || "Review request submitted successfully!"
         );
         router.refresh();
-      } catch (error: any) {
+      } catch (error) {
         console.error("Request review error:", error);
       } finally {
         setLoading(false);
       }
-    } else {
-      setShowLoginMessage(true);
-      setTimeout(() => setShowLoginMessage(false), 3000); // Hide message after 3 seconds
-      return;
     }
   };
 
