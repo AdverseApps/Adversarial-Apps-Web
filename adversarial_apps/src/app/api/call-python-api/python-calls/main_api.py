@@ -8,8 +8,6 @@ import psycopg2
 import requests
 from argon2 import PasswordHasher
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
-
 from database import (
     add_remove_favorite,
     add_user,
@@ -18,10 +16,11 @@ from database import (
     get_favorites,
     get_password,
     get_reviewer_status,
-    update_company_score,
     request_company_review,
+    update_company_score,
     verify_company,
 )
+from dotenv import load_dotenv
 from edgar import (
     get_def_url,
     get_recent_ownerships,
