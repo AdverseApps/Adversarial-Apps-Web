@@ -19,10 +19,7 @@ export default function Gear({ showGearIcon }: { showGearIcon: boolean }) {
       });
 
       if (response.ok) {
-        console.log("checking auth");
-        const data = await response.json();
         setIsAuthenticated(true);
-
       } else {
         setIsAuthenticated(false);
       }
