@@ -465,3 +465,82 @@ def generate_excel(username: str) -> dict:
         "file": encoded_file,  # Return the Base64-encoded file
         "filename": f"{username}_company_data.xlsx",  # Optional: filename for download
     }
+
+
+def request_company_review(username: str, cik: str) -> dict:
+    """
+    Process a review request for a company:
+    - Retrieves the user's ID from the USERS table.
+    - Checks if the user has already requested a review for the given company.
+    - Ensures the company exists in COMPANIES:
+         If it doesn't exist, inserts a new record with reviewRequests set to 0.
+    - Inserts a new record in REVIEW_REQUESTS.
+    - Increments the reviewRequests field in COMPANIES by 1.
+
+    :param username: Username of the requesting user.
+    :param cik: CIK number of the company.
+    :return: Dictionary with status and message.
+    """
+    connection = None
+    try:
+        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+
+        # 1. Get the user ID from the USERS table.
+        cursor.execute('SELECT id FROM "USERS" WHERE username = %s', (username,))
+        user_row = cursor.fetchone()
+        if not user_row:
+            return {"status": "error", "message": f"User '{username}' not found."}
+        user_id = user_row[0]
+
+        # 2. Ensure the company exists in COMPANIES.
+        cursor.execute(
+            'SELECT "reviewRequests" FROM "COMPANIES" WHERE "CIK" = %s', (cik,)
+        )
+        company_row = cursor.fetchone()
+        if not company_row:
+            # Insert the company with default values if it doesn't exist.
+            cursor.execute(
+                'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore", "reviewRequests") VALUES (%s, %s, %s, %s)',
+                (cik, False, 0, 0),
+            )
+            connection.commit()  # Commit the new company insertion.
+
+        # 3. Check if the user has already requested a review for this company.
+        cursor.execute(
+            'SELECT 1 FROM "REVIEW_REQUESTS" WHERE "userId" = %s AND "companyCIK" = %s',
+            (user_id, cik),
+        )
+        exists = cursor.fetchone()
+        if exists:
+            return {
+                "status": "error",
+                "message": "You have already requested a review for this company.",
+            }
+
+        # 4. Insert a record into REVIEW_REQUESTS.
+        cursor.execute(
+            'INSERT INTO "REVIEW_REQUESTS" ("userId", "companyCIK") VALUES (%s, %s)',
+            (user_id, cik),
+        )
+
+        # 5. Increment reviewRequests in COMPANIES.
+        cursor.execute(
+            'UPDATE "COMPANIES" SET "reviewRequests" = COALESCE("reviewRequests", 0) + 1 WHERE "CIK" = %s',
+            (cik,),
+        )
+
+        connection.commit()
+        return {
+            "status": "success",
+            "message": "Review request submitted successfully.",
+        }
+
+    except psycopg2.Error as e:
+        if connection:
+            connection.rollback()
+        return {"status": "error", "message": f"Database error: {e}"}
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()

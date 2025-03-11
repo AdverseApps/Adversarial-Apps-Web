@@ -16,6 +16,7 @@ from database import (
     get_favorites,
     get_password,
     get_reviewer_status,
+    request_company_review,
     update_company_score,
     verify_company,
 )
@@ -196,6 +197,11 @@ if __name__ == "__main__":
         elif action == "generate_excel":
             # Expecting JSON like { "action": "generate_excel", "username": YOUR_USERNAME }
             result = generate_excel(input_action_and_data.get("username"))
+        elif action == "request_company_review":
+            result = request_company_review(
+                input_action_and_data.get("username"), input_action_and_data.get("cik")
+            )
+
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}

@@ -14,6 +14,7 @@ import UpdateCompany from "@/components/UpdateCompany";
 import { RecentOwnership } from '@/components/RecentOwnership';
 import { RiskScoreMeter } from "@/components/RiskScoreMeter";
 
+import RequestReviewButton from '@/components/RequestReviewButton';
 
 interface CompanyDetailsProps {
   params: { cik: string };
@@ -219,9 +220,13 @@ export default async function page({ params }: CompanyDetailsProps) {
               <VerifyButton cik={cik} />
             </div>
           )}
+
+          <RequestReviewButton cik={cik} username={username || null} role={reviewerData?.role || null} />
+
           {reviewerData && reviewerData.role === "true" && (
             <UpdateCompany cik={cik} />
           )}
+
         </div>
 
         {/* Right side */}
