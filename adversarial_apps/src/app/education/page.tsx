@@ -39,7 +39,7 @@ const ModulesContainer: React.FC = () => {
         <div className="modules-container pt-4 justify-evenly align-middle">
             <Module title="Module 1: CFR Title 15">
                 <p>
-                    This module goes over the legislation introduced by CFR Title 15, which has impacts on 
+                    This module goes over the legislation introduced by the Code of Federal Regulations (CFR) Title 15, which has impacts on 
                     what technologies companies can use and who they cannot associate with.
                 </p>
                 <br></br><hr></hr><br></br>
@@ -50,7 +50,7 @@ const ModulesContainer: React.FC = () => {
             </Module>
             <Module title="Module 2: SAM Compliance">
                 <p>
-                    This module goes over the SAM website and its registration process.
+                    This module goes over the System for Award Management (SAM) website and its registration process.
                 </p>
                 <br></br><hr></hr><br></br>
                 <ul className="list-none">
@@ -71,7 +71,7 @@ const ModulesContainer: React.FC = () => {
             </Module>
             <Module title="Module 4: CMMC">
                 <p>
-                    This module goes over the new CMMC 2.0 program and its initiative to increase 
+                    This module goes over the new Cybersecurity Maturity Model Certification (CMMC) 2.0 program and its initiative to increase 
                     cybersecurity standards across contracted entities.
                 </p>
                 <br></br><hr></hr><br></br>
