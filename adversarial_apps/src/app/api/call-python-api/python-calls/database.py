@@ -476,7 +476,7 @@ def request_company_review(username: str, cik: str) -> dict:
          If it doesn't exist, inserts a new record with reviewRequests set to 0.
     - Inserts a new record in REVIEW_REQUESTS.
     - Increments the reviewRequests field in COMPANIES by 1.
-    
+
     :param username: Username of the requesting user.
     :param cik: CIK number of the company.
     :return: Dictionary with status and message.
@@ -494,13 +494,15 @@ def request_company_review(username: str, cik: str) -> dict:
         user_id = user_row[0]
 
         # 2. Ensure the company exists in COMPANIES.
-        cursor.execute('SELECT "reviewRequests" FROM "COMPANIES" WHERE "CIK" = %s', (cik,))
+        cursor.execute(
+            'SELECT "reviewRequests" FROM "COMPANIES" WHERE "CIK" = %s', (cik,)
+        )
         company_row = cursor.fetchone()
         if not company_row:
             # Insert the company with default values if it doesn't exist.
             cursor.execute(
                 'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore", "reviewRequests") VALUES (%s, %s, %s, %s)',
-                (cik, False, 0, 0)
+                (cik, False, 0, 0),
             )
             connection.commit()  # Commit the new company insertion.
 
@@ -511,7 +513,10 @@ def request_company_review(username: str, cik: str) -> dict:
         )
         exists = cursor.fetchone()
         if exists:
-            return {"status": "error", "message": "You have already requested a review for this company."}
+            return {
+                "status": "error",
+                "message": "You have already requested a review for this company.",
+            }
 
         # 4. Insert a record into REVIEW_REQUESTS.
         cursor.execute(
@@ -526,7 +531,10 @@ def request_company_review(username: str, cik: str) -> dict:
         )
 
         connection.commit()
-        return {"status": "success", "message": "Review request submitted successfully."}
+        return {
+            "status": "success",
+            "message": "Review request submitted successfully.",
+        }
 
     except psycopg2.Error as e:
         if connection:
