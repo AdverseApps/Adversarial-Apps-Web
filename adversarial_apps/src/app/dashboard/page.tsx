@@ -2,6 +2,7 @@ import LogoutButton from "@/components/logoutButton";
 import { FavoriteCompaniesAccordion } from "@/components/FavoriteCompaniesAccordion";
 import { verifyUser } from "../lib/data";
 import { FetchSecData, getFavorites, getRiskScore } from "../lib/data";
+import DownloadExcelButton from "@/components/downloadExcelButton";
 
 export default async function DashboardPage() {
   let userStatus;
@@ -49,6 +50,7 @@ export default async function DashboardPage() {
     })
   );
 
+
   return (
     <div className="p-8">
       {/* Display username */}
@@ -73,7 +75,7 @@ export default async function DashboardPage() {
           <span>Verified</span>
           <span>Rating</span>
           <span>Remove Favorite</span>
-          <span>QR Code</span>  
+          <span>QR Code</span>
         </div>
 
         {/* Looping through each company */}
@@ -93,7 +95,10 @@ export default async function DashboardPage() {
       {/* Logout button */}
       <div className="flex items-center justify-center pt-2">
         <LogoutButton />
+        <DownloadExcelButton username={userStatus.username} />
       </div>
+
+
     </div>
   );
 }

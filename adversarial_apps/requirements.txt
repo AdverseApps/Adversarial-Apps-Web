@@ -10,3 +10,10 @@ psycopg2-binary
 
 # Loads .env variables into environment
 python-dotenv
+
+# For Creating Excel Sheet
+openpyxl
+
+# For Password Reset
+argon2-cffi
+PyJWT

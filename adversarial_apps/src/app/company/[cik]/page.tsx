@@ -4,11 +4,15 @@ import {
   getFavorites,
   getRiskScore,
   verifyUser,
+  getTotalCommonStocks,
+  getDefUrl,
 } from "@/app/lib/data";
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import VerifyButton from "@/components/VerifyButton";
 import { RecentOwnership } from '@/components/RecentOwnership';
+import { RiskScoreMeter } from "@/components/RiskScoreMeter";
+
 import RequestReviewButton from '@/components/RequestReviewButton';
 
 interface CompanyDetailsProps {
@@ -89,6 +93,33 @@ export default async function page({ params }: CompanyDetailsProps) {
     console.error("Error in verifying user:", error);
   }
 
+  // Only if the user is a reviewer, fetch additional SEC data.
+  interface TotalCommonStocksResponse {
+    status: "success" | "error";
+    totalCommonStocks?: number;
+    message?: string;
+  }
+  
+  interface DefUrlResponse {
+    status: "success" | "error";
+    url?: string;
+    message?: string;
+  }  
+  let totalCommonStocks: TotalCommonStocksResponse | null = null;
+  let defUrl: DefUrlResponse | null = null;
+  if (reviewerData && reviewerData.role === "true") {
+    try {
+      totalCommonStocks = await getTotalCommonStocks(cik);
+    } catch (error) {
+      console.error("Error fetching total common stocks:", error);
+    }
+    try {
+      defUrl = await getDefUrl(cik);
+    } catch (error) {
+      console.error("Error fetching DEF 14A URL:", error);
+    }
+  }
+
   const {
     name,
     formerNames,
@@ -117,116 +148,137 @@ export default async function page({ params }: CompanyDetailsProps) {
 
   // reviewerData will be an object { username, role } or null
   return (
-    <div>
-      <div className="flex mt-6 ">
+    <div className="text-white min-h-screen p-8 box-border">
+      <div className="flex flex-wrap gap-6 mt-6 box-border">
         {/* Left side */}
-        <div className="w-1/2 text-left text-xl p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4">
-            {capitalizeWords(name) || "N/A"}
-          </h2>
+        <div className="w-full md:w-[calc(50%-1.5rem)] bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-navy-600 box-border">
+          <div className="flex items-center justify-between"> {/* Add flex container */}
+            <h2 className="text-3xl font-bold text-navy-300 mb-4">
+              {capitalizeWords(name) || "N/A"}
+            </h2>
+            <div className="flex items-center space-x-2"> {/* Wrap buttons */}
+              <QRCodeComponent companyName={name} cik={cik} displayIconOnly={false} />
+              <FavoriteButton cik={cik} username={username} favorites={favorites} />
+            </div>
+          </div>
 
+          {/* Former Names */}
           {formerNames && formerNames.length > 0 && (
-            <div className="">
-              <br />
-              <h3 className="text-lg font-semibold">Former Names:</h3>
-              <ul className="list-disc pl-5">
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold text-gray-300">Former Names:</h3>
+              <ul className="list-disc pl-5 text-gray-400">
                 {formerNames.map((item: FormerName, index: number) => (
-                  <li key={index}>
-                    <span className="font-medium">
-                      {" "}
+                  <li key={index} className="mt-1">
+                    <span className="font-medium text-gray-100">
                       {capitalizeWords(item.name)}
                     </span>{" "}
-                    (From: {formatDate(item.fromDate)} To:{" "}
-                    {formatDate(item.toDate)})
+                    (From: {formatDate(item.fromDate)} To: {formatDate(item.toDate)})
                   </li>
                 ))}
               </ul>
             </div>
           )}
-          <br />
-          <p>
-            <span className="font-semibold">Business Address:</span>{" "}
-            {capitalizeWords(address)?.replace(/,+$/, "") || "N/A"}
-            {street2 && `, ${capitalizeWords(street2).replace(/,+$/, "")}`}
-            {city && `, ${capitalizeWords(city).replace(/,+$/, "")}`}
-            {zipCode && `, ${zipCode}`}
-          </p>
-          <br />
-          <p>
-            <span className="font-semibold">State or Country:</span>{" "}
-            {stateOrCountryDescription || "N/A"}
-          </p>
-          <br />
-          <p>
-            <span className="font-semibold">State of Incorporation:</span>{" "}
-            {stateOfIncorporation || "N/A"}
-          </p>
-          <br />
-          <p>
-            <span className="font-semibold">Date of Last Filing:</span>{" "}
-            {mostRecentFilingDate ? (
-              <>{formatDate(mostRecentFilingDate)}</>
-            ) : (
-              "N/A"
-            )}
-          </p>
-          <br />
-          <p>
-            <span className="font-semibold">Phone:</span> {phone || "N/A"}
-          </p>
-          <br />
-          <p>
-            <span className="font-semibold">Website:</span>{" "}
-            {website ? (
-              <>
-                <a
-                  href={website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 underline"
-                >
-                  {website}
-                </a>
-                <span className="font-semibold text-sm">
-                  {" "}
-                  please note we do not verify any external website linked on
-                  this page, click on links at your own risk
-                </span>
-              </>
-            ) : (
-              "N/A"
-            )}
-          </p>
 
-          <RecentOwnership cik={cik} />
-          <QRCodeComponent companyName={name} cik={cik} displayIconOnly={false}/>
-          <FavoriteButton cik={cik} username={username} favorites={favorites} />
+          {/* Company Info */}
+          <div className="mt-6 text-gray-300">
+            <p><span className="font-semibold">Business Address:</span> {capitalizeWords(address)?.replace(/,+$/, "") || "N/A"}
+              {street2 && `, ${capitalizeWords(street2).replace(/,+$/, "")}`}
+              {city && `, ${capitalizeWords(city).replace(/,+$/, "")}`}
+              {zipCode && `, ${zipCode}`}
+            </p>
+
+            <p className="mt-2"><span className="font-semibold">State or Country:</span> {stateOrCountryDescription || "N/A"}</p>
+            <p className="mt-2"><span className="font-semibold">State of Incorporation:</span> {stateOfIncorporation || "N/A"}</p>
+            <p className="mt-2"><span className="font-semibold">Date of Last Filing:</span> {mostRecentFilingDate ? formatDate(mostRecentFilingDate) : "N/A"}</p>
+            <p className="mt-2"><span className="font-semibold">Phone:</span> {phone || "N/A"}</p>
+
+            {/* Website Link */}
+            <p className="mt-2">
+              <span className="font-semibold">Website:</span>{" "}
+              {website ? (
+                <div>
+                  <a
+                    href={website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-navy-400 font-medium hover:text-navy-500 underline"
+                  >
+                    {website}
+                  </a>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Please note we do not verify any external website linked on this page, click on links at your own risk.
+                  </p>
+                </div>
+              ) : "N/A"}
+            </p>
+          </div>
+
           {/* Render the "Verify Company" button only if user is a reviewer */}
           {reviewerData && reviewerData.role === "true" && (
-            <VerifyButton cik={cik} />
+            <div className="mt-4">
+              <VerifyButton cik={cik} />
+            </div>
           )}
           <RequestReviewButton cik={cik} username={username || null} role={reviewerData?.role || null} />
         </div>
 
         {/* Right side */}
-
-        <div className="w-1/2 text-right text-xl p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4">
-            Risk Report Feature Coming Soon To This Page!
-          </h2>
+        <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white text-center box-border">
           {/* Displaying simple risk score */}
           {riskScore.riskScore !== undefined && riskScore.riskScore !== null ? (
-            <p>
-              <span className="font-semibold">Risk Score:</span>{" "}
-              {riskScore.riskScore}
-            </p>
+            <div>
+              <RiskScoreMeter riskScore={riskScore.riskScore} />
+            </div>
           ) : (
             <p>This Company has not yet been verified</p>
           )}
+
+          {/* Only display additional SEC API data for reviewer users */}
+        {reviewerData && reviewerData.role === "true" && (
+          <div className="mt-4 text-left">
+            <h3 className="text-xl font-bold mb-2">Additional SEC Data</h3>
+            <p>
+              <span className="font-semibold">Total Common Stocks:</span>{" "}
+              {totalCommonStocks ? (
+                totalCommonStocks.status === "success" ? (
+                  totalCommonStocks.totalCommonStocks
+                ) : (
+                  totalCommonStocks.message
+                )
+              ) : (
+                "N/A"
+              )}
+            </p>
+            <p>
+              <span className="font-semibold">DEF 14A URL:</span>{" "}
+              {defUrl ? (
+                defUrl.status === "success" ? (
+                  <a
+                    href={defUrl.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    {defUrl.url}
+                  </a>
+                ) : (
+                  defUrl.message
+                )
+              ) : (
+                "N/A"
+              )}
+            </p>
+          </div>
+        )}
+
         </div>
       </div>
 
-      <footer>
+      <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
+        <RecentOwnership cik={cik} />
+      </div>
+
+      <footer className="mt-12 text-center text-sm">
         {/* Properly Citing the SEC*/}
         <p>
           Company filing and financial data is provided by the U.S. Securities
