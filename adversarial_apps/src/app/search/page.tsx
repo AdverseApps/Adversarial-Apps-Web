@@ -7,7 +7,7 @@ export default function Page({
     query?: string;
   };
 }) {
-  const query = searchParams?.query || "";
+  // const query = searchParams?.query || ""; not used for anything rn
 
   return (
     <>

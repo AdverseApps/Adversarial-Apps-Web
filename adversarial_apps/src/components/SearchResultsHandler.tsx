@@ -1,6 +1,4 @@
-{
-  /*currently useless might be revamped for some search page.tsx features later so im keeping it for now -Dami */
-}
+/*currently useless might be revamped for some search page.tsx features later so im keeping it for now -Dami */
 ("use client");
 import React from "react";
 import { useEffect, useState } from "react";
