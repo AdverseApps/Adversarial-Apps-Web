@@ -8,6 +8,11 @@ export default function Page() {
         <h1 className="text-4xl mt-12 ml-6 text-center">
           Search Company Information
         </h1>
+        <nav className="flex items-center justify-center mt-9 gap-2 md:mt-8">
+          <div className="w-2/5 rounded-sm">
+            <SearchBar placeholder="Search for company names..." />
+          </div>
+        </nav>
 
         <section className="mt-6 mx-6 text-center">
           <p className="text-lg mb-4">
@@ -36,29 +41,15 @@ export default function Page() {
               is displayed. (If a company isn’t verified, you’ll see a message
               indicating that verification is pending.)
             </li>
-          </ul>
-          <p className="text-lg mt-4">
-            <strong>User Benefits:</strong>
-          </p>
-          <p className="text-lg">
-            <strong>Logged In:</strong> Once you log in, you can access
-            additional features on the company page, including saving favorites
-            and requesting a review of the company. This enhanced view gives you
-            complete, up-to-date information and interactive tools to help
-            manage your company research.
-          </p>
+          </ul> 
+
           <p className="text-lg mt-4">
             <strong>Note:</strong> For best results, please log in or sign up to
             access all features.
           </p>
         </section>
 
-        <nav className="flex items-center justify-center mt-9 gap-2 md:mt-8">
-          <div className="w-2/5 rounded-sm">
-            <SearchBar placeholder="Search for company names..." />
-          </div>
-        </nav>
-
+        
         {/* if we still want to show full-page results after submission, add that section here */}
         {/*
         {query && (
