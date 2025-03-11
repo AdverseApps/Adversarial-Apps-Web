@@ -1,5 +1,6 @@
-'use client';
-import React from 'react'
+/*currently useless might be revamped for some search page.tsx features later so im keeping it for now -Dami */
+("use client");
+import React from "react";
 import { useEffect, useState } from "react";
 
 interface SearchResultsHandlerProps {
@@ -8,11 +9,12 @@ interface SearchResultsHandlerProps {
   currentPage: number;
 }
 
-export default function SearchResultsHandler({ cik }: SearchResultsHandlerProps) {
-  
+export default function SearchResultsHandler({
+  cik,
+}: SearchResultsHandlerProps) {
   const [results, setResults] = useState<unknown>(null);
   const [hasSearched, setHasSearched] = useState(false);
-  
+
   useEffect(() => {
     if (cik) {
       setHasSearched(true);
@@ -24,26 +26,25 @@ export default function SearchResultsHandler({ cik }: SearchResultsHandlerProps)
   }, [cik]);
 
   async function fetchResults(cik: string) {
-    console.log("cik:",cik);
+    console.log("cik:", cik);
     const data = { action: "get_sec_data", search_term: cik };
-    const response = await fetch('/api/call-python-api', {
-        method: 'Post',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+    const response = await fetch("/api/call-python-api", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
     const result = await response.json();
     console.log("clicked Company");
     console.log(result);
     if (result.status === "success") {
-        setResults(result.data);
+      setResults(result.data);
     } else {
-        setResults(null);
+      setResults(null);
     }
   }
-  
-  
+
   return (
     <div className="flex justify-center mt-6">
       {!hasSearched ? (
