@@ -417,15 +417,14 @@ def update_company_score(cik: str, risk_score: int) -> dict:
 
 def request_company_review(username: str, cik: str) -> dict:
     """
-    Process a review request for a company.
-
+    Process a review request for a company:
     - Retrieves the user's ID from the USERS table.
     - Checks if the user has already requested a review for the given company.
-    - If not, inserts a new record in the REVIEW_REQUESTS table.
-    - Then checks the COMPANIES table:
-        - If the company exists, increments reviewRequests by 1.
-        - Otherwise, inserts a new record with reviewRequests set to 1.
-
+    - Ensures the company exists in COMPANIES:
+         If it doesn't exist, inserts a new record with reviewRequests set to 0.
+    - Inserts a new record in REVIEW_REQUESTS.
+    - Increments the reviewRequests field in COMPANIES by 1.
+    
     :param username: Username of the requesting user.
     :param cik: CIK number of the company.
     :return: Dictionary with status and message.
@@ -442,47 +441,40 @@ def request_company_review(username: str, cik: str) -> dict:
             return {"status": "error", "message": f"User '{username}' not found."}
         user_id = user_row[0]
 
-        # 2. Check if the user has already requested a review for this company.
+        # 2. Ensure the company exists in COMPANIES.
+        cursor.execute('SELECT "reviewRequests" FROM "COMPANIES" WHERE "CIK" = %s', (cik,))
+        company_row = cursor.fetchone()
+        if not company_row:
+            # Insert the company with default values if it doesn't exist.
+            cursor.execute(
+                'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore", "reviewRequests") VALUES (%s, %s, %s, %s)',
+                (cik, False, 0, 0)
+            )
+            connection.commit()  # Commit the new company insertion.
+
+        # 3. Check if the user has already requested a review for this company.
         cursor.execute(
             'SELECT 1 FROM "REVIEW_REQUESTS" WHERE "userId" = %s AND "companyCIK" = %s',
             (user_id, cik),
         )
         exists = cursor.fetchone()
         if exists:
-            return {
-                "status": "error",
-                "message": "You have already requested a review for this company.",
-            }
+            return {"status": "error", "message": "You have already requested a review for this company."}
 
-        # 3. Insert a record into REVIEW_REQUESTS.
+        # 4. Insert a record into REVIEW_REQUESTS.
         cursor.execute(
             'INSERT INTO "REVIEW_REQUESTS" ("userId", "companyCIK") VALUES (%s, %s)',
             (user_id, cik),
         )
 
-        # 4. Check if the company exists in COMPANIES.
+        # 5. Increment reviewRequests in COMPANIES.
         cursor.execute(
-            'SELECT "reviewRequests" FROM "COMPANIES" WHERE "CIK" = %s', (cik,)
+            'UPDATE "COMPANIES" SET "reviewRequests" = COALESCE("reviewRequests", 0) + 1 WHERE "CIK" = %s',
+            (cik,),
         )
-        company_row = cursor.fetchone()
-        if company_row:
-            # If it exists, increment reviewRequests. Use COALESCE to handle NULL values.
-            cursor.execute(
-                'UPDATE "COMPANIES" SET "reviewRequests" = COALESCE("reviewRequests", 0) + 1 WHERE "CIK" = %s',
-                (cik,),
-            )
-        else:
-            # If it doesn't exist, insert a new record with reviewRequests = 1.
-            cursor.execute(
-                'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore", "reviewRequests") VALUES (%s, %s, %s, %s)',
-                (cik, False, 0, 1),
-            )
 
         connection.commit()
-        return {
-            "status": "success",
-            "message": "Review request submitted successfully.",
-        }
+        return {"status": "success", "message": "Review request submitted successfully."}
 
     except psycopg2.Error as e:
         if connection:
