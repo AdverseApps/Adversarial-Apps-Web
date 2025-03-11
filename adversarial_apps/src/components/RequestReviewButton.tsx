@@ -44,6 +44,7 @@ export default function RequestReviewButton({
     if (isLoggedIn && isRegularUser) {
       try {
         setLoading(true);
+        console.log("adding review request ");
         const payload = { action: "request_company_review", cik, username };
         const response = await fetch("/api/call-python-api", {
           method: "POST",
