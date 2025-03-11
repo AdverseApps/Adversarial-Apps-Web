@@ -1,13 +1,6 @@
 import SearchBar from "@/components/searchbar";
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams?: {
-    query?: string;
-  };
-}) {
-  // const query = searchParams?.query || ""; not used for anything rn
+export default function Page() {
 
   return (
     <>
