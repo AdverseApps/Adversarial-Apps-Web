@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { QRCodeComponent } from "./QR";
 import Image from "next/image";
+import Link from "next/link";
 
 
 interface Company {
@@ -138,7 +139,12 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
             {/* Accordion Content */}
             {isOpen && (
                 <div className="p-4 bg-blue-950 text-white rounded-lg rounded-t-none">
-                    <p><strong>CIK:</strong> {cik}</p>
+                    <p>
+                        <strong>CIK:</strong>{' '}
+                        <Link href={`/company/${cik}`} className="text-white underline hover:text-blue-300">
+                            {cik}
+                        </Link>
+                    </p>
                     <p><strong>Address:</strong> {formattedAddress}</p>
                     <p><strong>State of Incorporation:</strong> {company?.stateOfIncorporation || "N/A"}</p>
                     <p><strong>Phone:</strong> {company?.phone || "N/A"}</p>
