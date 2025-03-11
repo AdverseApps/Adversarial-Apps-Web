@@ -1,5 +1,7 @@
 'use client';
 
+import Image from "next/image";
+
 export default function DownloadExcelButton({ username }: { username: string }) {
     const handleDownload = async () => {
         if (!username) {
@@ -61,10 +63,10 @@ export default function DownloadExcelButton({ username }: { username: string }) 
     return (
         <button
             onClick={handleDownload}
-            className="px-4 py-2 bg-blue-900 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors flex items-center space-x-2 mt-2"
+            className="px-2 py-2 bg-green-700 text-white rounded-md shadow-md hover:bg-green-800 transition-colors flex items-center space-x-2 mt-2"
             disabled={!username}
         >
-            {username ? "Download Excel" : "Loading..."}
+            {username ? "Export to Excel" : "Loading..."}
         </button>
     );
 }

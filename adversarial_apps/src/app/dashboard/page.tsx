@@ -93,7 +93,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Logout button */}
-      <div className="flex items-center justify-center pt-2">
+      <div className="flex items-center justify-center pt-2 gap-x-4">
         <LogoutButton />
         <DownloadExcelButton username={userStatus.username} />
       </div>
