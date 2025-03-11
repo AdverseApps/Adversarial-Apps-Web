@@ -1,7 +1,5 @@
 'use client';
 
-import Image from "next/image";
-
 export default function DownloadExcelButton({ username }: { username: string }) {
     const handleDownload = async () => {
         if (!username) {
