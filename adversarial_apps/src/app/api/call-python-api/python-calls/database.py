@@ -430,9 +430,11 @@ def generate_excel(username: str) -> dict:
     # updates deminsions of the columns
     ws_company_data.column_dimensions["A"].width = 15
     ws_company_data.column_dimensions["B"].width = 35
-    ws_company_data.column_dimensions["C"].width = 15
+    ws_company_data.column_dimensions["C"].width = 35
+    ws_company_data.column_dimensions["D"].width = 15
+    ws_company_data.column_dimensions["E"].width = 15
 
-    ws_company_data.append(["CIK", "Company Name", "Risk Score"])
+    ws_company_data.append(["CIK", "Company Name", "Address", "Phone", "Risk Score"])
 
     # Get the list of favorited companies for the user
     favorites = get_favorites(username)
@@ -446,11 +448,23 @@ def generate_excel(username: str) -> dict:
 
         if company_score["status"] == "success":
             ws_company_data.append(
-                [cik, company_data["company"]["name"], company_score["riskScore"]]
+                [
+                    cik,
+                    company_data["company"]["name"],
+                    company_data["company"]["address"],
+                    company_data["company"]["phone"],
+                    company_score["riskScore"],
+                ]
             )
         else:
             ws_company_data.append(
-                [cik, company_data["company"]["name"], "Not Verified"]
+                [
+                    cik,
+                    company_data["company"]["name"],
+                    company_data["company"]["address"],
+                    company_data["company"]["phone"],
+                    "Not Verified",
+                ]
             )
 
     excel_stream = BytesIO()
