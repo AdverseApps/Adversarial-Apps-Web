@@ -100,12 +100,12 @@ export default async function page({ params }: CompanyDetailsProps) {
     totalCommonStocks?: number;
     message?: string;
   }
-  
+
   interface DefUrlResponse {
     status: "success" | "error";
     url?: string;
     message?: string;
-  }  
+  }
   let totalCommonStocks: TotalCommonStocksResponse | null = null;
   let defUrl: DefUrlResponse | null = null;
   if (reviewerData && reviewerData.role === "true") {
@@ -213,17 +213,6 @@ export default async function page({ params }: CompanyDetailsProps) {
               ) : "N/A"}
             </p>
           </div>
-
-          {/* Render the "Verify Company" button only if user is a reviewer */}
-          {reviewerData && reviewerData.role === "true" && (
-            <div className="mt-4">
-              <VerifyButton cik={cik} />
-            </div>
-          )}
-          {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany cik={cik} />
-          )}
-
         </div>
 
         {/* Right side */}
@@ -241,43 +230,51 @@ export default async function page({ params }: CompanyDetailsProps) {
           )}
 
           {/* Only display additional SEC API data for reviewer users */}
-        {reviewerData && reviewerData.role === "true" && (
-          <div className="mt-4 text-left">
-            <h3 className="text-xl font-bold mb-2">Additional SEC Data</h3>
-            <p>
-              <span className="font-semibold">Total Common Stocks:</span>{" "}
-              {totalCommonStocks ? (
-                totalCommonStocks.status === "success" ? (
-                  totalCommonStocks.totalCommonStocks
+          {reviewerData && reviewerData.role === "true" && (
+            <div className="mt-4 text-left">
+              <h3 className="text-xl font-bold mb-2">Additional SEC Data</h3>
+              <p>
+                <span className="font-semibold">Total Common Stocks:</span>{" "}
+                {totalCommonStocks ? (
+                  totalCommonStocks.status === "success" ? (
+                    totalCommonStocks.totalCommonStocks
+                  ) : (
+                    totalCommonStocks.message
+                  )
                 ) : (
-                  totalCommonStocks.message
-                )
-              ) : (
-                "N/A"
-              )}
-            </p>
-            <p>
-              <span className="font-semibold">DEF 14A URL:</span>{" "}
-              {defUrl ? (
-                defUrl.status === "success" ? (
-                  <a
-                    href={defUrl.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 underline"
-                  >
-                    {defUrl.url}
-                  </a>
+                  "N/A"
+                )}
+              </p>
+              <p>
+                <span className="font-semibold">DEF 14A URL:</span>{" "}
+                {defUrl ? (
+                  defUrl.status === "success" ? (
+                    <a
+                      href={defUrl.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 underline"
+                    >
+                      {defUrl.url}
+                    </a>
+                  ) : (
+                    defUrl.message
+                  )
                 ) : (
-                  defUrl.message
-                )
-              ) : (
-                "N/A"
-              )}
-            </p>
-          </div>
-        )}
-
+                  "N/A"
+                )}
+              </p>
+            </div>
+          )}
+          {/* Render the "Verify Company" button only if user is a reviewer */}
+          {reviewerData && reviewerData.role === "true" && (
+            <div className="mt-4">
+              <VerifyButton cik={cik} />
+            </div>
+          )}
+          {reviewerData && reviewerData.role === "true" && (
+            <UpdateCompany cik={cik} />
+          )}
         </div>
       </div>
 
