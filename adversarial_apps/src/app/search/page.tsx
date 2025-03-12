@@ -16,7 +16,7 @@ export default function Page() {
 
         <section className="mt-6 mx-6 text-center">
           <p className="text-lg mb-4">
-            Enter a company name below to search for detailed company
+            Enter a company name above to search for detailed company
             information from SEC filings. Your search results will include:
           </p>
           <ul className="list-disc list-inside text-left inline-block">
