@@ -94,7 +94,7 @@ export default function VerifyUpdate({ cik }: VerifyButtonProps)
                 className={`px-6 py-2 bg-blue-900 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors self-end ${loading ? "opacity-50 cursor-not-allowed" : ""
                     }`}
             >
-                {loading ? "Updating..." : "Update Company"}
+                {loading ? "Updating..." : "Update Risk Score"}
             </button>
         </form>
 
