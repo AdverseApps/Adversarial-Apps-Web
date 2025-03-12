@@ -220,9 +220,6 @@ export default async function page({ params }: CompanyDetailsProps) {
               <VerifyButton cik={cik} />
             </div>
           )}
-
-          <RequestReviewButton cik={cik} username={username || null} role={reviewerData?.role || null} />
-
           {reviewerData && reviewerData.role === "true" && (
             <UpdateCompany cik={cik} />
           )}
@@ -237,7 +234,10 @@ export default async function page({ params }: CompanyDetailsProps) {
               <RiskScoreMeter riskScore={riskScore.riskScore} />
             </div>
           ) : (
-            <p>This Company has not yet been verified</p>
+            <div className="flex flex-col items-center">
+              <p>This Company has not yet been verified</p>
+              <RequestReviewButton cik={cik} username={username || null} role={reviewerData?.role || null} />
+            </div>
           )}
 
           {/* Only display additional SEC API data for reviewer users */}
