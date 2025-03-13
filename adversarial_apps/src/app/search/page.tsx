@@ -47,6 +47,10 @@ export default function Page() {
             <strong>Note:</strong> For best results, please log in or sign up to
             access all features.
           </p>
+
+          <p className="text-md mt-4">
+            <p><u>We do not track user searches with this tool.</u> </p>
+          </p>
         </section>
 
         

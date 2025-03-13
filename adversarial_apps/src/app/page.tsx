@@ -16,8 +16,9 @@ export default function Home() {
                 Helping <strong>You</strong> Identify Friendly Business Partners
                 </h2>
 
-                <p className="text-lg text-center"><br /><br />
-                We offer an extensive database with powerful search tools to help you pursue your contracting goals
+                <p className="text-lg text-center"><br />
+                <p>We offer an extensive database with powerful search tools to locate business partners</p>
+                <p>that meet federal contracting security standards for U.S.-based supply chains.</p>
                 </p>
                 
                 <nav className="inset-0 flex items-center justify-center mt-9 gap-2 md:mt-8 ">
