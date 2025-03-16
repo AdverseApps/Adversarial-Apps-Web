@@ -47,6 +47,11 @@ export default function Page() {
             <strong>Note:</strong> For best results, please log in or sign up to
             access all features.
           </p>
+
+          <p className="text-md mt-4">
+            <p><u>We do not track user searches with this tool.</u> We value user privacy and will not save anything without your permission. We only store</p>
+            <p>user data for login credentials and user-favorited companies. For website demonstration inquiries, please email: adversarialapps@gmail.com</p>
+          </p>
         </section>
 
         
