@@ -234,7 +234,7 @@ export default async function page({ params }: CompanyDetailsProps) {
             <p className="text-sm mt-4">
               The lower the score of a graded company is, the less risky said company is to work with 
               by our scale. <u>The process by which we evaluate companies has subjective elements to it; </u>
-              please consult our About page for more information regarding our rubric.
+              please consult our <a href="https://adversarialapps.com/about" target="_blank"><u>About </u></a> page for more information regarding our rubric.
             </p>
           </div>
 
