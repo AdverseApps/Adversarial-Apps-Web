@@ -57,13 +57,6 @@ export default async function DashboardPage() {
       <p className="text-2xl font-bold">Welcome, {userStatus.username}!</p>
       <br />
 
-      {userStatus && userStatus.role === "true" && (
-        <div>
-          <h2>Reviewer Features</h2>
-          <button>Special Reviewer Action</button>
-        </div>
-      )}
-
       {/* Display Favorite Companies with SEC Data */}
       <div className="bg-gray-700 rounded-xl p-4 shadow-md">
         {/* Headers */}
