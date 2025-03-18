@@ -13,6 +13,7 @@ import VerifyButton from "@/components/VerifyButton";
 import UpdateCompany from "@/components/UpdateCompany";
 import { RecentOwnership } from '@/components/RecentOwnership';
 import { RiskScoreMeter } from "@/components/RiskScoreMeter";
+import Image from "next/image";
 
 import RequestReviewButton from '@/components/RequestReviewButton';
 
@@ -151,7 +152,7 @@ export default async function page({ params }: CompanyDetailsProps) {
   return (
     <div className="text-white min-h-screen p-8 box-border">
       <div className="flex flex-wrap gap-6 mt-6 box-border">
-        {/* Left side */}
+        {/* Left side (Company Information) */}
         <div className="w-full md:w-[calc(50%-1.5rem)] bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-navy-600 box-border">
           <div className="flex items-center justify-between"> {/* Add flex container */}
             <h2 className="text-3xl font-bold text-navy-300 mb-4">
@@ -215,9 +216,26 @@ export default async function page({ params }: CompanyDetailsProps) {
           </div>
         </div>
 
-        {/* Right side */}
+        {/* Right side (Risk Score) */}
         <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white text-center box-border">
-          {/* Displaying simple risk score */}
+          {/* Risk Score Hover Information */}
+          <div className="flex items-center gap-2 relative">
+            <h2 className="text-3xl font-bold text-navy-300">Risk Score</h2>
+            <div className="relative group">
+              <Image
+                src="/info.png"
+                height={20}
+                width={20}
+                alt="Info"
+                className="invert cursor-pointer"
+              />
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 bg-blue-800 text-white text-sm p-2 rounded shadow-lg 
+              opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                This is the risk score explanation. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Totam praesentium cumque fuga quis accusantium iure ad iste.
+              </div>
+            </div>
+          </div>
+          {/* Displaying risk score */}
           {riskScore.riskScore !== undefined && riskScore.riskScore !== null ? (
             <div>
               <RiskScoreMeter riskScore={riskScore.riskScore} />
