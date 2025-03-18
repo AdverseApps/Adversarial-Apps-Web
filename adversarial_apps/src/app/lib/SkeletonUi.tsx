@@ -4,11 +4,14 @@
 export function SkeletonCompany() {
     return (
         <div className="flex flex-col p-8 gap-4 bg-gray-900 text-white min-h-screen">
+          {/* Company info and risk score boxes */}
           <div className="flex gap-4 mt-4">
             <div className="bg-gray-700 w-1/2 h-48 animate-pulse rounded"></div>
             <div className="bg-gray-700 w-1/2 h-48 animate-pulse rounded"></div>
           </div>
+          {/* Recent owners box */}
           <div className="bg-gray-700 w-full h-24 animate-pulse rounded mt-4"></div>
+          {/* SEC/EDGAR disclaimer box */}
           <div className="flex justify-center space-x-4">
           <div className="bg-gray-700 w-1/2 h-4 animate-pulse rounded"></div>
           </div>
