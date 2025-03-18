@@ -1,6 +1,6 @@
 //this is a UI file for loading page skeletons
 //when making a new skeleton please name the function "Skeleton*folder*"
-
+//and add comments detailing which loading box corresponds to which field on the page
 export function SkeletonCompany() {
     return (
         <div className="flex flex-col p-8 gap-4 bg-gray-900 text-white min-h-screen">
