@@ -34,6 +34,7 @@ export default function LoginPage() {
       .then(() => {
         // Redirect to the dashboard
         window.location.href = '/dashboard';
+        console.log('Session created successfully');
       })
       .catch((error) => {
         if (error.message === "Invalid credentials."){
