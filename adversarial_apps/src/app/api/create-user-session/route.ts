@@ -28,7 +28,7 @@ async function validatePassword(username: string) {
     if (result.status === "success") {
         return result.password;
     } else {
-        throw new Error (result.message);
+        return null;
     }
 }
 
@@ -62,7 +62,6 @@ async function getRole (username: string) {
 }
 
 export async function POST(req: NextRequest) {
-
     if (req.method !== 'POST') {
         return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
     }
@@ -78,7 +77,11 @@ export async function POST(req: NextRequest) {
 
         // grabs password from database, compares to input password to authenticate
         const storedPassword = await validatePassword(username);
-
+        
+        if (!storedPassword) {
+            return NextResponse.json({ error: "Invalid credentials." }, { status: 401 }); // Handle invalid email properly
+        }
+        
         const isAuthenticated = await argon2.verify(storedPassword, password);
 
         if (!isAuthenticated) {
