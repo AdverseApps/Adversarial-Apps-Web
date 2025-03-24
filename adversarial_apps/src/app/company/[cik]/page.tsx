@@ -13,6 +13,7 @@ import VerifyButton from "@/components/VerifyButton";
 import UpdateCompany from "@/components/UpdateCompany";
 import { RecentOwnership } from '@/components/RecentOwnership';
 import { RiskScoreMeter } from "@/components/RiskScoreMeter";
+import RiskScoreTooltip from "@/components/RiskScoreTooltip";
 
 import RequestReviewButton from '@/components/RequestReviewButton';
 
@@ -151,7 +152,7 @@ export default async function page({ params }: CompanyDetailsProps) {
   return (
     <div className="text-white min-h-screen p-8 box-border">
       <div className="flex flex-wrap gap-6 mt-6 box-border">
-        {/* Left side */}
+        {/* Left side (Company Information) */}
         <div className="w-full md:w-[calc(50%-1.5rem)] bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-navy-600 box-border">
           <div className="flex items-center justify-between"> {/* Add flex container */}
             <h2 className="text-3xl font-bold text-navy-300 mb-4">
@@ -215,9 +216,14 @@ export default async function page({ params }: CompanyDetailsProps) {
           </div>
         </div>
 
-        {/* Right side */}
+        {/* Right side (Risk Score) */}
         <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white text-center box-border">
-          {/* Displaying simple risk score */}
+          {/* Risk Score Hover Information */}
+          <div className="flex items-center gap-2 relative">
+            <h2 className="text-3xl font-bold text-navy-300">Risk Score</h2>
+            <RiskScoreTooltip />
+          </div>
+          {/* Displaying risk score */}
           {riskScore.riskScore !== undefined && riskScore.riskScore !== null ? (
             <div>
               <RiskScoreMeter riskScore={riskScore.riskScore} />
@@ -228,15 +234,6 @@ export default async function page({ params }: CompanyDetailsProps) {
               <RequestReviewButton cik={cik} username={username || null} role={reviewerData?.role || null} />
             </div>
           )}
-
-          {/* Report rubric disclaimers */}
-          <div>
-            <p className="text-sm mt-4">
-              The lower the score of a graded company is, the less risky said company is to work with 
-              by our scale. <u>The process by which we evaluate companies has subjective elements to it; </u>
-              please consult our <a href="https://adversarialapps.com/about" target="_blank"><u>About</u> </a> page for more information regarding our rubric.
-            </p>
-          </div>
 
           {/* Report Summary (goes below this comment once functionality is made) */}
 
