@@ -2,6 +2,7 @@ import "./globals.css";
 import NavBar from "@/components/navbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CookieBanner from "@/components/CookieBanner";
 
 export default function RootLayout({
   children,
@@ -24,6 +25,7 @@ export default function RootLayout({
           draggable
           pauseOnHover
         />
+        <CookieBanner />
       </body>
     </html>
   );
