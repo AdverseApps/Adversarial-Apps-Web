@@ -155,7 +155,7 @@ export default async function page({ params }: CompanyDetailsProps) {
         {/* Left side (Company Information) */}
         <div className="w-full md:w-[calc(50%-1.5rem)] bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-navy-600 box-border">
           <div className="flex items-center justify-between"> {/* Add flex container */}
-            <h2 className="text-3xl font-bold text-navy-300 mb-4">
+            <h2 className="text-3xl font-bold text-navy-300 mb-4 max-w-[65%]">
               {capitalizeWords(name) || "N/A"}
             </h2>
             <div className="flex items-center space-x-2"> {/* Wrap buttons */}
