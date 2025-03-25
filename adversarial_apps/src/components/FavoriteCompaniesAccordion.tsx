@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { QRCodeComponent } from "./QR";
 import Image from "next/image";
-import Link from "next/link";
 
 
 interface Company {
@@ -146,12 +145,12 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
                     <p><strong>State of Incorporation:</strong> {company?.stateOfIncorporation || "N/A"}</p>
                     <p><strong>Phone:</strong> {company?.phone || "N/A"}</p>
                     <p><strong>Most Recent Filing Date:</strong> {company?.mostRecentFilingDate || "N/A"}</p>
-                    <Link href={`/company/${cik}`}>
+                    <a href={`/company/${cik}`} target="_blank">
                         <div className="mt-2 inline-flex items-center bg-blue-600 hover:bg-blue-800 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out">
                             More Info
                             <Image src="/more.png" height={30} width={30} alt="More" className="invert ml-2" />
                         </div>
-                    </Link>
+                    </a>
                 </div>
             )}
         </div>
