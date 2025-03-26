@@ -568,3 +568,84 @@ def request_company_review(username: str, cik: str) -> dict:
         if connection:
             cursor.close()
             connection.close()
+
+
+def get_review_requests() -> dict:
+    """
+    Retrieve a list of companies that have pending review requests by checking the
+    'reviewRequests' field in the COMPANIES table. Only returns companies where
+    reviewRequests > 0.
+
+    :return: Dictionary with status and a list of objects, each having 'cik' and 'requestCount'
+    """
+    connection = None
+    try:
+        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+
+        # Query the COMPANIES table for companies with reviewRequests > 0
+        cursor.execute(
+            'SELECT "CIK", "reviewRequests" FROM "COMPANIES" WHERE "reviewRequests" > 0'
+        )
+        rows = cursor.fetchall()
+        review_requests = (
+            [{"cik": row[0], "requestCount": row[1]} for row in rows] if rows else []
+        )
+
+        return {"status": "success", "reviewRequests": review_requests}
+
+    except psycopg2.Error as e:
+        if connection:
+            connection.rollback()
+        return {"status": "error", "message": f"Database error: {e}"}
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def remove_all_review_requests(cik: str) -> dict:
+    """
+    Removes all review requests for a specific company.
+
+    - Resets the reviewRequests count in the COMPANIES table to 0.
+    - Deletes all corresponding entries for that company in the REVIEW_REQUESTS table.
+
+    :param cik: The CIK number of the company.
+    :return: Dictionary with status and a message.
+    """
+    connection = None
+    try:
+        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+
+        # Check if the company exists
+        cursor.execute(
+            'SELECT "reviewRequests" FROM "COMPANIES" WHERE "CIK" = %s', (cik,)
+        )
+        row = cursor.fetchone()
+        if not row:
+            return {"status": "error", "message": f"Company with CIK {cik} not found."}
+
+        # 1. Reset reviewRequests count in COMPANIES table to 0
+        cursor.execute(
+            'UPDATE "COMPANIES" SET "reviewRequests" = 0 WHERE "CIK" = %s', (cik,)
+        )
+
+        # 2. Remove all entries for the company in REVIEW_REQUESTS
+        cursor.execute('DELETE FROM "REVIEW_REQUESTS" WHERE "companyCIK" = %s', (cik,))
+
+        connection.commit()
+        return {
+            "status": "success",
+            "message": f"All review requests removed for company {cik}.",
+        }
+
+    except psycopg2.Error as e:
+        if connection:
+            connection.rollback()
+        return {"status": "error", "message": f"Database error: {e}"}
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
