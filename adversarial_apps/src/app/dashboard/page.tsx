@@ -70,7 +70,7 @@ export default async function DashboardPage() {
           // Check if the status is 'success' or 'error'
           const riskScore =
             riskScoreData.status === "success" ? riskScoreData.riskScore : -1; // Return -1 if the company is not verified
-          return { cik, data: result, riskScore };
+          return { cik, company: result?.company || null, riskScore };
         } catch (error) {
           console.error(
             `Error fetching SEC data or risk score for CIK ${cik}:`,
