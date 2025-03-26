@@ -585,7 +585,7 @@ def get_review_requests() -> dict:
 
         # Query the COMPANIES table for companies with reviewRequests > 0
         cursor.execute(
-            'SELECT "CIK", "reviewRequests" FROM "COMPANIES" WHERE "reviewRequests" > 0'
+            'SELECT "CIK", "reviewRequests" FROM "COMPANIES" WHERE "reviewRequests" > 0 ORDER BY "reviewRequests" DESC'
         )
         rows = cursor.fetchall()
         review_requests = (
