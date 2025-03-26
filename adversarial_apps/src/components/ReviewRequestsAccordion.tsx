@@ -21,7 +21,6 @@ interface Company {
 interface ReviewRequestProps {
   cik: string;
   company: Company;
-  username: string;
   requestCount: number;
 }
 /*
@@ -122,7 +121,6 @@ export const ReviewRequestsAccordion = ({ cik, company, username, requestCount }
 export const ReviewRequestsAccordion = ({
   cik,
   company,
-  username,
   requestCount,
 }: ReviewRequestProps) => {
   const [isOpen, setIsOpen] = useState(false);

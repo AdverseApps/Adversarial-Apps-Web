@@ -5,6 +5,22 @@ import { FetchSecData, getFavorites, getRiskScore } from "../lib/data";
 import DownloadExcelButton from "@/components/downloadExcelButton";
 import { ReviewRequestsAccordion } from "@/components/ReviewRequestsAccordion";
 
+
+interface FavoriteCompany {
+  cik: string;
+  data: {
+    company?: string;
+  } | null;
+  riskScore: number;
+}
+
+interface ReviewRequest {
+  cik: string;
+  requestCount: number;
+  company: string;
+  username: string;
+}
+
 export default async function DashboardPage() {
   let userStatus;
   try {
@@ -29,7 +45,7 @@ export default async function DashboardPage() {
     );
   }
 
-  let favoritesData: any[] = [];
+  let favoritesData: FavoriteCompany[] = [];
   if (userStatus.role === "false") {
     // Getting CIK of Favorites
     const { favorites } = await getFavorites(userStatus.username);
@@ -78,7 +94,7 @@ export default async function DashboardPage() {
   );
   */
 
-  let reviewRequests: any[] = [];
+  let reviewRequests: ReviewRequest[] = [];
 
   if (userStatus.role === "true") {
     try {
