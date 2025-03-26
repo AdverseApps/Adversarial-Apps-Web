@@ -320,3 +320,36 @@ export async function getDefUrl(cik: string) {
     };
   }
 }
+
+export async function getReviewRequests(): Promise<{ status: string; reviewRequests?: { cik: string; requestCount: number }[]; message?: string }> {
+  try {
+    console.log("Getting Review Requests:");
+    const headersList = headers();
+    const domain = headersList.get("host");
+    const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+    const data = { action: "get_review_requests" };
+    const response = await fetch(
+      `${protocol}://${domain}/api/call-python-api`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!response.ok) {
+      console.error(`Review Requests fetch failed: ${response.statusText}`);
+      return {
+        status: "error",
+        message: `Failed to fetch Review Requests: ${response.statusText}`,
+      };
+    }
+    const result = await response.json();
+    console.log(result);
+    return result;
+  } catch (error) {
+    console.error("Error fetching review requests:", error);
+    return { status: "error", message: "Error fetching review requests" };
+  }
+}
