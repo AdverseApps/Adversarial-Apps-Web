@@ -5,20 +5,29 @@ import { FetchSecData, getFavorites, getRiskScore } from "../lib/data";
 import DownloadExcelButton from "@/components/downloadExcelButton";
 import { ReviewRequestsAccordion } from "@/components/ReviewRequestsAccordion";
 
-
-interface FavoriteCompany {
-  cik: string;
-  data: {
-    company?: string;
-  } | null;
-  riskScore: number;
+interface Company {
+  name?: string;
+  address?: string;
+  street2?: string;
+  city?: string;
+  zipCode?: string;
+  stateOrCountryDescription?: string;
+  stateOfIncorporation?: string;
+  mostRecentFilingDate?: string;
+  phone?: string;
 }
 
-interface ReviewRequest {
+interface FavoriteCompanyProps {
   cik: string;
-  requestCount: number;
-  company: string;
+  company: Company;
   username: string;
+  riskScore: number | null;
+}
+
+interface ReviewRequestProps {
+  cik: string;
+  company: Company;
+  requestCount: number;
 }
 
 export default async function DashboardPage() {
@@ -45,7 +54,7 @@ export default async function DashboardPage() {
     );
   }
 
-  let favoritesData: FavoriteCompany[] = [];
+  let favoritesData: FavoriteCompanyProps[] = [];
   if (userStatus.role === "false") {
     // Getting CIK of Favorites
     const { favorites } = await getFavorites(userStatus.username);
@@ -94,7 +103,7 @@ export default async function DashboardPage() {
   );
   */
 
-  let reviewRequests: ReviewRequest[] = [];
+  let reviewRequests: ReviewRequestProps[] = [];
 
   if (userStatus.role === "true") {
     try {
@@ -140,7 +149,7 @@ export default async function DashboardPage() {
           {/* Looping through each company */}
           {favoritesData.length > 0 ? (
             favoritesData.map((item, index) => {
-              const company = item.data?.company;
+              const company = item?.company;
               const riskScore = item.riskScore;
               return company ? (
                 <FavoriteCompaniesAccordion
@@ -177,7 +186,6 @@ export default async function DashboardPage() {
                 key={index}
                 cik={item.cik}
                 company={item.company}
-                username={item.username}
                 requestCount={item.requestCount}
               />
             ))
