@@ -16,6 +16,7 @@ import { RiskScoreMeter } from "@/components/RiskScoreMeter";
 import RiskScoreTooltip from "@/components/RiskScoreTooltip";
 
 import RequestReviewButton from '@/components/RequestReviewButton';
+import { RiskScoreExplanation } from "@/components/RiskScoreExplanation";
 
 interface CompanyDetailsProps {
   params: { cik: string };
@@ -227,6 +228,9 @@ export default async function page({ params }: CompanyDetailsProps) {
           {riskScore.riskScore !== undefined && riskScore.riskScore !== null ? (
             <div>
               <RiskScoreMeter riskScore={riskScore.riskScore} />
+              <div className="mt-2">
+                <RiskScoreExplanation riskScore={riskScore.riskScore} />
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center">
