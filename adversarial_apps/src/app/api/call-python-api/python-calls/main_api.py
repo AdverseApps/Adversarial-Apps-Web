@@ -15,7 +15,9 @@ from database import (
     get_company_score,
     get_favorites,
     get_password,
+    get_review_requests,
     get_reviewer_status,
+    remove_all_review_requests,
     request_company_review,
     update_company_score,
     verify_company,
@@ -201,7 +203,10 @@ if __name__ == "__main__":
             result = request_company_review(
                 input_action_and_data.get("username"), input_action_and_data.get("cik")
             )
-
+        elif action == "get_review_requests":
+            result = get_review_requests()
+        elif action == "remove_all_review_requests":
+            result = remove_all_review_requests(input_action_and_data.get("cik"))
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}
