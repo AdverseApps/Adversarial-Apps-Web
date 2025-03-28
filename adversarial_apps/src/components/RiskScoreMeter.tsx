@@ -39,7 +39,7 @@ export const RiskScoreMeter = (props: Props) => {
                 width: 15
             }}
             labels={{
-                valueLabel: { formatTextValue: value => (value > 5 ? '5+' : `Risk Score ${value}`) },
+                valueLabel: { formatTextValue: value => (value > 5 ? '5+' : `${value}`) },
                 tickLabels: {
                     type: 'outer',
                     defaultTickValueConfig: {
