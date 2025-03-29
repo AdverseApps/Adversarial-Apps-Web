@@ -381,7 +381,7 @@ def verify_company(cik: str) -> dict:
             connection.close()
 
 
-def update_company_score(cik: str, risk_score: int) -> dict:
+def update_company_score(cik: str, risk_score: float) -> dict:
     """
     Update the risk score for a company based on the CIK number.
 

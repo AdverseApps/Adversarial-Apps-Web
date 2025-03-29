@@ -13,14 +13,15 @@ export default function VerifyUpdate({ cik }: VerifyButtonProps)
 {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [score, setScore] = useState<number | "">(""); // Ensure controlled input
+    const [score, setScore] = useState<string>(""); // Ensure controlled input
 
     const handleUpdate = async (e: React.FormEvent) =>
     {
         e.preventDefault(); // Prevent default form submission behavior
 
-        if (score === "" || isNaN(Number(score)))
-        {
+        const numericScore = parseFloat(score);
+
+        if (isNaN(numericScore) || numericScore < 0 || numericScore > 100) {
             toast.error("Please enter a valid risk score between 0 and 100.");
             return;
         }
@@ -29,7 +30,7 @@ export default function VerifyUpdate({ cik }: VerifyButtonProps)
 
         try
         {
-            const data = { action: "update_company_score", cik, risk_score: Number(score) }; // Use state value
+            const data = { action: "update_company_score", cik, risk_score: numericScore }; // Use state value
 
             console.log("Submitting Data:", data);
 
@@ -79,8 +80,9 @@ export default function VerifyUpdate({ cik }: VerifyButtonProps)
                     name="riskscore"
                     min="0"
                     max="100"
+                    step="0.01"
                     value={score}
-                    onChange={(e) => setScore(e.target.value ? Number(e.target.value) : "")}
+                    onChange={(e) => setScore(e.target.value)}
                     className="w-64 px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-800"
                     placeholder="Input score..."
                     required
