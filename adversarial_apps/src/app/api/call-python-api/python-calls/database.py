@@ -320,67 +320,6 @@ def get_company_score(cik: str) -> dict:
         return {"status": "error", "message": f"Database error: {e}"}
 
 
-def verify_company(cik: str) -> dict:
-    """
-    Verify a company by its CIK. If the CIK doesn't exist in COMPANIES,
-    insert a new row with isVerified = TRUE. If it does exist and isVerified
-    is FALSE, update it to TRUE.
-
-    :param cik: The CIK number of the company
-    :return: A dictionary with status and message
-    """
-    connection = None
-    try:
-        connection = psycopg2.connect(os.getenv("DATABASE_URL"))
-        cursor = connection.cursor()
-
-        # 1. Check if the company exists in COMPANIES
-        cursor.execute(
-            'SELECT "CIK", "isVerified" FROM "COMPANIES" WHERE "CIK" = %s', (cik,)
-        )
-        row = cursor.fetchone()
-
-        if row:
-            # row = (CIK, isVerified)
-            _, is_verified = row
-            if not is_verified:
-                # 2a. If company exists but isVerified is FALSE, set it to TRUE
-                cursor.execute(
-                    'UPDATE "COMPANIES" SET "isVerified" = TRUE WHERE "CIK" = %s',
-                    (cik,),
-                )
-                connection.commit()
-                return {
-                    "status": "success",
-                    "message": f"Company with CIK {cik} has been verified (updated).",
-                }
-            else:
-                # If it's already verified, just inform the caller
-                return {
-                    "status": "success",
-                    "message": f"Company with CIK {cik} is already verified.",
-                }
-        else:
-            # 2b. If the company doesn't exist, insert it with isVerified = TRUE
-            cursor.execute(
-                'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
-                (cik, True, 0),
-            )
-            connection.commit()
-            return {
-                "status": "success",
-                "message": f"Company with CIK {cik} added and verified.",
-            }
-
-    except psycopg2.Error as e:
-        print(f"Database error: {e}")
-        return {"status": "error", "message": f"Database error: {e}"}
-    finally:
-        if connection:
-            cursor.close()
-            connection.close()
-
-
 def update_company_score(cik: str, risk_score: int) -> dict:
     """
     Update the risk score for a company based on the CIK number.
@@ -405,8 +344,9 @@ def update_company_score(cik: str, risk_score: int) -> dict:
                     connection.commit()
 
                 # Update the risk score for the company and sets it to be verified
+                # we set reviewRequests to 0 since now the socre has been updated so those requests have been satisfied
                 cursor.execute(
-                    'UPDATE "COMPANIES" SET "riskScore" = %s, "isVerified" = TRUE WHERE "CIK" = %s',
+                    'UPDATE "COMPANIES" SET "riskScore" = %s, "isVerified" = TRUE, "lastVerified" = NOW(), "reviewRequests" = 0 WHERE "CIK" = %s',
                     (risk_score, cik),
                 )
 
