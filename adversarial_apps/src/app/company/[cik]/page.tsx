@@ -9,7 +9,6 @@ import {
 } from "@/app/lib/data";
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
-import VerifyButton from "@/components/VerifyButton";
 import UpdateCompany from "@/components/UpdateCompany";
 import { RecentOwnership } from '@/components/RecentOwnership';
 import { RiskScoreMeter } from "@/components/RiskScoreMeter";
