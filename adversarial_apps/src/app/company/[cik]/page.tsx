@@ -274,12 +274,7 @@ export default async function page({ params }: CompanyDetailsProps) {
               </p>
             </div>
           )}
-          {/* Render the "Verify Company" button only if user is a reviewer */}
-          {reviewerData && reviewerData.role === "true" && (
-            <div className="mt-4">
-              <VerifyButton cik={cik} />
-            </div>
-          )}
+          
           {reviewerData && reviewerData.role === "true" && (
             <UpdateCompany cik={cik} />
           )}
