@@ -71,6 +71,18 @@ export const RecentOwnership = (props: Props) => {
         }
     };
 
+    // Function to determine transaction impact
+    const getTransactionSymbol = (code: string) => {
+        const gainingCodes = ["P", "A", "M", "C", "O", "X", "L"];
+        const losingCodes = ["S", "D", "F", "H", "G", "U"];
+        const neutralCodes = ["V", "I", "E", "W", "Z", "J", "K"];
+
+        if (gainingCodes.includes(code)) return "+";
+        if (losingCodes.includes(code)) return "-";
+        if (neutralCodes.includes(code)) return "~";
+        return ""; // Default fallback if the code is unknown
+    };
+
     // Preload the next page when we get a new page
     useEffect(() => {
         if (hasMore) {
@@ -90,7 +102,20 @@ export const RecentOwnership = (props: Props) => {
     return (
         <div >
             <br />
-            <h2 className="text-2xl font-semibold text-white mb-4">Recent Owners:</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">Ownership Tracking:</h2>
+            <br />
+            <p>
+                Below is a table of most recent changes in ownership of the company as provided by Form 4 submissions if there are any.
+                This provides a live updated view of how ownership is changing in real time, as our risk score is only calculated on data given once per year from the annual DEF 14A form.
+                <br></br>
+                <br></br>
+                The letter relates to the exact type of transaction that has occurred. For covnince we summed up the transaction codes and provided the key:
+            </p>
+            <ul className="list-disc ml-5">
+                <li>If the transaction code letter has a + that means the Receiver has obtained more control over the company.</li>
+                <li>If the transaction code letter has a - that means the Receiver has lost or given up control over the company.</li>
+                <li>If the transaction code letter has a ~ that means the Receiver has not changed their ownership of the company.</li>
+            </ul>
             <br />
             {error && <p className="text-red-500">Error: {error}</p>}
 
@@ -106,13 +131,13 @@ export const RecentOwnership = (props: Props) => {
                                     Accession Number
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                    Form
+                                    Transaction Type
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                    Issuer
+                                    Company
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                    Reporter
+                                    Receiver
                                 </th>
                             </tr>
                         </thead>
@@ -126,7 +151,7 @@ export const RecentOwnership = (props: Props) => {
                                         {filing.accessionNumber}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        {filing.form}
+                                        {filing.transaction_code} {getTransactionSymbol(filing.transaction_code)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {filing.issuer}
