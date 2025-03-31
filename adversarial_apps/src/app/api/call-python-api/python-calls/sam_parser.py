@@ -65,7 +65,7 @@ def parse_sam_dat_file(data_file_path: str) -> list:
     ]
     records = []
     index = 0
-    limit = 100  # Process only the first 100 records for demo
+    # limit = 100  # Process only the first 100 records for demo
 
     try:
         with open(data_file_path, mode='r', encoding='utf-8') as file:
@@ -77,11 +77,11 @@ def parse_sam_dat_file(data_file_path: str) -> list:
                 print("Skipping BOF header row")
             else:
                 records.append(process_row(first_line))
-                index += 1
+                # index += 1
 
             for row in reader:
-                if index >= limit:
-                    break
+               # if index >= limit:
+                #    break
                 processed = process_row(row)
                 records.append(processed)
                 index += 1
