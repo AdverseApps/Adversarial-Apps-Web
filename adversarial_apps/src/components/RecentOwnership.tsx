@@ -112,7 +112,7 @@ export const RecentOwnership = (props: Props) => {
                 <br></br>
                 The letter relates to the exact type of transaction that has occurred. For covnince we summed up the transaction codes and provided the key:
             </p>
-            <ul className="list-disc ml-5">
+            <ul className='list-disc ml-5'>
                 <li>If the transaction code letter has a "+" that means the Receiver has obtained more control over the company.</li>
                 <li>If the transaction code letter has a "-" that means the Receiver has lost or given up control over the company.</li>
                 <li>If the transaction code letter has a "~" that means the Receiver has not changed their ownership of the company.</li>
