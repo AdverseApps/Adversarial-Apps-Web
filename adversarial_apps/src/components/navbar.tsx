@@ -251,7 +251,7 @@ export default function NavBar() {
   }, []);
 
   return (
-    <header className="sticky top-0 bg-blue-900 grid grid-cols-3 items-center p-1 shadow-md border-b-2">
+    <header className="sticky top-0 bg-blue-900 grid grid-cols-3 items-center p-1 shadow-md border-b-2 z-50">
       {/* Logo */}
       <div className="flex justify-start ml-4">
         <Link href="/" aria-label="Go to home page">
