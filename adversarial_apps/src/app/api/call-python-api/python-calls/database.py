@@ -319,6 +319,7 @@ def get_company_score(cik: str) -> dict:
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
 
+
 def update_company_score(cik: str, risk_score: float) -> dict:
     """
     Update the risk score for a company based on the CIK number.
