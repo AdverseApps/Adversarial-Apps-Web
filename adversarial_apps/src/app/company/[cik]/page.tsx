@@ -9,7 +9,6 @@ import {
 } from "@/app/lib/data";
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
-import VerifyButton from "@/components/VerifyButton";
 import UpdateCompany from "@/components/UpdateCompany";
 import { RecentOwnership } from '@/components/RecentOwnership';
 import { RiskScoreMeter } from "@/components/RiskScoreMeter";
@@ -278,12 +277,7 @@ export default async function page({ params }: CompanyDetailsProps) {
               </p>
             </div>
           )}
-          {/* Render the "Verify Company" button only if user is a reviewer */}
-          {reviewerData && reviewerData.role === "true" && (
-            <div className="mt-4">
-              <VerifyButton cik={cik} />
-            </div>
-          )}
+          
           {reviewerData && reviewerData.role === "true" && (
             <UpdateCompany cik={cik} />
           )}
