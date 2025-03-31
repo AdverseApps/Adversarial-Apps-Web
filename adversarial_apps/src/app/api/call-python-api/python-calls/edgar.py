@@ -198,10 +198,12 @@ def get_recent_ownerships(cik: str, pagination: int) -> dict:
                         # grabs the owner information from the xml
                         issuer = soup.find("issuerName").text
                         reporter = soup.find("rptOwnerName").text
+                        transaction_code = soup.find("transactionCode").text
 
                         # adds gathered information to the form dictionary to be saved to output
                         form["issuer"] = issuer
                         form["reporter"] = reporter
+                        form["transaction_code"] = transaction_code
 
                 else:
                     return {
