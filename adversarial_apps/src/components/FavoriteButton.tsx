@@ -5,14 +5,20 @@ import Image from "next/image";
 import { useState } from "react";
 
 interface Props {
-    cik: string;
+    cik?: string;         // For SEC companies
+    uei?: string;         // For SAM companies
     username: string;
     favorites: string[];
 }
 
 export const FavoriteButton = (props: Props) => {
-    const { cik, username, favorites } = props;
-    const [isFavorite, setIsFavorite] = useState(favorites.includes(cik));
+    const { cik, uei, username, favorites } = props;
+
+    // Use the correct identifier
+    const identifier = cik || uei;
+    const isSec = Boolean(cik);
+
+    const [isFavorite, setIsFavorite] = useState(favorites.includes(identifier || ""));
     const [showLoginMessage, setShowLoginMessage] = useState(false);
 
     // function for handling when the user clicks 'add to favorites' button
@@ -23,7 +29,8 @@ export const FavoriteButton = (props: Props) => {
                 const response = await fetch('/api/call-python-api', {
                     method: "POST",
                     body: JSON.stringify({
-                        "action": "add_remove_favorite", "username": username, "cik": cik
+                        "action": "add_remove_favorite", "username": username, identifier,   // Send either CIK or UEI
+                        type: isSec ? "SEC" : "SAM"  // Specify the type
                     }),
                 });
 

@@ -153,12 +153,13 @@ def get_reviewer_status(username: str) -> dict:
     }
 
 
-def add_remove_favorite(username: str, cik: int) -> dict:
+def add_remove_favorite(username: str, identifier: str, company_type: str) -> dict:
     """
-    Add or remove a favorite company for the user.
+    Add or remove a favorite company for the user, supporting both SEC and SAM companies.
 
     :param username: Username of the user
-    :param cik: CIK number of the company
+    :param identifier: CIK (SEC) or UEI (SAM)
+    :param company_type: "SEC" or "SAM"
     :return: Message indicating success or failure
     """
     try:
@@ -172,48 +173,59 @@ def add_remove_favorite(username: str, cik: int) -> dict:
                         "status": "error",
                         "message": f"User '{username}' not found.",
                     }
+                # Check if the company exists in the database
+                if company_type == "SEC":
+                    cursor.execute('SELECT 1 FROM "COMPANIES" WHERE "CIK" = %s', (identifier,))
+                else:
+                    cursor.execute('SELECT 1 FROM "SAM_COMPANIES" WHERE "UEI" = %s', (identifier,))
 
-                # company must exist in the database first before we can add it to favorites
-                cursor.execute('SELECT 1 FROM "COMPANIES" WHERE "CIK" = %s', (cik,))
                 company_exists = cursor.fetchone()
+
+               
 
                 if not company_exists:
                     # since company does not exist, we need to add it to the database before we can add it to favorites
                     # do the the CIK in FAVORITES table is a foreign key to the CIK in COMPANIES table
-                    cursor.execute(
-                        'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
-                        (cik, False, 0),
-                    )
+                    if company_type == "SEC":
+                        cursor.execute(
+                            'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
+                            (identifier, False, 0)
+                        )
+                    else:
+                        cursor.execute(
+                            'INSERT INTO "SAM_COMPANIES" ("UEI", "isVerified", "riskScore") VALUES (%s, %s, %s)',
+                            (identifier, False, 0)
+                        )
                     connection.commit()
 
                 # Check if the user has already favorited the company
                 cursor.execute(
-                    'SELECT 1 FROM "FAVORITES" WHERE "userId" = %s AND "companyCIK" = %s',
-                    (user_id, cik),
+                    'SELECT 1 FROM "FAVORITES" WHERE "userId" = %s AND "companyId" = %s AND "type" = %s',
+                    (user_id, identifier, company_type)
                 )
                 favorite_exists = cursor.fetchone()
 
                 if favorite_exists:
                     # If the favorite exists, remove it
                     cursor.execute(
-                        'DELETE FROM "FAVORITES" WHERE "userId" = %s AND "companyCIK" = %s',
-                        (user_id, cik),
+                        'DELETE FROM "FAVORITES" WHERE "userId" = %s AND "companyId" = %s AND "type" = %s',
+                        (user_id, identifier, company_type)
                     )
                     connection.commit()
                     return {
                         "status": "success",
-                        "message": f"Removed company with CIK {cik} from favorites for {username}.",
+                        "message": f"Removed {company_type} company with ID {identifier} from favorites for {username}."
                     }
                 else:
                     # If the favorite does not exist, add it
                     cursor.execute(
-                        'INSERT INTO "FAVORITES" ("userId", "companyCIK") VALUES (%s, %s)',
-                        (user_id, cik),
+                        'INSERT INTO "FAVORITES" ("userId", "companyId", "type") VALUES (%s, %s, %s)',
+                        (user_id, identifier, company_type)
                     )
                     connection.commit()
                     return {
                         "status": "success",
-                        "message": f"Added company with CIK {cik} to favorites for {username}.",
+                        "message": f"Added {company_type} company with ID {identifier} to favorites for {username}."
                     }
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
@@ -240,15 +252,20 @@ def get_favorites(username: str) -> dict:
                     }
 
                 # Query to get the list of favorited companies
+                # Query for both SEC and SAM favorites
                 cursor.execute(
-                    'SELECT "companyCIK" FROM "FAVORITES" WHERE "userId" = %s',
-                    (user_id,),
+                    'SELECT "companyId", "type" FROM "FAVORITES" WHERE "userId" = %s',
+                    (user_id,)
                 )
                 favorites = cursor.fetchall()
 
+                sec_favorites = [fav[0] for fav in favorites if fav[1] == "SEC"]
+                sam_favorites = [fav[0] for fav in favorites if fav[1] == "SAM"]
+
                 return {
                     "status": "success",
-                    "favorites": [favorite[0] for favorite in favorites],
+                    "sec_favorites": sec_favorites,
+                    "sam_favorites": sam_favorites
                 }
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
@@ -589,3 +606,81 @@ def remove_all_review_requests(cik: str) -> dict:
         if connection:
             cursor.close()
             connection.close()
+
+
+def samSearch(search_term: str) -> dict:
+     """
+     Searches the SAM entities stored in the database for companies matching the search term.
+     Returns only the company name and UEI.
+     """
+     try:
+         db_url = os.getenv("DATABASE_URL")
+         if not db_url:
+             return {"status": "error", "message": "DATABASE_URL not set."}
+         conn = psycopg2.connect(db_url)
+         cursor = conn.cursor()
+         # Search only by company name (case-insensitive), returning company_name and UEI.
+         cursor.execute("""
+             SELECT legal_business_name, entity_id
+             FROM sam_entities
+             WHERE legal_business_name ILIKE %s
+             LIMIT 10;
+         """, (f"%{search_term}%",))
+         rows = cursor.fetchall()
+         cursor.close()
+         conn.close()
+ 
+         results = []
+         for row in rows:
+             results.append({
+                 "company_name": row[0],
+                 "uei": row[1]
+             })
+         return {"status": "success", "results": results}
+     except Exception as e:
+         return {"status": "error", "message": str(e)}
+     
+
+def FetchSamData(uei: str) -> dict:
+     """
+     Retrieves detailed SAM company data from the database using the Unique Entity ID (UEI).
+     """
+     import os
+     import psycopg2
+ 
+     db_url = os.getenv("DATABASE_URL")
+     if not db_url:
+         return {"status": "error", "message": "DATABASE_URL not set."}
+     
+     try:
+         conn = psycopg2.connect(db_url)
+         cursor = conn.cursor()
+         cursor.execute("""
+             SELECT legal_business_name, cage_code, country_code,
+                    state_or_province, city, zip_code, address_line1, address_line2,
+                    registration_date, expiration_date
+             FROM sam_entities
+             WHERE entity_id = %s
+             LIMIT 1;
+         """, (uei,))
+         row = cursor.fetchone()
+         cursor.close()
+         conn.close()
+         if row:
+             company = {
+                 "company_name": row[0],
+                 "cage_code": row[1],
+                 "country_code": row[2],
+                 "state_or_province": row[3],
+                 "city": row[4],
+                 "zip_code": row[5],
+                 "address_line1": row[6],
+                 "address_line2": row[7],
+                 "registration_date": row[8] if row[8] else None,
+                 "expiration_date": row[9] if row[9] else None
+             }
+             return {"status": "success", "company": company}
+         else:
+             return {"status": "error", "message": "No company found with the provided UEI."}
+     except Exception as e:
+         return {"status": "error", "message": str(e)}

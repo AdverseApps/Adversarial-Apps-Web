@@ -20,6 +20,8 @@ from database import (
     remove_all_review_requests,
     request_company_review,
     update_company_score,
+    samSearch,
+    FetchSamData
 )
 from dotenv import load_dotenv
 from edgar import (
@@ -135,6 +137,10 @@ if __name__ == "__main__":
             result = obtain_cik_number(input_action_and_data.get("search_term"))
         elif action == "get_sec_data":
             result = get_sec_data(input_action_and_data.get("search_term"))
+        elif action == "sam_search":
+            result = samSearch(input_action_and_data.get("search_term"))
+        elif action == "fetch_sam_data":
+            result = FetchSamData(input_action_and_data.get("uei"))    
         elif action == "add_user":
             # Then the inputActionAndData is formatted as such:
             # { "action": "add_user", "username": YOUR_USERNAME, "password_hashed": YOUR_PASSWORD, "comnpany": YOUR_COMPANY }
