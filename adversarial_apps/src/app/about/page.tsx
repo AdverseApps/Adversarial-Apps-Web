@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
-export default function page() {
+export default function Page() {
     const [isAdversarialAppsOpen, setIsAdversarialAppsOpen] = useState(false);
     const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
     const [isRiskLevelsOpen, setIsRiskLevelsOpen] = useState(false);
