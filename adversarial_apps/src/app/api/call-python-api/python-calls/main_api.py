@@ -20,7 +20,6 @@ from database import (
     remove_all_review_requests,
     request_company_review,
     update_company_score,
-    verify_company,
 )
 from dotenv import load_dotenv
 from edgar import (
