@@ -6,10 +6,11 @@ import { toast } from "react-toastify";
 
 interface VerifyButtonProps
 {
-    cik: string;
+    identifier: string;   // CIK for SEC, UEI for SAM
+    source: "SEC" | "SAM";  // New prop to indicate the source
 }
 
-export default function VerifyUpdate({ cik }: VerifyButtonProps)
+export default function VerifyUpdate({ identifier, source }: VerifyButtonProps)
 {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -30,7 +31,12 @@ export default function VerifyUpdate({ cik }: VerifyButtonProps)
 
         try
         {
-            const data = { action: "update_company_score", cik, risk_score: numericScore }; // Use state value
+            const data = { 
+                action: "update_company_score",
+                identifier,               // CIK or UEI
+                source,                   // SEC or SAM
+                risk_score: numericScore 
+            }; // Use state value
 
             console.log("Submitting Data:", data);
 

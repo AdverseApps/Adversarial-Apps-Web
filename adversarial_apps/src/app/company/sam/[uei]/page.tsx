@@ -134,13 +134,14 @@ export default async function Page({ params }: CompanyDetailsProps) {
               {/* Wrap buttons */}
               <QRCodeComponent
                 companyName={company_name}
-                cik={uei}
+                identifier={uei}
+                source="SAM"
                 displayIconOnly={false}
               />
               <FavoriteButton
-                cik={uei}
+                uei={uei}
                 username={username}
-                favorites={favorites}
+                favorites={favorites || []}
               />
             </div>
           </div>
@@ -199,7 +200,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
           )}
 
           {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany cik={uei} />
+            <UpdateCompany identifier={uei} source="SAM"/>
           )}
         </div>
       </div>

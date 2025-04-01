@@ -159,8 +159,8 @@ export default async function page({ params }: CompanyDetailsProps) {
               {capitalizeWords(name) || "N/A"}
             </h2>
             <div className="flex items-center space-x-2"> {/* Wrap buttons */}
-              <QRCodeComponent companyName={name} cik={cik} displayIconOnly={false} />
-              <FavoriteButton cik={cik} username={username} favorites={favorites} />
+              <QRCodeComponent companyName={name} identifier={cik} source="SEC" displayIconOnly={false} />
+              <FavoriteButton cik={cik} username={username} favorites={favorites || []} />
             </div>
           </div>
 
@@ -279,7 +279,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           )}
           
           {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany cik={cik} />
+            <UpdateCompany identifier={cik} source="SEC"/>
           )}
         </div>
       </div>

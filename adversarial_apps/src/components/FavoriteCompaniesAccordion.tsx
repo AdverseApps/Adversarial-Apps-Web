@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 
-interface Company {
+interface SECCompany {
     name?: string;
     address?: string;
     street2?: string;
@@ -17,15 +17,33 @@ interface Company {
     phone?: string;
 }
 
+interface SAMCompany {
+    legal_business_name?: string;
+    address_line1?: string;
+    address_line2?: string;
+    city?: string;
+    state_or_province?: string;
+    zip_code?: string;
+    country_code?: string;
+    registration_date?: string;
+    expiration_date?: string;
+}
+
 interface FavoriteCompanyProps {
-    cik: string;
-    company: Company;
+    identifier: string;
+    company: SECCompany | SAMCompany;
+    source: "SEC" | "SAM";
     username: string;
     riskScore: number | null;
 }
 
 // function for handling when the user clicks 'add to favorites' button
-const RemoveFavorite = ({ username, cik, company }: { username: string; cik: string, company: string, }) => {
+const RemoveFavorite = ({ username, identifier, source, companyName }: { 
+    username: string; 
+    identifier: string; 
+    source: "SEC" | "SAM"; 
+    companyName: string; 
+}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleRemoveFavorite = async () => {
@@ -35,7 +53,8 @@ const RemoveFavorite = ({ username, cik, company }: { username: string; cik: str
                 body: JSON.stringify({
                     action: "add_remove_favorite",
                     username,
-                    cik,
+                    identifier,
+                    source,
                 }),
             });
 
@@ -64,7 +83,7 @@ const RemoveFavorite = ({ username, cik, company }: { username: string; cik: str
                         onClick={(e) => e.stopPropagation()}
                     >
                         <p className="text-black pb-2 text-center">
-                            Are you sure you want to remove {company} from your favorites?
+                            Are you sure you want to remove {companyName} from your favorites?
                         </p>
                         <div className="flex space-x-4">
                             <button
@@ -88,7 +107,8 @@ const RemoveFavorite = ({ username, cik, company }: { username: string; cik: str
 };
 
 // Component for displaying favorites
-export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }: FavoriteCompanyProps) => {
+export const FavoriteCompaniesAccordion = ({ identifier, company, source, username, riskScore }: FavoriteCompanyProps) => 
+{
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleAccordion = () => {
@@ -100,10 +120,19 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
         e.stopPropagation();
     };
 
-    const formattedAddress = company
-        ? `${company.address || "N/A"}${company.street2 ? `, ${company.street2}` : ""}, ${company.city || "N/A"}, ${company.stateOrCountryDescription || "N/A"} ${company.zipCode || "N/A"}`
-        : "N/A";
+    // Formatting address based on company type
+    const formattedAddress = source === "SEC"
+        ? `${(company as SECCompany).address || "N/A"}${(company as SECCompany).street2 ? `, ${(company as SECCompany).street2}` : ""}, ${(company as SECCompany).city || "N/A"}, ${(company as SECCompany).stateOrCountryDescription || "N/A"} ${(company as SECCompany).zipCode || "N/A"}`
+        : `${(company as SAMCompany).address_line1 || "N/A"}${(company as SAMCompany).address_line2 ? `, ${(company as SAMCompany).address_line2}` : ""}, ${(company as SAMCompany).city || "N/A"}, ${(company as SAMCompany).state_or_province || "N/A"} ${(company as SAMCompany).zip_code || "N/A"}`;
 
+        // Generating link based on company type
+    const moreInfoLink = source === "SEC"
+    ? `/company/${identifier}`
+    : `/sam-entity/${identifier}`;
+
+    const companyName = source === "SEC"
+    ? (company as SECCompany).name || "Unknown Company"
+    : (company as SAMCompany).legal_business_name || "Unknown Entity";
     return (
         <div className="mb-2 border border-gray-500 rounded-lg overflow-visible">
             {/* Accordion Header */}
@@ -121,7 +150,7 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
                 }}
             >
                 <span className="justify-self-start">{isOpen ? "▲" : "▼"}</span>
-                <span>{company?.name || "Unknown Company"}</span>
+                <span>{companyName || "Unknown Company"}</span>
                 {riskScore !== -1 ? (
                     <Image src={"/check.png"} alt="Verified Company" width={30} height={20} />
                 ) : (
@@ -129,24 +158,44 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
                 )}
                 <span>{riskScore === -1 ? "Unverified" : riskScore}</span>
                 <div onClick={handleQRCodeClick} className="cursor-pointer text-white">
-                    <RemoveFavorite username={username} cik={cik} company={company.name || "this company"} />
+                    <RemoveFavorite                         
+                        username={username} 
+                        identifier={identifier} 
+                        source={source} 
+                        companyName={companyName} />
                 </div>
                 <div onClick={handleQRCodeClick} className="cursor-pointer text-white">
-                    <QRCodeComponent companyName={company.name || ''} cik={cik} displayIconOnly={true} />
-                </div>
+                <QRCodeComponent 
+                        companyName={companyName} 
+                        identifier={identifier} 
+                        source={source} 
+                        displayIconOnly={true} 
+                    />
             </div>
 
             {/* Accordion Content */}
             {isOpen && (
                 <div className="p-4 bg-blue-950 text-white rounded-lg rounded-t-none">
                     <p>
-                        <strong>CIK: </strong>{cik}
+                        <strong>Identifier: </strong>{identifier}
                     </p>
                     <p><strong>Address:</strong> {formattedAddress}</p>
-                    <p><strong>State of Incorporation:</strong> {company?.stateOfIncorporation || "N/A"}</p>
-                    <p><strong>Phone:</strong> {company?.phone || "N/A"}</p>
-                    <p><strong>Most Recent Filing Date:</strong> {company?.mostRecentFilingDate || "N/A"}</p>
-                    <Link href={`/company/${cik}`} target="_blank">
+                    {source === "SAM" && (
+                        <>
+                            <p><strong>Country:</strong> {(company as SAMCompany).country_code || "N/A"}</p>
+                            <p><strong>Registration Date:</strong> {(company as SAMCompany).registration_date || "N/A"}</p>
+                            <p><strong>Expiration Date:</strong> {(company as SAMCompany).expiration_date || "N/A"}</p>
+                        </>
+                    )}
+                       {source === "SEC" && (
+                        <>
+                             <p><strong>State of Incorporation:</strong> {(company as SECCompany).stateOfIncorporation || "N/A"}</p>
+                            <p><strong>Phone:</strong> {(company as SECCompany).phone || "N/A"}</p>
+                            <p><strong>Most Recent Filing Date:</strong> {(company as SECCompany).mostRecentFilingDate || "N/A"}</p>
+                        </>
+                    )}
+                   
+                    <Link href={moreInfoLink} target="_blank">
                         <div className="mt-2 inline-flex items-center bg-blue-600 hover:bg-blue-800 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out">
                             More Info
                             <Image src="/more.png" height={30} width={30} alt="More" className="invert ml-2" />
@@ -155,5 +204,7 @@ export const FavoriteCompaniesAccordion = ({ cik, company, username, riskScore }
                 </div>
             )}
         </div>
+        </div>
     );
+
 }
