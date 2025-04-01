@@ -26,6 +26,32 @@ export default function Home() {
                         <SearchBar placeholder="Search..." aria-label="Search for business partners" />
                     </div>
                 </nav>
+                <br />
+                <div className="flex justify-center mb-6">
+  <div className="bg-blue-100 text-blue-900 p-4 rounded-md shadow text-center text-med inline-block">
+    <p>
+      <strong>Not sure where to start?</strong> <br />
+      Access our{" "}
+      <a
+        href="/search"
+        className="text-blue-700 underline hover:text-blue-900 transition-colors"
+      >
+        Search Page
+      </a>{" "}
+      for more details on searching.
+      <br />
+      or <br />
+      Visit our{" "}
+      <a
+        href="/company-examples"
+        className="text-blue-700 underline hover:text-blue-900 transition-colors"
+      >
+        Company Examples Page
+      </a>{" "}
+      to see how it works.
+    </p>
+  </div>
+</div>
 
 
             </main>
