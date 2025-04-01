@@ -301,7 +301,7 @@ export default function NavBar() {
                 onFocus={openSubMenu}
                 */
               >
-                Tackling The Threat
+                TacklingTheThreat
               </Link>
               {/* Submenu for education: NO LONGER NEEDED */}
               {/* <EducationSubNavBar isSubMenuOpen={isSubMenuOpen} /> */}
