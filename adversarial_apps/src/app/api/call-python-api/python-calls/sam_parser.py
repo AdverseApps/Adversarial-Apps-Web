@@ -9,45 +9,68 @@ import tempfile
 # Increase CSV field size limit safely (max for a 32-bit system)
 csv.field_size_limit(2**31 - 1)
 
-def parse_sam_dat_file(data_file_path: str, output_file_path: str)  -> list:
+def get_safe(row, idx):
+    try:
+        return row[idx].strip()
+    except IndexError:
+        return ""
+    
+def get_safe(row, idx):
+    try:
+        return row[idx].strip()
+    except IndexError:
+        return ""
+
+def parse_sam_dat_file(data_file_path: str, output_file_path: str) -> int:
     """
     Parses the SAM .DAT file and writes necessary fields into a CSV for PostgreSQL COPY.
     Returns the number of records processed.
     """
     total_records = 0
-    print(f"starting parser")
+    log_path = "malformed_rows_log.txt"
+
     try:
-        with open(data_file_path, mode='r', encoding='utf-8') as infile, \
-                open(output_file_path, mode='w', encoding='utf-8', newline='') as outfile:
+        with open(log_path, 'w', encoding='utf-8') as log, \
+             open(data_file_path, mode='r', encoding='utf-8') as infile, \
+             open(output_file_path, mode='w', encoding='utf-8', newline='') as outfile:
 
             reader = csv.reader(infile, delimiter='|')
             writer = csv.writer(outfile)
 
-            for row in reader:
+            for row_num, row in enumerate(reader, 1):
                 if not row or row[0].startswith("BOF"):
                     continue
 
-                entity_id = row[0].strip()
-                cage_code = row[3].strip()
-                registration_date = row[7].strip()
-                expiration_date = row[9].strip()
-                legal_business_name = row[11].strip()
-                address_line1 = row[15].strip()
-                address_line2 = row[16].strip()
-                city = row[17].strip()
-                state_or_province = row[18].strip()
-                zip_code = row[19].strip()
-                country_code = row[21].strip()
-                certifications = row[31].strip()
-                naics_primary = row[32].strip()
-                exclusions = row[36].strip()
+                try:
+                    entity_id = get_safe(row, 0)
+                    cage_code = get_safe(row, 3)
+                    registration_date = get_safe(row, 7)
+                    expiration_date = get_safe(row, 9)
+                    legal_business_name = get_safe(row, 11)
+                    address_line1 = get_safe(row, 15)
+                    address_line2 = get_safe(row, 16)
+                    city = get_safe(row, 17)
+                    state_or_province = get_safe(row, 18)
+                    zip_code = get_safe(row, 19)
+                    country_code = get_safe(row, 21)
+                    certifications = get_safe(row, 31)
+                    naics_primary = get_safe(row, 32)
+                    exclusions = get_safe(row, 36)
 
-                writer.writerow([
-                    entity_id, legal_business_name, cage_code, country_code,
-                    state_or_province, city, zip_code, address_line1, address_line2,
-                    registration_date, expiration_date, certifications, naics_primary, exclusions
-                ])
-                total_records += 1
+                    if len(row) < 40:
+                        log.write(f"Row {row_num} skipped: too few fields ({len(row)}) | Data: {row}\n")
+                        continue
+
+                    writer.writerow([
+                        entity_id, legal_business_name, cage_code, country_code,
+                        state_or_province, city, zip_code, address_line1, address_line2,
+                        registration_date, expiration_date, certifications, naics_primary,
+                        exclusions
+                    ])
+                    total_records += 1
+
+                except Exception as e:
+                    log.write(f"Row {row_num} skipped: {str(e)} | Data: {row}\n")
 
     except Exception as e:
         print(f"Error parsing SAM file: {e}")
@@ -232,7 +255,7 @@ def process_sam_data(data_file_path: str) -> None:
     The temp file is auto-deleted after use.
     """
     print(f"Processing SAM data from: {data_file_path}")
-    with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', newline='', delete=True) as tmp_csv:
+    with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', newline='', delete=False) as tmp_csv:
         temp_csv_path = tmp_csv.name
         record_count = parse_sam_dat_file(data_file_path, temp_csv_path)
         print(f"Parsed {record_count} records into temp CSV.")
@@ -241,7 +264,7 @@ def process_sam_data(data_file_path: str) -> None:
             copy_into_sam_entities(temp_csv_path)
         else:
             print("No records to copy.")
-
+    os.remove(temp_csv_path)
 def main():
     # Get the directory of this script
     script_dir = os.path.dirname(os.path.abspath(__file__))
