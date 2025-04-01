@@ -15,7 +15,7 @@ def parse_sam_dat_file(data_file_path: str, output_file_path: str)  -> list:
     Returns the number of records processed.
     """
     total_records = 0
-
+    print(f"starting parser")
     try:
         with open(data_file_path, mode='r', encoding='utf-8') as infile, \
                 open(output_file_path, mode='w', encoding='utf-8', newline='') as outfile:
@@ -172,9 +172,9 @@ def copy_into_sam_entities(csv_path: str) -> None:
             "expiration_date" text,
             "address_line2" text,
             "address_line1" text,
-            "certifications" text,
-            "naics_primary" text,
-            "exclusions" text,
+            "certifications" text DEFAULT '',
+            "naics_primary" text DEFAULT '',
+            "exclusions" text DEFAULT '',
             "review_requests" int4 DEFAULT 0,
             "riskScore" float4 DEFAULT 0,
             "lastVerified" timestamp,
