@@ -153,7 +153,7 @@ def get_reviewer_status(username: str) -> dict:
     }
 
 
-def add_remove_favorite(username: str, identifier: str, company_type: str) -> dict:
+def add_remove_favorite(username: str, identifier: str, source: str) -> dict:
     """
     Add or remove a favorite company for the user, supporting both SEC and SAM companies.
 
@@ -174,7 +174,7 @@ def add_remove_favorite(username: str, identifier: str, company_type: str) -> di
                         "message": f"User '{username}' not found.",
                     }
                 # Check if the company exists in the database
-                if company_type == "SEC":
+                if source == "SEC":
                     cursor.execute('SELECT 1 FROM "COMPANIES" WHERE "CIK" = %s', (identifier,))
                 else:
                     cursor.execute('SELECT 1 FROM "SAM_COMPANIES" WHERE "UEI" = %s', (identifier,))
@@ -186,7 +186,7 @@ def add_remove_favorite(username: str, identifier: str, company_type: str) -> di
                 if not company_exists:
                     # since company does not exist, we need to add it to the database before we can add it to favorites
                     # do the the CIK in FAVORITES table is a foreign key to the CIK in COMPANIES table
-                    if company_type == "SEC":
+                    if source == "SEC":
                         cursor.execute(
                             'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
                             (identifier, False, 0)
@@ -201,7 +201,7 @@ def add_remove_favorite(username: str, identifier: str, company_type: str) -> di
                 # Check if the user has already favorited the company
                 cursor.execute(
                     'SELECT 1 FROM "FAVORITES" WHERE "userId" = %s AND "companyId" = %s AND "type" = %s',
-                    (user_id, identifier, company_type)
+                    (user_id, identifier, source)
                 )
                 favorite_exists = cursor.fetchone()
 
@@ -209,23 +209,23 @@ def add_remove_favorite(username: str, identifier: str, company_type: str) -> di
                     # If the favorite exists, remove it
                     cursor.execute(
                         'DELETE FROM "FAVORITES" WHERE "userId" = %s AND "companyId" = %s AND "type" = %s',
-                        (user_id, identifier, company_type)
+                        (user_id, identifier, source)
                     )
                     connection.commit()
                     return {
                         "status": "success",
-                        "message": f"Removed {company_type} company with ID {identifier} from favorites for {username}."
+                        "message": f"Removed {source} company with ID {identifier} from favorites for {username}."
                     }
                 else:
                     # If the favorite does not exist, add it
                     cursor.execute(
                         'INSERT INTO "FAVORITES" ("userId", "companyId", "type") VALUES (%s, %s, %s)',
-                        (user_id, identifier, company_type)
+                        (user_id, identifier, source)
                     )
                     connection.commit()
                     return {
                         "status": "success",
-                        "message": f"Added {company_type} company with ID {identifier} to favorites for {username}."
+                        "message": f"Added {source} company with ID {identifier} to favorites for {username}."
                     }
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
@@ -337,34 +337,49 @@ def get_company_score(cik: str) -> dict:
         return {"status": "error", "message": f"Database error: {e}"}
 
 
-def update_company_score(cik: str, risk_score: float) -> dict:
+def update_company_score(identifier: str, source: str, risk_score: float) -> dict:
     """
-    Update the risk score for a company based on the CIK number.
+    Update the risk score for a company based on the identifier (CIK or UEI) and source.
 
-    :param cik: CIK number of the company
-    :param risk_score: New risk score for the company
-    :return: Dictionary containing the updated risk score
+    :param identifier: CIK for SEC or UEI for SAM
+    :param source: "SEC" or "SAM"
+    :param risk_score: New risk score
+    :return: Dictionary containing the update status
     """
     try:
         with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
             with connection.cursor() as cursor:
 
-                # checks if company is in the database and if not adds them
-                cursor.execute('SELECT 1 FROM "COMPANIES" WHERE "CIK" = %s', (cik,))
+
+                if source == "SEC":
+                    table = "COMPANIES"
+                    id_column = "CIK"
+                    insert_query = f'''
+                        INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests")
+                        VALUES (%s, %s, %s, NOW(), 0)
+                    '''
+                    insert_values = (identifier, False, 0)
+                else:
+                    table = "sam_entities"
+                    id_column = "entity_id"
+
+                # Check if the company exists
+                cursor.execute(
+                    f'SELECT 1 FROM "{table}" WHERE "{id_column}" = %s',
+                    (identifier,)
+                )
                 company_exists = cursor.fetchone()
 
+                  # Insert if it doesn't exist
                 if not company_exists:
-                    cursor.execute(
-                        'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
-                        (cik, False, 0),
-                    )
+                    cursor.execute(insert_query, insert_values)
                     connection.commit()
 
                 # Update the risk score for the company and sets it to be verified
                 # we set reviewRequests to 0 since now the socre has been updated so those requests have been satisfied
                 cursor.execute(
-                    'UPDATE "COMPANIES" SET "riskScore" = %s, "isVerified" = TRUE, "lastVerified" = NOW(), "reviewRequests" = 0 WHERE "CIK" = %s',
-                    (risk_score, cik),
+                    'UPDATE "{table}" SET "riskScore" = %s, "isVerified" = TRUE, "lastVerified" = NOW(), "review_requests" = 0 WHERE "{id_column}" = %s',
+                    (risk_score, id_column),
                 )
 
                 return {
