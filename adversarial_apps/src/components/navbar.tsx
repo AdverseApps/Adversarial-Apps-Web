@@ -128,7 +128,7 @@ const HamburgerMenu = () => {
                 className="block hover:bg-blue-800 rounded p-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Education
+                Tackling The Threat
               </Link>
             </li>
             <li>
@@ -179,7 +179,7 @@ const HamburgerMenu = () => {
 };
 
 export default function NavBar() {
-  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
+  // const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const navRef = useRef<HTMLDivElement | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -225,9 +225,12 @@ export default function NavBar() {
   }, []);
 
   // Handler to open submenu when focusing or hovering
-  const openSubMenu = () => setIsSubMenuOpen(true);
+  // unneeded; commented for code preservation
+  // const openSubMenu = () => setIsSubMenuOpen(true);
 
   // Handler to close submenu when focus moves outside
+  // unneeded; commented for code preservation
+  /*
   const closeSubMenu = (e: FocusEvent) => {
     if (navRef.current && !navRef.current.contains(e.relatedTarget as Node)) {
       setIsSubMenuOpen(false);
@@ -245,6 +248,7 @@ export default function NavBar() {
       }
     };
   }, []);
+  */
 
   useEffect(() => {
     checkAuthentication();
@@ -282,21 +286,22 @@ export default function NavBar() {
             </div>
 
             <div
-              className="group relative hover:bg-blue-950 p-2 rounded-lg transition duration-200"
-              onMouseEnter={openSubMenu}
-              onMouseLeave={() => setIsSubMenuOpen(false)}
+              className="hover:bg-blue-950 p-2 rounded-lg transition duration-200"
+              /* onMouseEnter={openSubMenu}*/
+              /* onMouseLeave={() => setIsSubMenuOpen(false)} */
             >
               <Link
-                aria-label="Go to education page"
-                id="education-menu"
+                aria-label="Go to Education page"
                 href="/education"
                 className="text-white text-xl"
+                /*
                 aria-haspopup="true"
                 aria-expanded={isSubMenuOpen ? "true" : "false"}
                 aria-controls="education-submenu"
                 onFocus={openSubMenu}
+                */
               >
-                Education
+                Tackling The Threat
               </Link>
               {/* Submenu for education: NO LONGER NEEDED */}
               {/* <EducationSubNavBar isSubMenuOpen={isSubMenuOpen} /> */}
