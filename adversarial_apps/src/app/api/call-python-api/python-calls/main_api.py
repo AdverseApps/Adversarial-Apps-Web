@@ -161,7 +161,7 @@ if __name__ == "__main__":
             # Then the inputActionAndData is formatted as such:
             # { "action": "add_favorite", "username": YOUR_USERNAME, "cik": YOUR_CIK }
             result = add_remove_favorite(
-                input_action_and_data.get("username"), input_action_and_data.get("cik")
+                input_action_and_data.get("username"), input_action_and_data.get("identifier"), input_action_and_data.get("source")
             )
         elif action == "get_favorites":
             # Then the inputActionAndData is formatted as such:
@@ -192,7 +192,8 @@ if __name__ == "__main__":
         elif action == "update_company_score":
             # Expecting JSON like { "action": "update_company_score", "cik": "0000123456", "risk_score": 3 }
             result = update_company_score(
-                input_action_and_data.get("cik"),
+                input_action_and_data.get("identifier"),
+                input_action_and_data.get("source"),
                 input_action_and_data.get("risk_score"),
             )
         elif action == "get_def_url":
