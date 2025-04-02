@@ -80,10 +80,18 @@ export default async function DashboardPage() {
       favorites.map(
         async (item: { identifier: string; source: "SEC" | "SAM" }) => {
           try {
-            const company =
-              item.source === "SEC"
-                ? (await FetchSecData(item.identifier)).company
-                : (await FetchSamData(item.identifier)).company;
+          let company;
+          if (item.source === "SEC") {
+            console.log(`CIK is ${item.identifier}`);
+            const secResult = await FetchSecData(item.identifier);
+            company = secResult?.company;
+            if (!company) console.warn("SEC company not found for:", item.identifier);
+          } else {
+            console.log(`UEI is ${item.identifier}`);
+            const samResult = await FetchSamData(item.identifier);
+            company = samResult?.company;
+            if (!company) console.warn("SAM company not found for:", item.identifier);
+          }
 
             // Fetching risk score
             const riskScoreData = await getRiskScore(
@@ -143,31 +151,51 @@ export default async function DashboardPage() {
   let reviewRequests: ReviewRequestProps[] = [];
 
   if (userStatus.role === "true") {
-    try {
-      const reviewData = await getReviewRequests();
-      if (reviewData.status === "success" && reviewData.reviewRequests) {
-        reviewRequests = await Promise.all(
-          reviewData.reviewRequests.map(async (item) => {
-            const source = item.source as "SEC" | "SAM";
-            const companyData =
-              source === "SEC"
-                ? await FetchSecData(item.identifier)
-                : await FetchSamData(item.identifier);
-
-            return {
-              identifier: item.identifier,
-              source: item.source as "SEC" | "SAM",
-              requestCount: item.requestCount,
-              company: companyData.company,
-            };
-          })
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching review requests:", error);
-    }
+    const reviewData = await getReviewRequests();
+    const requests = Array.isArray(reviewData.reviewRequests)
+      ? reviewData.reviewRequests
+      : [];
+  
+    reviewRequests = await Promise.all(
+      requests.map(async (item) => {
+        try {
+          
+          let company;
+          const source = item.source as "SEC" | "SAM";
+  
+          if (source === "SEC") {
+            console.log(`CIK is ${item.identifier}`);
+            const secResult = await FetchSecData(item.identifier);
+            company = secResult?.company;
+            if (!company) console.warn("SEC company not found for:", item.identifier);
+          } else {
+            console.log(`UEI is ${item.identifier}`);
+            const samResult = await FetchSamData(item.identifier);
+            company = samResult?.company;
+            if (!company) console.warn("SAM company not found for:", item.identifier);
+          }
+  
+          return {
+            identifier: item.identifier,
+            source: source, // ✅ already "SEC" | "SAM"
+            requestCount: item.requestCount,
+            company,
+          };
+        } catch (error) {
+          console.error(
+            `Error fetching ${item.source} data for ${item.identifier}:`,
+            error
+          );
+          return {
+            identifier: item.identifier,
+            source: item.source as "SEC" | "SAM", // ✅ cast in error case too
+            requestCount: item.requestCount,
+            company: null,
+          };
+        }
+      })
+    );
   }
-
   return (
     <div className="p-8">
       {/* Display username */}
@@ -222,15 +250,18 @@ export default async function DashboardPage() {
 
           {/* Loop through each review request */}
           {reviewRequests.length > 0 ? (
-            reviewRequests.map((item, index) => (
-              <ReviewRequestsAccordion
-                key={index}
-                identifier={item.identifier}
-                source={item.source}
-                company={item.company}
-                requestCount={item.requestCount}
-              />
-            ))
+            reviewRequests.map((item, index) => {
+              const company = item?.company;
+              return company ? (
+                <ReviewRequestsAccordion
+                  key={index}
+                  identifier={item.identifier}
+                  source={item.source}
+                  company={item.company}
+                  requestCount={item.requestCount}
+                />
+              ) : null; // <- fallback if company is null
+            })
           ) : (
             <p className="text-white">No review requests.</p>
           )}

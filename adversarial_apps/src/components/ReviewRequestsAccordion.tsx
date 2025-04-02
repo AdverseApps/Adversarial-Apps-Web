@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useState } from "react";
 import { QRCodeComponent } from "./QR";
 import Image from "next/image";
@@ -19,7 +19,7 @@ interface SECCompany {
 }
 
 interface SAMCompany {
-  legal_business_name?: string;
+  company_name?: string;
   address_line1?: string;
   address_line2?: string;
   city?: string;
@@ -173,7 +173,7 @@ export const ReviewRequestsAccordion = ({
   const companyName =
     source === "SEC"
       ? (company as SECCompany).name || "Unknown Company"
-      : (company as SAMCompany).legal_business_name || "Unknown Entity";
+      : (company as SAMCompany).company_name || "Unknown Entity";
 
   const handleRemoveRequest = async () => {
     setLoading(true);
@@ -277,37 +277,38 @@ export const ReviewRequestsAccordion = ({
           <p>
             <strong>Address:</strong> {formattedAddress}
           </p>
-          {source === "SEC" && (
-            <>
-              <p>
-                <strong>State of Incorporation:</strong>{" "}
-                {(company as SECCompany).stateOfIncorporation || "N/A"}
-              </p>
-              <p>
-                <strong>Phone:</strong> {(company as SECCompany).phone || "N/A"}
-              </p>
-              <p>
-                <strong>Most Recent Filing Date:</strong>{" "}
-                {(company as SECCompany).mostRecentFilingDate || "N/A"}
-              </p>
-            </>
-          )}
           {source === "SAM" && (
-            <>
-              <p>
-                <strong>Country:</strong>{" "}
-                {(company as SAMCompany).country_code || "N/A"}
-              </p>
-              <p>
-                <strong>Registration Date:</strong>{" "}
-                {(company as SAMCompany).registration_date || "N/A"}
-              </p>
-              <p>
-                <strong>Expiration Date:</strong>{" "}
-                {(company as SAMCompany).expiration_date || "N/A"}
-              </p>
-            </>
-          )}
+              <>
+                <p>
+                  <strong>Country:</strong>{" "}
+                  {(company as SAMCompany).country_code || "N/A"}
+                </p>
+                <p>
+                  <strong>Registration Date:</strong>{" "}
+                  {(company as SAMCompany).registration_date || "N/A"}
+                </p>
+                <p>
+                  <strong>Expiration Date:</strong>{" "}
+                  {(company as SAMCompany).expiration_date || "N/A"}
+                </p>
+              </>
+            )}
+            {source === "SEC" && (
+              <>
+                <p>
+                  <strong>State of Incorporation:</strong>{" "}
+                  {(company as SECCompany).stateOfIncorporation || "N/A"}
+                </p>
+                <p>
+                  <strong>Phone:</strong>{" "}
+                  {(company as SECCompany).phone || "N/A"}
+                </p>
+                <p>
+                  <strong>Most Recent Filing Date:</strong>{" "}
+                  {(company as SECCompany).mostRecentFilingDate || "N/A"}
+                </p>
+              </>
+            )}
         </div>
       )}
 
