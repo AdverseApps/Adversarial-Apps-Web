@@ -175,13 +175,15 @@ def add_remove_favorite(username: str, identifier: str, source: str) -> dict:
                     }
                 # Check if the company exists in the database
                 if source == "SEC":
-                    cursor.execute('SELECT 1 FROM "COMPANIES" WHERE "CIK" = %s', (identifier,))
+                    cursor.execute(
+                        'SELECT 1 FROM "COMPANIES" WHERE "CIK" = %s', (identifier,)
+                    )
                 else:
-                    cursor.execute('SELECT 1 FROM "SAM_COMPANIES" WHERE "UEI" = %s', (identifier,))
+                    cursor.execute(
+                        'SELECT 1 FROM "SAM_COMPANIES" WHERE "UEI" = %s', (identifier,)
+                    )
 
                 company_exists = cursor.fetchone()
-
-               
 
                 if not company_exists:
                     # since company does not exist, we need to add it to the database before we can add it to favorites
@@ -189,43 +191,38 @@ def add_remove_favorite(username: str, identifier: str, source: str) -> dict:
                     if source == "SEC":
                         cursor.execute(
                             'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
-                            (identifier, False, 0)
-                        )
-                    else:
-                        cursor.execute(
-                            'INSERT INTO "SAM_COMPANIES" ("UEI", "isVerified", "riskScore") VALUES (%s, %s, %s)',
-                            (identifier, False, 0)
+                            (identifier, False, 0),
                         )
                     connection.commit()
 
                 # Check if the user has already favorited the company
                 cursor.execute(
-                    'SELECT 1 FROM "FAVORITES" WHERE "userId" = %s AND "companyId" = %s AND "type" = %s',
-                    (user_id, identifier, source)
+                    'SELECT 1 FROM "FAVORITES" WHERE "userId" = %s AND "identifier" = %s AND "source" = %s',
+                    (user_id, identifier, source),
                 )
                 favorite_exists = cursor.fetchone()
 
                 if favorite_exists:
                     # If the favorite exists, remove it
                     cursor.execute(
-                        'DELETE FROM "FAVORITES" WHERE "userId" = %s AND "companyId" = %s AND "type" = %s',
-                        (user_id, identifier, source)
+                        'DELETE FROM "FAVORITES" WHERE "userId" = %s AND "identifier" = %s AND "source" = %s',
+                        (user_id, identifier, source),
                     )
                     connection.commit()
                     return {
                         "status": "success",
-                        "message": f"Removed {source} company with ID {identifier} from favorites for {username}."
+                        "message": f"Removed {source} company with ID {identifier} from favorites for {username}.",
                     }
                 else:
                     # If the favorite does not exist, add it
                     cursor.execute(
-                        'INSERT INTO "FAVORITES" ("userId", "companyId", "type") VALUES (%s, %s, %s)',
-                        (user_id, identifier, source)
+                        'INSERT INTO "FAVORITES" ("userId", "identifier", "source") VALUES (%s, %s, %s)',
+                        (user_id, identifier, source),
                     )
                     connection.commit()
                     return {
                         "status": "success",
-                        "message": f"Added {source} company with ID {identifier} to favorites for {username}."
+                        "message": f"Added {source} company with ID {identifier} to favorites for {username}.",
                     }
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
@@ -254,8 +251,8 @@ def get_favorites(username: str) -> dict:
                 # Query to get the list of favorited companies
                 # Query for both SEC and SAM favorites
                 cursor.execute(
-                    'SELECT "companyId", "type" FROM "FAVORITES" WHERE "userId" = %s',
-                    (user_id,)
+                    'SELECT "identifier", "source" FROM "FAVORITES" WHERE "userId" = %s',
+                    (user_id,),
                 )
                 favorites = cursor.fetchall()
 
@@ -265,7 +262,7 @@ def get_favorites(username: str) -> dict:
                 return {
                     "status": "success",
                     "sec_favorites": sec_favorites,
-                    "sam_favorites": sam_favorites
+                    "sam_favorites": sam_favorites,
                 }
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
@@ -293,7 +290,7 @@ def get_user_id(username: str, cursor) -> int:
         return None
 
 
-def get_company_score(cik: str) -> dict:
+def get_company_score(identifier: str, source: str) -> dict:
     """
     Retrieve the risk score for a verified company based on the CIK number.
 
@@ -304,10 +301,16 @@ def get_company_score(cik: str) -> dict:
         with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
             with connection.cursor() as cursor:
 
+                if source == "SEC":
+                    table = "COMPANIES"
+                    id_column = "CIK"
+                else:
+                    table = "sam_entities"
+                    id_column = "entity_id"
                 # Combined query to check if the company exists, is verified, and retrieve riskScore
                 cursor.execute(
-                    'SELECT "isVerified", "riskScore" FROM "COMPANIES" WHERE "CIK" = %s',
-                    (cik,),
+                    f'SELECT "isVerified", "riskScore" FROM "{table}" WHERE "{id_column}" = %s',
+                    (identifier,),
                 )
                 result = cursor.fetchone()
 
@@ -315,7 +318,7 @@ def get_company_score(cik: str) -> dict:
                 if not result:
                     return {
                         "status": "error",
-                        "message": f"Company with CIK {cik} not found.",
+                        "message": f"Company with {id_column} {identifier} not found.",
                     }
 
                 is_verified, risk_score = result
@@ -324,7 +327,7 @@ def get_company_score(cik: str) -> dict:
                 if not is_verified:
                     return {
                         "status": "error",
-                        "message": f"Company with CIK {cik} is not verified.",
+                        "message": f"Company with {id_column} {identifier} is not verified.",
                     }
 
                 # If company is verified, return the risk score
@@ -350,14 +353,13 @@ def update_company_score(identifier: str, source: str, risk_score: float) -> dic
         with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
             with connection.cursor() as cursor:
 
-
                 if source == "SEC":
                     table = "COMPANIES"
                     id_column = "CIK"
-                    insert_query = f'''
+                    insert_query = f"""
                         INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests")
                         VALUES (%s, %s, %s, NOW(), 0)
-                    '''
+                    """
                     insert_values = (identifier, False, 0)
                 else:
                     table = "sam_entities"
@@ -365,26 +367,25 @@ def update_company_score(identifier: str, source: str, risk_score: float) -> dic
 
                 # Check if the company exists
                 cursor.execute(
-                    f'SELECT 1 FROM "{table}" WHERE "{id_column}" = %s',
-                    (identifier,)
+                    f'SELECT 1 FROM "{table}" WHERE "{id_column}" = %s', (identifier,)
                 )
                 company_exists = cursor.fetchone()
 
-                  # Insert if it doesn't exist
+                # Insert if it doesn't exist
                 if not company_exists:
                     cursor.execute(insert_query, insert_values)
                     connection.commit()
 
                 # Update the risk score for the company and sets it to be verified
-                # we set reviewRequests to 0 since now the socre has been updated so those requests have been satisfied
+                # we set review_requests to 0 since now the socre has been updated so those requests have been satisfied
                 cursor.execute(
-                    'UPDATE "{table}" SET "riskScore" = %s, "isVerified" = TRUE, "lastVerified" = NOW(), "review_requests" = 0 WHERE "{id_column}" = %s',
+                    f'UPDATE "{table}" SET "riskScore" = %s, "isVerified" = TRUE, "lastVerified" = NOW(), "review_requests" = 0 WHERE "{id_column}" = %s',
                     (risk_score, id_column),
                 )
 
                 return {
                     "status": "success",
-                    "message": f"Risk score updated for company with CIK {cik}.",
+                    "message": f"Risk score updated for company with {id_column} {identifier}.",
                 }
 
     except psycopg2.Error as e:
@@ -405,16 +406,22 @@ def generate_excel(username: str) -> dict:
     ws_company_data.column_dimensions["C"].width = 50
     ws_company_data.column_dimensions["D"].width = 15
     ws_company_data.column_dimensions["E"].width = 15
+    ws_company_data.column_dimensions["F"].width = 10
+    ws_company_data.column_dimensions["G"].width = 50  # For the More Info URL
 
-    ws_company_data.append(["CIK", "Company Name", "Address", "Phone", "Risk Score"])
+    ws_company_data.append(
+        ["Identifier", "Company Name", "Address", "Phone", "Risk Score", "Source"]
+    )
 
     # Get the list of favorited companies for the user
     favorites = get_favorites(username)
+    sec_favorites = favorites.get("sec_favorites", [])
+    sam_favorites = favorites.get("sam_favorites", [])
 
     # displays the data in the excel sheet
-    for cik in favorites["favorites"]:
+    for cik in sec_favorites:
         # Get the company name and risk score
-        company_score = get_company_score(cik)
+        company_score = get_company_score(cik, "SEC")
 
         company_data = get_sec_data(cik)
 
@@ -427,6 +434,7 @@ def generate_excel(username: str) -> dict:
             f"{company_info.get('stateOrCountryDescription', 'N/A')} "
             f"{company_info.get('zipCode', 'N/A')}"
         )
+        more_info_url = f"https://adversarialapps.com/company/{cik}"
 
         if company_score["status"] == "success":
             ws_company_data.append(
@@ -436,6 +444,8 @@ def generate_excel(username: str) -> dict:
                     formatted_address,
                     company_data["company"]["phone"],
                     company_score["riskScore"],
+                    "SEC",
+                    more_info_url,
                 ]
             )
         else:
@@ -446,6 +456,47 @@ def generate_excel(username: str) -> dict:
                     formatted_address,
                     company_data["company"]["phone"],
                     "Not Verified",
+                    "SEC",
+                    more_info_url,
+                ]
+            )
+
+    # Process SAM Favorites
+    for uei in sam_favorites:
+        company_score = get_company_score(uei, "SAM")
+        company_data = FetchSamData(uei)
+        company_info = company_data.get("company", {})
+
+        formatted_address = (
+            f"{company_info.get('address_line1', 'N/A')}"
+            f"{', ' + company_info['address_line2'] if company_info.get('address_line2') else ''}, "
+            f"{company_info.get('city', 'N/A')}, "
+            f"{company_info.get('state_or_province', 'N/A')} "
+            f"{company_info.get('zip_code', 'N/A')}"
+        )
+        more_info_url = f"https://adversarialapps.com/company/sam/{uei}"
+        if company_score["status"] == "success":
+            ws_company_data.append(
+                [
+                    uei,
+                    company_info.get("legal_business_name", "N/A"),
+                    formatted_address,
+                    "N/A",  # Phone not available for SAM, can adjust if you store it
+                    company_score["riskScore"],
+                    "SAM",
+                    more_info_url,
+                ]
+            )
+        else:
+            ws_company_data.append(
+                [
+                    uei,
+                    company_info.get("legal_business_name", "N/A"),
+                    formatted_address,
+                    "N/A",  # Phone not available for SAM, can adjust if you store it
+                    "Not Verified",
+                    "SAM",
+                    more_info_url,
                 ]
             )
 
@@ -463,15 +514,15 @@ def generate_excel(username: str) -> dict:
     }
 
 
-def request_company_review(username: str, cik: str) -> dict:
+def request_company_review(username: str, identifier: str, source: str) -> dict:
     """
     Process a review request for a company:
     - Retrieves the user's ID from the USERS table.
     - Checks if the user has already requested a review for the given company.
     - Ensures the company exists in COMPANIES:
-         If it doesn't exist, inserts a new record with reviewRequests set to 0.
+         If it doesn't exist, inserts a new record with review_requests set to 0.
     - Inserts a new record in REVIEW_REQUESTS.
-    - Increments the reviewRequests field in COMPANIES by 1.
+    - Increments the review_requests field in COMPANIES by 1.
 
     :param username: Username of the requesting user.
     :param cik: CIK number of the company.
@@ -489,23 +540,32 @@ def request_company_review(username: str, cik: str) -> dict:
             return {"status": "error", "message": f"User '{username}' not found."}
         user_id = user_row[0]
 
-        # 2. Ensure the company exists in COMPANIES.
+        # 2. Ensure the company exists.
+        if source == "SEC":
+            table = "COMPANIES"
+            id_column = "CIK"
+        else:
+            table = "sam_entities"
+            id_column = "entity_id"
+
+        # Ensure the company exists
         cursor.execute(
-            'SELECT "reviewRequests" FROM "COMPANIES" WHERE "CIK" = %s', (cik,)
+            f'SELECT review_requests FROM "{table}" WHERE "{id_column}" = %s',
+            (identifier,),
         )
         company_row = cursor.fetchone()
         if not company_row:
             # Insert the company with default values if it doesn't exist.
             cursor.execute(
-                'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore", "reviewRequests") VALUES (%s, %s, %s, %s)',
-                (cik, False, 0, 0),
+                f'INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "review_requests") VALUES (%s, %s, %s, %s)',
+                (identifier, False, 0, 0),
             )
             connection.commit()  # Commit the new company insertion.
 
         # 3. Check if the user has already requested a review for this company.
         cursor.execute(
-            'SELECT 1 FROM "REVIEW_REQUESTS" WHERE "userId" = %s AND "companyCIK" = %s',
-            (user_id, cik),
+            'SELECT 1 FROM "REVIEW_REQUESTS" WHERE "userId" = %s AND "identifier" = %s AND "source" = %s',
+            (user_id, identifier, source),
         )
         exists = cursor.fetchone()
         if exists:
@@ -516,14 +576,14 @@ def request_company_review(username: str, cik: str) -> dict:
 
         # 4. Insert a record into REVIEW_REQUESTS.
         cursor.execute(
-            'INSERT INTO "REVIEW_REQUESTS" ("userId", "companyCIK") VALUES (%s, %s)',
-            (user_id, cik),
+            'INSERT INTO "REVIEW_REQUESTS" ("userId", "identifier", "source") VALUES (%s, %s, %s)',
+            (user_id, identifier, source),
         )
 
-        # 5. Increment reviewRequests in COMPANIES.
+        # 5. Increment review_requests in COMPANIES.
         cursor.execute(
-            'UPDATE "COMPANIES" SET "reviewRequests" = COALESCE("reviewRequests", 0) + 1 WHERE "CIK" = %s',
-            (cik,),
+            f'UPDATE "{table}" SET "review_requests" = COALESCE("review_requests", 0) + 1 WHERE "{id_column}" = %s',
+            (identifier,),
         )
 
         connection.commit()
@@ -545,8 +605,8 @@ def request_company_review(username: str, cik: str) -> dict:
 def get_review_requests() -> dict:
     """
     Retrieve a list of companies that have pending review requests by checking the
-    'reviewRequests' field in the COMPANIES table. Only returns companies where
-    reviewRequests > 0.
+    'review_requests' field in the COMPANIES table. Only returns companies where
+    review_requests > 0.
 
     :return: Dictionary with status and a list of objects, each having 'cik' and 'requestCount'
     """
@@ -555,16 +615,22 @@ def get_review_requests() -> dict:
         connection = psycopg2.connect(os.getenv("DATABASE_URL"))
         cursor = connection.cursor()
 
-        # Query the COMPANIES table for companies with reviewRequests > 0
+        # Query the COMPANIES table for companies with reviewRreview_requestsequests > 0
         cursor.execute(
-            'SELECT "CIK", "reviewRequests" FROM "COMPANIES" WHERE "reviewRequests" > 0 ORDER BY "reviewRequests" DESC'
+            'SELECT "CIK" AS identifier, "review_requests" FROM "COMPANIES" WHERE "review_requests" > 0'
         )
-        rows = cursor.fetchall()
-        review_requests = (
-            [{"cik": row[0], "requestCount": row[1]} for row in rows] if rows else []
-        )
+        company_rows = cursor.fetchall()
 
-        return {"status": "success", "reviewRequests": review_requests}
+        cursor.execute(
+            "SELECT entity_id AS identifier, review_requests FROM sam_entities WHERE review_requests > 0"
+        )
+        sam_rows = cursor.fetchall()
+
+        combined = [
+            {"identifier": row[0], "requestCount": row[1]}
+            for row in company_rows + sam_rows
+        ]
+        return {"status": "success", "reviewRequests": combined}
 
     except psycopg2.Error as e:
         if connection:
@@ -576,11 +642,11 @@ def get_review_requests() -> dict:
             connection.close()
 
 
-def remove_all_review_requests(cik: str) -> dict:
+def remove_all_review_requests(identifier: str, source: str) -> dict:
     """
     Removes all review requests for a specific company.
 
-    - Resets the reviewRequests count in the COMPANIES table to 0.
+    - Resets the review_requests count in the COMPANIES table to 0.
     - Deletes all corresponding entries for that company in the REVIEW_REQUESTS table.
 
     :param cik: The CIK number of the company.
@@ -591,26 +657,41 @@ def remove_all_review_requests(cik: str) -> dict:
         connection = psycopg2.connect(os.getenv("DATABASE_URL"))
         cursor = connection.cursor()
 
+        if source == "SEC":
+            table = "COMPANIES"
+            id_column = "CIK"
+        else:
+            table = "sam_entities"
+            id_column = "entity_id"
+
         # Check if the company exists
         cursor.execute(
-            'SELECT "reviewRequests" FROM "COMPANIES" WHERE "CIK" = %s', (cik,)
+            f'SELECT "review_requests" FROM "{table}" WHERE "{id_column}" = %s',
+            (identifier,),
         )
         row = cursor.fetchone()
         if not row:
-            return {"status": "error", "message": f"Company with CIK {cik} not found."}
+            return {
+                f"status": "error",
+                "message": f"Company with {id_column} {identifier} not found.",
+            }
 
-        # 1. Reset reviewRequests count in COMPANIES table to 0
+        # 1. Reset review_requests count in COMPANIES table to 0
         cursor.execute(
-            'UPDATE "COMPANIES" SET "reviewRequests" = 0 WHERE "CIK" = %s', (cik,)
+            f'UPDATE "{table}" SET "review_requests" = 0 WHERE "{id_column}" = %s',
+            (identifier,),
         )
 
         # 2. Remove all entries for the company in REVIEW_REQUESTS
-        cursor.execute('DELETE FROM "REVIEW_REQUESTS" WHERE "companyCIK" = %s', (cik,))
+        cursor.execute(
+            'DELETE FROM "REVIEW_REQUESTS" WHERE "identifier" = %s AND "source" = %s',
+            (identifier, source),
+        )
 
         connection.commit()
         return {
             "status": "success",
-            "message": f"All review requests removed for company {cik}.",
+            "message": f"All review requests removed for company {identifier}.",
         }
 
     except psycopg2.Error as e:
@@ -624,78 +705,84 @@ def remove_all_review_requests(cik: str) -> dict:
 
 
 def samSearch(search_term: str) -> dict:
-     """
-     Searches the SAM entities stored in the database for companies matching the search term.
-     Returns only the company name and UEI.
-     """
-     try:
-         db_url = os.getenv("DATABASE_URL")
-         if not db_url:
-             return {"status": "error", "message": "DATABASE_URL not set."}
-         conn = psycopg2.connect(db_url)
-         cursor = conn.cursor()
-         # Search only by company name (case-insensitive), returning company_name and UEI.
-         cursor.execute("""
+    """
+    Searches the SAM entities stored in the database for companies matching the search term.
+    Returns only the company name and UEI.
+    """
+    try:
+        db_url = os.getenv("DATABASE_URL")
+        if not db_url:
+            return {"status": "error", "message": "DATABASE_URL not set."}
+        conn = psycopg2.connect(db_url)
+        cursor = conn.cursor()
+        # Search only by company name (case-insensitive), returning company_name and UEI.
+        cursor.execute(
+            """
              SELECT legal_business_name, entity_id
              FROM sam_entities
              WHERE legal_business_name ILIKE %s
              LIMIT 10;
-         """, (f"%{search_term}%",))
-         rows = cursor.fetchall()
-         cursor.close()
-         conn.close()
- 
-         results = []
-         for row in rows:
-             results.append({
-                 "company_name": row[0],
-                 "uei": row[1]
-             })
-         return {"status": "success", "results": results}
-     except Exception as e:
-         return {"status": "error", "message": str(e)}
-     
+         """,
+            (f"%{search_term}%",),
+        )
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        results = []
+        for row in rows:
+            results.append({"company_name": row[0], "uei": row[1]})
+        return {"status": "success", "results": results}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 def FetchSamData(uei: str) -> dict:
-     """
-     Retrieves detailed SAM company data from the database using the Unique Entity ID (UEI).
-     """
-     import os
-     import psycopg2
- 
-     db_url = os.getenv("DATABASE_URL")
-     if not db_url:
-         return {"status": "error", "message": "DATABASE_URL not set."}
-     
-     try:
-         conn = psycopg2.connect(db_url)
-         cursor = conn.cursor()
-         cursor.execute("""
+    """
+    Retrieves detailed SAM company data from the database using the Unique Entity ID (UEI).
+    """
+    import os
+    import psycopg2
+
+    db_url = os.getenv("DATABASE_URL")
+    if not db_url:
+        return {"status": "error", "message": "DATABASE_URL not set."}
+
+    try:
+        conn = psycopg2.connect(db_url)
+        cursor = conn.cursor()
+        cursor.execute(
+            """
              SELECT legal_business_name, cage_code, country_code,
                     state_or_province, city, zip_code, address_line1, address_line2,
                     registration_date, expiration_date
              FROM sam_entities
              WHERE entity_id = %s
              LIMIT 1;
-         """, (uei,))
-         row = cursor.fetchone()
-         cursor.close()
-         conn.close()
-         if row:
-             company = {
-                 "company_name": row[0],
-                 "cage_code": row[1],
-                 "country_code": row[2],
-                 "state_or_province": row[3],
-                 "city": row[4],
-                 "zip_code": row[5],
-                 "address_line1": row[6],
-                 "address_line2": row[7],
-                 "registration_date": row[8] if row[8] else None,
-                 "expiration_date": row[9] if row[9] else None
-             }
-             return {"status": "success", "company": company}
-         else:
-             return {"status": "error", "message": "No company found with the provided UEI."}
-     except Exception as e:
-         return {"status": "error", "message": str(e)}
+         """,
+            (uei,),
+        )
+        row = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if row:
+            company = {
+                "company_name": row[0],
+                "cage_code": row[1],
+                "country_code": row[2],
+                "state_or_province": row[3],
+                "city": row[4],
+                "zip_code": row[5],
+                "address_line1": row[6],
+                "address_line2": row[7],
+                "registration_date": row[8] if row[8] else None,
+                "expiration_date": row[9] if row[9] else None,
+            }
+            return {"status": "success", "company": company}
+        else:
+            return {
+                "status": "error",
+                "message": "No company found with the provided UEI.",
+            }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
