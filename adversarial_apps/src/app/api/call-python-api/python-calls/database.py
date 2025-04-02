@@ -162,68 +162,73 @@ def add_remove_favorite(username: str, identifier: str, source: str) -> dict:
     :param company_type: "SEC" or "SAM"
     :return: Message indicating success or failure
     """
+    connection = None
     try:
-        with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
-            with connection.cursor() as cursor:
+        db_url = os.getenv("DATABASE_URL")
+        connection = psycopg2.connect(db_url)
+        cursor = connection.cursor()
 
-                user_id = get_user_id(username, cursor)
+        user_id = get_user_id(username, cursor)
 
-                if not user_id:
-                    return {
-                        "status": "error",
-                        "message": f"User '{username}' not found.",
-                    }
-                # Check if the company exists in the database
-                if source == "SEC":
-                    cursor.execute(
-                        'SELECT 1 FROM "COMPANIES" WHERE "CIK" = %s', (identifier,)
-                    )
-                else:
-                    cursor.execute(
-                        'SELECT 1 FROM "SAM_COMPANIES" WHERE "UEI" = %s', (identifier,)
-                    )
+        if not user_id:
+            return {
+                "status": "error",
+                "message": f"User '{username}' not found.",
+            }
 
-                company_exists = cursor.fetchone()
+        if source == "SEC":
+            table = "COMPANIES"
+            id_column = "CIK"
+        else:
+            table = "sam_entities"
+            id_column = "entity_id"
 
-                if not company_exists:
-                    # since company does not exist, we need to add it to the database before we can add it to favorites
-                    # do the the CIK in FAVORITES table is a foreign key to the CIK in COMPANIES table
-                    if source == "SEC":
-                        cursor.execute(
-                            'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
-                            (identifier, False, 0),
-                        )
-                    connection.commit()
+        # Check if the company exists in the database
+        cursor.execute(
+            f'SELECT 1 FROM "{table}" WHERE "{id_column}" = %s', (identifier,)
+        )
 
-                # Check if the user has already favorited the company
+        company_exists = cursor.fetchone()
+
+        if not company_exists:
+            # since company does not exist, we need to add it to the database before we can add it to favorites
+            # do the the CIK in FAVORITES table is a foreign key to the CIK in COMPANIES table
+            if source == "SEC":
                 cursor.execute(
-                    'SELECT 1 FROM "FAVORITES" WHERE "userId" = %s AND "identifier" = %s AND "source" = %s',
-                    (user_id, identifier, source),
+                    'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
+                    (identifier, False, 0),
                 )
-                favorite_exists = cursor.fetchone()
+            connection.commit()
 
-                if favorite_exists:
-                    # If the favorite exists, remove it
-                    cursor.execute(
-                        'DELETE FROM "FAVORITES" WHERE "userId" = %s AND "identifier" = %s AND "source" = %s',
-                        (user_id, identifier, source),
-                    )
-                    connection.commit()
-                    return {
-                        "status": "success",
-                        "message": f"Removed {source} company with ID {identifier} from favorites for {username}.",
-                    }
-                else:
-                    # If the favorite does not exist, add it
-                    cursor.execute(
-                        'INSERT INTO "FAVORITES" ("userId", "identifier", "source") VALUES (%s, %s, %s)',
-                        (user_id, identifier, source),
-                    )
-                    connection.commit()
-                    return {
-                        "status": "success",
-                        "message": f"Added {source} company with ID {identifier} to favorites for {username}.",
-                    }
+        # Check if the user has already favorited the company
+        cursor.execute(
+            'SELECT 1 FROM "FAVORITES" WHERE "userId" = %s AND "identifier" = %s AND "source" = %s',
+            (user_id, identifier, source),
+        )
+        favorite_exists = cursor.fetchone()
+
+        if favorite_exists:
+            # If the favorite exists, remove it
+            cursor.execute(
+                'DELETE FROM "FAVORITES" WHERE "userId" = %s AND "identifier" = %s AND "source" = %s',
+                (user_id, identifier, source),
+            )
+            connection.commit()
+            return {
+                "status": "success",
+                "message": f"Removed {source} company with ID {identifier} from favorites for {username}.",
+            }
+        else:
+            # If the favorite does not exist, add it
+            cursor.execute(
+                'INSERT INTO "FAVORITES" ("userId", "identifier", "source") VALUES (%s, %s, %s)',
+                (user_id, identifier, source),
+            )
+            connection.commit()
+            return {
+                "status": "success",
+                "message": f"Added {source} company with ID {identifier} to favorites for {username}.",
+            }
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
 
@@ -235,35 +240,37 @@ def get_favorites(username: str) -> dict:
     :param username: Username of the user
     :return: Dictionary containing the list of favorited companies
     """
+    connection = None
     try:
-        with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
-            with connection.cursor() as cursor:
+        db_url = os.getenv("DATABASE_URL")
+        connection = psycopg2.connect(db_url)
+        cursor = connection.cursor()
 
-                user_id = get_user_id(username, cursor)
+        user_id = get_user_id(username, cursor)
 
-                # If the user does not exist, return an error message
-                if not user_id:
-                    return {
-                        "status": "error",
-                        "message": f"User '{username}' not found.",
-                    }
+        # If the user does not exist, return an error message
+        if not user_id:
+            return {
+                "status": "error",
+                "message": f"User '{username}' not found.",
+            }
 
-                # Query to get the list of favorited companies
-                # Query for both SEC and SAM favorites
-                cursor.execute(
-                    'SELECT "identifier", "source" FROM "FAVORITES" WHERE "userId" = %s',
-                    (user_id,),
-                )
-                favorites = cursor.fetchall()
+        # Query to get the list of favorited companies
+        # Query for both SEC and SAM favorites
+        cursor.execute(
+            'SELECT "identifier", "source" FROM "FAVORITES" WHERE "userId" = %s',
+            (user_id,),
+        )
+        favorites = cursor.fetchall()
 
-                sec_favorites = [fav[0] for fav in favorites if fav[1] == "SEC"]
-                sam_favorites = [fav[0] for fav in favorites if fav[1] == "SAM"]
+        sec_favorites = [fav[0] for fav in favorites if fav[1] == "SEC"]
+        sam_favorites = [fav[0] for fav in favorites if fav[1] == "SAM"]
 
-                return {
-                    "status": "success",
-                    "sec_favorites": sec_favorites,
-                    "sam_favorites": sam_favorites,
-                }
+        return {
+            "status": "success",
+            "sec_favorites": sec_favorites,
+            "sam_favorites": sam_favorites,
+        }
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
 
@@ -297,44 +304,46 @@ def get_company_score(identifier: str, source: str) -> dict:
     :param cik: CIK number of the company
     :return: Dictionary containing the risk score
     """
+    connection = None
     try:
-        with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
-            with connection.cursor() as cursor:
+        db_url = os.getenv("DATABASE_URL")
+        connection = psycopg2.connect(db_url)
+        cursor = connection.cursor()
 
-                if source == "SEC":
-                    table = "COMPANIES"
-                    id_column = "CIK"
-                else:
-                    table = "sam_entities"
-                    id_column = "entity_id"
-                # Combined query to check if the company exists, is verified, and retrieve riskScore
-                cursor.execute(
-                    f'SELECT "isVerified", "riskScore" FROM "{table}" WHERE "{id_column}" = %s',
-                    (identifier,),
-                )
-                result = cursor.fetchone()
+        if source == "SEC":
+            table = "COMPANIES"
+            id_column = "CIK"
+        else:
+            table = "sam_entities"
+            id_column = "entity_id"
+        # Combined query to check if the company exists, is verified, and retrieve riskScore
+        cursor.execute(
+            f'SELECT "isVerified", "riskScore" FROM "{table}" WHERE "{id_column}" = %s',
+            (identifier,),
+        )
+        result = cursor.fetchone()
 
-                # If the company is not found
-                if not result:
-                    return {
-                        "status": "error",
-                        "message": f"Company with {id_column} {identifier} not found.",
-                    }
+        # If the company is not found
+        if not result:
+            return {
+                "status": "error",
+                "message": f"Company with {id_column} {identifier} not found.",
+            }
 
-                is_verified, risk_score = result
+        is_verified, risk_score = result
 
-                # the score must be verified and reviewed before being returned
-                if not is_verified:
-                    return {
-                        "status": "error",
-                        "message": f"Company with {id_column} {identifier} is not verified.",
-                    }
+        # the score must be verified and reviewed before being returned
+        if not is_verified:
+            return {
+                "status": "error",
+                "message": f"Company with {id_column} {identifier} is not verified.",
+            }
 
-                # If company is verified, return the risk score
-                return {
-                    "status": "success",
-                    "riskScore": risk_score,
-                }
+        # If company is verified, return the risk score
+        return {
+            "status": "success",
+            "riskScore": risk_score,
+        }
 
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
@@ -349,44 +358,46 @@ def update_company_score(identifier: str, source: str, risk_score: float) -> dic
     :param risk_score: New risk score
     :return: Dictionary containing the update status
     """
+    connection = None
     try:
-        with psycopg2.connect(os.getenv("DATABASE_URL")) as connection:
-            with connection.cursor() as cursor:
+        db_url = os.getenv("DATABASE_URL")
+        connection = psycopg2.connect(db_url)
+        cursor = connection.cursor()
 
-                if source == "SEC":
-                    table = "COMPANIES"
-                    id_column = "CIK"
-                    insert_query = f"""
-                        INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests")
-                        VALUES (%s, %s, %s, NOW(), 0)
-                    """
-                    insert_values = (identifier, False, 0)
-                else:
-                    table = "sam_entities"
-                    id_column = "entity_id"
+        if source == "SEC":
+            table = "COMPANIES"
+            id_column = "CIK"
+            insert_query = f"""
+                INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests")
+                VALUES (%s, %s, %s, NOW(), 0)
+            """
+            insert_values = (identifier, False, 0)
+        else:
+            table = "sam_entities"
+            id_column = "entity_id"
 
-                # Check if the company exists
-                cursor.execute(
-                    f'SELECT 1 FROM "{table}" WHERE "{id_column}" = %s', (identifier,)
-                )
-                company_exists = cursor.fetchone()
+        # Check if the company exists
+        cursor.execute(
+            f'SELECT 1 FROM "{table}" WHERE "{id_column}" = %s', (identifier,)
+        )
+        company_exists = cursor.fetchone()
 
-                # Insert if it doesn't exist
-                if not company_exists:
-                    cursor.execute(insert_query, insert_values)
-                    connection.commit()
+        # Insert if it doesn't exist
+        if not company_exists:
+            cursor.execute(insert_query, insert_values)
+            connection.commit()
 
-                # Update the risk score for the company and sets it to be verified
-                # we set review_requests to 0 since now the socre has been updated so those requests have been satisfied
-                cursor.execute(
-                    f'UPDATE "{table}" SET "riskScore" = %s, "isVerified" = TRUE, "lastVerified" = NOW(), "review_requests" = 0 WHERE "{id_column}" = %s',
-                    (risk_score, id_column),
-                )
+        # Update the risk score for the company and sets it to be verified
+        # we set review_requests to 0 since now the socre has been updated so those requests have been satisfied
+        cursor.execute(
+            f'UPDATE "{table}" SET "riskScore" = %s, "isVerified" = TRUE, "lastVerified" = NOW(), "review_requests" = 0 WHERE "{id_column}" = %s',
+            (risk_score, id_column),
+        )
 
-                return {
-                    "status": "success",
-                    "message": f"Risk score updated for company with {id_column} {identifier}.",
-                }
+        return {
+            "status": "success",
+            "message": f"Risk score updated for company with {id_column} {identifier}.",
+        }
 
     except psycopg2.Error as e:
         return {"status": "error", "message": f"Database error: {e}"}
@@ -741,9 +752,6 @@ def FetchSamData(uei: str) -> dict:
     """
     Retrieves detailed SAM company data from the database using the Unique Entity ID (UEI).
     """
-    import os
-
-    import psycopg2
 
     db_url = os.getenv("DATABASE_URL")
     if not db_url:

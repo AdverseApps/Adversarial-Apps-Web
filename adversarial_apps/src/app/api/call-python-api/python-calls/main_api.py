@@ -163,7 +163,7 @@ if __name__ == "__main__":
             result = add_remove_favorite(
                 input_action_and_data.get("username"),
                 input_action_and_data.get("identifier"),
-                input_action_and_data.get("source"),
+                input_action_and_data.get("source")
             )
         elif action == "get_favorites":
             # Then the inputActionAndData is formatted as such:
@@ -174,7 +174,7 @@ if __name__ == "__main__":
             # { "action": "get_company_score", "cik": YOUR_CIK }
             result = get_company_score(
                 input_action_and_data.get("identifier"),
-                input_action_and_data.get("source"),
+                input_action_and_data.get("source")
             )
         elif action == "get_recent_ownerships":
             # Then the inputActionAndData is formatted as such:
@@ -199,7 +199,7 @@ if __name__ == "__main__":
             result = update_company_score(
                 input_action_and_data.get("identifier"),
                 input_action_and_data.get("source"),
-                input_action_and_data.get("risk_score"),
+                input_action_and_data.get("risk_score")
             )
         elif action == "get_def_url":
             # Expecting JSON like { "action": "get_def_url", "cik": "0000123456" }
@@ -214,14 +214,14 @@ if __name__ == "__main__":
             result = request_company_review(
                 input_action_and_data.get("username"),
                 input_action_and_data.get("identifier"),
-                input_action_and_data.get("source"),
+                input_action_and_data.get("source")
             )
         elif action == "get_review_requests":
             result = get_review_requests()
         elif action == "remove_all_review_requests":
             result = remove_all_review_requests(
                 input_action_and_data.get("identifier"),
-                input_action_and_data.get("source"),
+                input_action_and_data.get("source")
             )
         else:
             # Process the input data_
