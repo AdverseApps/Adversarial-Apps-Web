@@ -2,11 +2,11 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 
-interface CompanyResult  {
+interface CompanyResult {
   name: string;
   identifier: string; // For SEC: CIK; for SAM: UEI
-  source: 'SEC' | 'SAM';
-};
+  source: "SEC" | "SAM";
+}
 interface SAMCompanyAPIResponse {
   company_name: string;
   uei: string;
@@ -42,6 +42,7 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
       if (searchTerm) {
         console.log("Searching for:", searchTerm);
         fetchCombinedResults(searchTerm);
+        setPage();
         setShowDropdown(true);
       } else {
         setResults([]);
@@ -55,60 +56,65 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
     try {
       // --- Fetch SEC/EDGAR results
       const secData = { action: "obtain_cik_number", search_term: query };
-      const secResponse = await fetch('/api/call-python-api', {
-        method: 'Post',
+      const secResponse = await fetch("/api/call-python-api", {
+        method: "Post",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(secData)
+        body: JSON.stringify(secData),
       });
-      
+
       let secResults: CompanyResult[] = [];
       if (secResponse.status === 200) {
         const secResult = await secResponse.json();
-        console.log("SEC Result:", secResult);
-      
+        console.log("SEC Results:", secResult);
+
         if (Array.isArray(secResult.companies)) {
-          secResults = secResult.companies.map((company: SECCompanyAPIResponse) => ({
-            name: company["Company Name"] || "Unknown SEC Company",
-            identifier: company.CIK,
-            source: "SEC" as const,
-          }));
+          secResults = secResult.companies.map(
+            (company: SECCompanyAPIResponse) => ({
+              name: company["Company Name"] || "Unknown SEC Company",
+              identifier: company.CIK,
+              source: "SEC" as const,
+            })
+          );
         }
       }
 
       // --- Fetch SAM results using SAM search endpoint
       const samData = { action: "sam_search", search_term: query };
-      const samResponse = await fetch('/api/call-python-api', {
-        method: 'Post',
+      const samResponse = await fetch("/api/call-python-api", {
+        method: "Post",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(samData)
+        body: JSON.stringify(samData),
       });
+
       let samResults: CompanyResult[] = [];
       if (samResponse.status === 200) {
         const samResult = await samResponse.json();
-        console.log("SAM Result:", samResult);
-      
+        console.log("SAM Results:", samResult);
+
         if (Array.isArray(samResult.results)) {
-          samResults = samResult.results.map((company: SAMCompanyAPIResponse) => ({
-            name: company.company_name || "Unknown SAM Company",
-            identifier: company.uei,
-            source: "SAM" as const,
-          }));
+          samResults = samResult.results.map(
+            (company: SAMCompanyAPIResponse) => ({
+              name: company.company_name || "Unknown SAM Company",
+              identifier: company.uei,
+              source: "SAM" as const,
+            })
+          );
         }
       }
 
       // Combine results from both sources
       setResults([...secResults, ...samResults]);
     } catch (error) {
-      console.error('Error fetching combined results:', error);
+      console.error("Error fetching combined results:", error);
       setResults([]);
     }
   }
 
-   /*
+  /*
      SEC ONLY FETCH
   async function fetchResults(query: string) {
     
@@ -139,20 +145,26 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
   }
  */
 
-        // Called when a user clicks a specific result in the dropdown
-        function handleResultClick(result: CompanyResult) {
-          // Redirect to the appropriate company details page based on source.
-          if (result.source === "SEC") {
-            replace.push(`/company/${result.identifier}`);
-          } else if (result.source === "SAM") {
-            replace.push(`/company/sam/${result.identifier}`);
-          }
-          setShowDropdown(false);
-        }
+  // Called when a user clicks a specific result in the dropdown
+  function handleResultClick(result: CompanyResult) {
+    // Redirect to the appropriate company details page based on source.
+    if (result.source === "SEC") {
+      replace.push(`/company/${result.identifier}`);
+    } else if (result.source === "SAM") {
+      replace.push(`/company/sam/${result.identifier}`);
+    }
+    setShowDropdown(false);
+  }
 
   function handleSearch(term: string) {
     if (term) {
       replace.push(`/search?query=${term}`);
+    }
+  }
+
+  function setPage() {
+    if (currentPage != 1) {
+      setCurrentPage(1);
     }
   }
 
@@ -204,16 +216,17 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
           style={{ top: "100%" }}
         >
           {paginatedResults.map((result, index) => (
-                 <li
-                   key={index}
-                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                   tabIndex={0}
-                   onClick={() => handleResultClick(result)}
-                   onKeyDown={(e) => {
-                     if (e.key === 'Enter') handleResultClick(result);
+            <li
+              key={index}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              tabIndex={0}
+              onClick={() => handleResultClick(result)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleResultClick(result);
               }}
-              >
-              {result.name} <span className="text-xs italic">({result.source})</span>
+            >
+              {result.name}{" "}
+              <span className="text-xs italic">({result.source})</span>
             </li>
           ))}
           <div className="flex justify-between px-4 py-2 border-t border-gray-300">
