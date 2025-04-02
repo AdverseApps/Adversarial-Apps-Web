@@ -646,7 +646,7 @@ def get_review_requests() -> dict:
         ]
         # ✅ Sort by requestCount descending
         combined.sort(key=lambda x: x["requestCount"], reverse=True)
-        
+
         return {"status": "success", "reviewRequests": combined}
 
     except psycopg2.Error as e:
