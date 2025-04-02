@@ -1,6 +1,6 @@
 name: Testing Code Check
 
-on: [push]
+on:
 
 jobs:
   test:
