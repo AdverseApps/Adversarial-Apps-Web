@@ -9,17 +9,20 @@ import tempfile
 # Increase CSV field size limit safely (max for a 32-bit system)
 csv.field_size_limit(2**31 - 1)
 
+
 def get_safe(row, idx):
     try:
         return row[idx].strip()
     except IndexError:
         return ""
-    
+
+
 def get_safe(row, idx):
     try:
         return row[idx].strip()
     except IndexError:
         return ""
+
 
 def parse_sam_dat_file(data_file_path: str, output_file_path: str) -> int:
     """
@@ -30,11 +33,13 @@ def parse_sam_dat_file(data_file_path: str, output_file_path: str) -> int:
     log_path = "malformed_rows_log.txt"
 
     try:
-        with open(log_path, 'w', encoding='utf-8') as log, \
-             open(data_file_path, mode='r', encoding='utf-8') as infile, \
-             open(output_file_path, mode='w', encoding='utf-8', newline='') as outfile:
+        with open(log_path, "w", encoding="utf-8") as log, open(
+            data_file_path, mode="r", encoding="utf-8"
+        ) as infile, open(
+            output_file_path, mode="w", encoding="utf-8", newline=""
+        ) as outfile:
 
-            reader = csv.reader(infile, delimiter='|')
+            reader = csv.reader(infile, delimiter="|")
             writer = csv.writer(outfile)
 
             for row_num, row in enumerate(reader, 1):
@@ -58,15 +63,29 @@ def parse_sam_dat_file(data_file_path: str, output_file_path: str) -> int:
                     exclusions = get_safe(row, 36)
 
                     if len(row) < 40:
-                        log.write(f"Row {row_num} skipped: too few fields ({len(row)}) | Data: {row}\n")
+                        log.write(
+                            f"Row {row_num} skipped: too few fields ({len(row)}) | Data: {row}\n"
+                        )
                         continue
 
-                    writer.writerow([
-                        entity_id, legal_business_name, cage_code, country_code,
-                        state_or_province, city, zip_code, address_line1, address_line2,
-                        registration_date, expiration_date, certifications, naics_primary,
-                        exclusions
-                    ])
+                    writer.writerow(
+                        [
+                            entity_id,
+                            legal_business_name,
+                            cage_code,
+                            country_code,
+                            state_or_province,
+                            city,
+                            zip_code,
+                            address_line1,
+                            address_line2,
+                            registration_date,
+                            expiration_date,
+                            certifications,
+                            naics_primary,
+                            exclusions,
+                        ]
+                    )
                     total_records += 1
 
                 except Exception as e:
@@ -76,6 +95,7 @@ def parse_sam_dat_file(data_file_path: str, output_file_path: str) -> int:
         print(f"Error parsing SAM file: {e}")
 
     return total_records
+
 
 def process_row(row: dict) -> dict:
     """
@@ -88,6 +108,7 @@ def process_row(row: dict) -> dict:
             value = str(value)
         processed[key] = value.replace("!end", "").strip() if value else ""
     return processed
+
 
 '''
 def store_subset_in_db(records: list) -> None:
@@ -168,6 +189,7 @@ def store_subset_in_db(records: list) -> None:
         print(f"Error storing SAM data: {e}")
 '''
 
+
 def copy_into_sam_entities(csv_path: str) -> None:
     """
     Uses PostgreSQL COPY command to insert bulk data from a CSV into sam_entities.
@@ -214,15 +236,18 @@ def copy_into_sam_entities(csv_path: str) -> None:
         print(f"starting bulk copy")
 
         # Perform bulk COPY
-        with open(csv_path, 'r', encoding='utf-8') as f:
-            cursor.copy_expert("""
+        with open(csv_path, "r", encoding="utf-8") as f:
+            cursor.copy_expert(
+                """
                 COPY sam_entities (
                     entity_id, legal_business_name, cage_code, country_code,
                     state_or_province, city, zip_code, address_line1, address_line2,
                     registration_date, expiration_date, certifications,
                     naics_primary, exclusions
                 ) FROM STDIN WITH CSV
-            """, f)
+            """,
+                f,
+            )
 
         conn.commit()
         cursor.close()
@@ -249,13 +274,16 @@ def process_sam_data(data_file_path: str) -> None:
         print("No records to store.")
 '''
 
+
 def process_sam_data(data_file_path: str) -> None:
     """
     Parses SAM data into a temporary CSV and loads it into the database via COPY.
     The temp file is auto-deleted after use.
     """
     print(f"Processing SAM data from: {data_file_path}")
-    with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', newline='', delete=False) as tmp_csv:
+    with tempfile.NamedTemporaryFile(
+        mode="w+", encoding="utf-8", newline="", delete=False
+    ) as tmp_csv:
         temp_csv_path = tmp_csv.name
         record_count = parse_sam_dat_file(data_file_path, temp_csv_path)
         print(f"Parsed {record_count} records into temp CSV.")
@@ -265,19 +293,24 @@ def process_sam_data(data_file_path: str) -> None:
         else:
             print("No records to copy.")
     os.remove(temp_csv_path)
+
+
 def main():
     # Get the directory of this script
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    
+
     # Construct the relative path to the data file (adjust as needed)
-    data_file_path = os.path.join(script_dir, '..', '..', '..', 'lib', 'SAM_PUBLIC_UTF-8_MONTHLY_V2_20250302.dat')
+    data_file_path = os.path.join(
+        script_dir, "..", "..", "..", "lib", "SAM_PUBLIC_UTF-8_MONTHLY_V2_20250302.dat"
+    )
     data_file_path = os.path.normpath(data_file_path)
     print(f"Processing SAM data from: {data_file_path}")
-    
+
     if os.path.exists(data_file_path):
         process_sam_data(data_file_path)
     else:
         print(f"Error: File not found at {data_file_path}")
+
 
 if __name__ == "__main__":
     load_dotenv()
