@@ -15,11 +15,6 @@ interface CompanyDetailsProps {
   params: { uei: string };
 }
 
-interface FormerName {
-  name: string;
-  fromDate: string;
-  toDate: string;
-}
 
 function capitalizeWords(input: string | null | undefined): string {
   if (!input) return "";
