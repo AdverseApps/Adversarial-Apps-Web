@@ -1,20 +1,14 @@
 import {
-  FetchSecData,
   getUsername,
   getFavorites,
-  getRiskScore,
   verifyUser,
-  getTotalCommonStocks,
-  getDefUrl,
   FetchSamData,
 } from "@/app/lib/data";
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import UpdateCompany from "@/components/UpdateCompany";
-import { RecentOwnership } from "@/components/RecentOwnership";
 import { RiskScoreMeter } from "@/components/RiskScoreMeter";
 import RiskScoreTooltip from "@/components/RiskScoreTooltip";
-
 import RequestReviewButton from "@/components/RequestReviewButton";
 import { RiskScoreExplanation } from "@/components/RiskScoreExplanation";
 interface CompanyDetailsProps {
