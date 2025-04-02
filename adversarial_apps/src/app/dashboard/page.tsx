@@ -1,11 +1,11 @@
 import LogoutButton from "@/components/logoutButton";
 import { FavoriteCompaniesAccordion } from "@/components/FavoriteCompaniesAccordion";
-import { getReviewRequests, verifyUser } from "../lib/data";
+import { FetchSamData, getReviewRequests, verifyUser } from "../lib/data";
 import { FetchSecData, getFavorites, getRiskScore } from "../lib/data";
 import DownloadExcelButton from "@/components/downloadExcelButton";
 import { ReviewRequestsAccordion } from "@/components/ReviewRequestsAccordion";
 
-interface Company {
+interface SECCompany {
   name?: string;
   address?: string;
   street2?: string;
@@ -17,16 +17,30 @@ interface Company {
   phone?: string;
 }
 
+interface SAMCompany {
+  legal_business_name?: string;
+  address_line1?: string;
+  address_line2?: string;
+  city?: string;
+  state_or_province?: string;
+  zip_code?: string;
+  country_code?: string;
+  registration_date?: string;
+  expiration_date?: string;
+}
+
 interface FavoriteCompanyProps {
-  cik: string;
-  company: Company;
+  identifier: string;
+  company: SECCompany | SAMCompany;
+  source: "SEC" | "SAM";
   username: string;
   riskScore: number | null;
 }
 
 interface ReviewRequestProps {
-  cik: string;
-  company: Company;
+  identifier: string;
+  source: "SEC" | "SAM";
+  company: SECCompany | SAMCompany;
   requestCount: number;
 }
 
@@ -57,28 +71,51 @@ export default async function DashboardPage() {
   let favoritesData: FavoriteCompanyProps[] = [];
   if (userStatus.role === "false") {
     // Getting CIK of Favorites
-    const { favorites } = await getFavorites(userStatus.username);
+    const favoritesResponse = await getFavorites(userStatus.username);
+    const favorites = Array.isArray(favoritesResponse.favorites)
+      ? favoritesResponse.favorites
+      : [];
     // Use Promise.all to wait for all promises to resolve
     favoritesData = await Promise.all(
-      favorites.map(async (cik: string) => {
-        try {
-          const result = await FetchSecData(cik);
+      favorites.map(
+        async (item: { identifier: string; source: "SEC" | "SAM" }) => {
+          try {
+            const company =
+              item.source === "SEC"
+                ? (await FetchSecData(item.identifier)).company
+                : (await FetchSamData(item.identifier)).company;
 
-          // Fetching risk score
-          const riskScoreData = await getRiskScore(cik);
+            // Fetching risk score
+            const riskScoreData = await getRiskScore(
+              item.identifier,
+              item.source
+            );
 
-          // Check if the status is 'success' or 'error'
-          const riskScore =
-            riskScoreData.status === "success" ? riskScoreData.riskScore : -1; // Return -1 if the company is not verified
-          return { cik, company: result?.company || null, riskScore };
-        } catch (error) {
-          console.error(
-            `Error fetching SEC data or risk score for CIK ${cik}:`,
-            error
-          );
-          return { cik, data: null, riskScore: -1 }; // In case of any error, return -1 for riskScore
+            // Check if the status is 'success' or 'error'
+            const riskScore =
+              riskScoreData.status === "success" ? riskScoreData.riskScore : -1; // Return -1 if the company is not verified
+            return {
+              identifier: item.identifier,
+              company,
+              source: item.source,
+              username: userStatus.username,
+              riskScore,
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching ${item.source} data or risk score for ${item.identifier}:`,
+              error
+            );
+            return {
+              identifier: item.identifier,
+              company: null,
+              source: item.source,
+              username: userStatus.username,
+              riskScore: -1,
+            }; // In case of any error, return -1 for riskScore
+          }
         }
-      })
+      )
     );
   }
 
@@ -111,13 +148,17 @@ export default async function DashboardPage() {
       if (reviewData.status === "success" && reviewData.reviewRequests) {
         reviewRequests = await Promise.all(
           reviewData.reviewRequests.map(async (item) => {
-            const companyData = await FetchSecData(item.cik);
+            const source = item.source as "SEC" | "SAM";
+            const companyData =
+              source === "SEC"
+                ? await FetchSecData(item.identifier)
+                : await FetchSamData(item.identifier);
 
             return {
-              cik: item.cik,
+              identifier: item.identifier,
+              source: item.source as "SEC" | "SAM",
               requestCount: item.requestCount,
               company: companyData.company,
-              username: userStatus.username,
             };
           })
         );
@@ -150,14 +191,14 @@ export default async function DashboardPage() {
           {favoritesData.length > 0 ? (
             favoritesData.map((item, index) => {
               const company = item?.company;
-              const riskScore = item.riskScore;
               return company ? (
                 <FavoriteCompaniesAccordion
                   key={index}
-                  cik={item.cik}
-                  company={company}
+                  identifier={item.identifier}
+                  source={item.source}
+                  company={item.company}
                   username={userStatus.username}
-                  riskScore={riskScore}
+                  riskScore={item.riskScore}
                 />
               ) : null;
             })
@@ -184,7 +225,8 @@ export default async function DashboardPage() {
             reviewRequests.map((item, index) => (
               <ReviewRequestsAccordion
                 key={index}
-                cik={item.cik}
+                identifier={item.identifier}
+                source={item.source}
                 company={item.company}
                 requestCount={item.requestCount}
               />
