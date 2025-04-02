@@ -53,12 +53,22 @@ export default function VerifyUpdate({ identifier, source }: VerifyButtonProps)
                 throw new Error("Failed to update company score");
             }
 
-            const result = await response.json();
+            let result;
+            
+            try {
+            result = await response.json();
+            } catch (jsonErr) {
+            console.error("Failed to parse JSON from backend:", jsonErr);
+            const rawText = await response.text();
+            console.error("Raw response text:", rawText);
+            toast.error("Server returned invalid JSON.");
+            return;
+            }
 
-            if (result.status !== "success")
-            {
-                toast.error(`Error updating company: ${result.message || result.error}`);
-                return;
+            if (!response.ok || !result || result.status !== "success") {
+            console.error("Backend returned error:", result);
+            toast.error(`Error updating company: ${result?.message || result?.error || "Unknown error"}`);
+            return;
             }
 
             toast.success(result.message || "Company score updated successfully!");

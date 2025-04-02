@@ -367,36 +367,42 @@ def update_company_score(identifier: str, source: str, risk_score: float) -> dic
         if source == "SEC":
             table = "COMPANIES"
             id_column = "CIK"
-            insert_query = f"""
-                INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests")
-                VALUES (%s, %s, %s, NOW(), 0)
-            """
-            insert_values = (identifier, False, 0)
+
+            # Check if the SEC company exists
+            cursor.execute(
+                f'SELECT 1 FROM "{table}" WHERE "{id_column}" = %s', (identifier,)
+            )
+            company_exists = cursor.fetchone()
+
+            # Insert if it doesn't exist
+            if not company_exists:
+                insert_query = f"""
+                    INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests")
+                    VALUES (%s, %s, %s, NOW(), 0)
+                """
+                insert_values = (identifier, False, 0)
+                cursor.execute(insert_query, insert_values)
+                connection.commit()
+
         else:
             table = "sam_entities"
             id_column = "entity_id"
 
-        # Check if the company exists
-        cursor.execute(
-            f'SELECT 1 FROM "{table}" WHERE "{id_column}" = %s', (identifier,)
-        )
-        company_exists = cursor.fetchone()
-
-        # Insert if it doesn't exist
-        if not company_exists:
-            cursor.execute(insert_query, insert_values)
-            connection.commit()
-
-        # Update the risk score for the company and sets it to be verified
-        # we set review_requests to 0 since now the socre has been updated so those requests have been satisfied
-        cursor.execute(
-            f'UPDATE "{table}" SET "riskScore" = %s, "isVerified" = TRUE, "lastVerified" = NOW(), "review_requests" = 0 WHERE "{id_column}" = %s',
-            (risk_score, id_column),
-        )
-
+        # Update riskScore and verification
+        update_query = f'''
+            UPDATE "{table}"
+            SET "riskScore" = %s,
+                "isVerified" = TRUE,
+                "lastVerified" = NOW(),
+                "review_requests" = 0
+            WHERE "{id_column}" = %s
+        '''
+        cursor.execute(update_query, (risk_score, identifier))
+        connection.commit()
+        
         return {
             "status": "success",
-            "message": f"Risk score updated for company with {id_column} {identifier}.",
+            "message": f"Risk score updated for company with {id_column} {identifier}."
         }
 
     except psycopg2.Error as e:
@@ -758,28 +764,31 @@ def FetchSamData(uei: str) -> dict:
     """
     Retrieves detailed SAM company data from the database using the Unique Entity ID (UEI).
     """
+    connection = None  
 
-    db_url = os.getenv("DATABASE_URL")
-    if not db_url:
-        return {"status": "error", "message": "DATABASE_URL not set."}
 
     try:
-        conn = psycopg2.connect(db_url)
-        cursor = conn.cursor()
+        db_url = os.getenv("DATABASE_URL")
+        if not db_url:
+            return {"status": "error", "message": "DATABASE_URL not set."}
+        connection = psycopg2.connect(db_url)
+        cursor = connection.cursor()
+
         cursor.execute(
             """
-             SELECT legal_business_name, cage_code, country_code,
-                    state_or_province, city, zip_code, address_line1, address_line2,
-                    registration_date, expiration_date
-             FROM sam_entities
-             WHERE entity_id = %s
-             LIMIT 1;
-         """,
+            SELECT legal_business_name, cage_code, country_code,
+                   state_or_province, city, zip_code, address_line1, address_line2,
+                   registration_date, expiration_date, "riskScore"
+            FROM sam_entities
+            WHERE entity_id = %s
+            LIMIT 1;
+            """,
             (uei,),
         )
         row = cursor.fetchone()
         cursor.close()
-        conn.close()
+        connection.close()
+
         if row:
             company = {
                 "company_name": row[0],
@@ -792,6 +801,7 @@ def FetchSamData(uei: str) -> dict:
                 "address_line2": row[7],
                 "registration_date": row[8] if row[8] else None,
                 "expiration_date": row[9] if row[9] else None,
+                "riskScore": row[10], 
             }
             return {"status": "success", "company": company}
         else:
@@ -799,5 +809,6 @@ def FetchSamData(uei: str) -> dict:
                 "status": "error",
                 "message": "No company found with the provided UEI.",
             }
+
     except Exception as e:
         return {"status": "error", "message": str(e)}
