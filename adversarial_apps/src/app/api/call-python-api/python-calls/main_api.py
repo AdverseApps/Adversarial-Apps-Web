@@ -21,7 +21,7 @@ from database import (
     request_company_review,
     update_company_score,
     samSearch,
-    FetchSamData
+    FetchSamData,
 )
 from dotenv import load_dotenv
 from edgar import (
@@ -140,7 +140,7 @@ if __name__ == "__main__":
         elif action == "sam_search":
             result = samSearch(input_action_and_data.get("search_term"))
         elif action == "fetch_sam_data":
-            result = FetchSamData(input_action_and_data.get("uei"))    
+            result = FetchSamData(input_action_and_data.get("uei"))
         elif action == "add_user":
             # Then the inputActionAndData is formatted as such:
             # { "action": "add_user", "username": YOUR_USERNAME, "password_hashed": YOUR_PASSWORD, "comnpany": YOUR_COMPANY }
@@ -161,7 +161,9 @@ if __name__ == "__main__":
             # Then the inputActionAndData is formatted as such:
             # { "action": "add_favorite", "username": YOUR_USERNAME, "cik": YOUR_CIK }
             result = add_remove_favorite(
-                input_action_and_data.get("username"), input_action_and_data.get("identifier"), input_action_and_data.get("source")
+                input_action_and_data.get("username"),
+                input_action_and_data.get("identifier"),
+                input_action_and_data.get("source"),
             )
         elif action == "get_favorites":
             # Then the inputActionAndData is formatted as such:
@@ -170,7 +172,10 @@ if __name__ == "__main__":
         elif action == "get_company_score":
             # Then the inputActionAndData is formatted as such:
             # { "action": "get_company_score", "cik": YOUR_CIK }
-            result = get_company_score(input_action_and_data.get("cik"))
+            result = get_company_score(
+                input_action_and_data.get("identifier"),
+                input_action_and_data.get("source"),
+            )
         elif action == "get_recent_ownerships":
             # Then the inputActionAndData is formatted as such:
             # { "action": "get_recent_ownerships", "cik": YOUR_CIK, "pagination": YOUR_PAGINATION_INDEX }
@@ -207,12 +212,17 @@ if __name__ == "__main__":
             result = generate_excel(input_action_and_data.get("username"))
         elif action == "request_company_review":
             result = request_company_review(
-                input_action_and_data.get("username"), input_action_and_data.get("cik")
+                input_action_and_data.get("username"),
+                input_action_and_data.get("identifier"),
+                input_action_and_data.get("source"),
             )
         elif action == "get_review_requests":
             result = get_review_requests()
         elif action == "remove_all_review_requests":
-            result = remove_all_review_requests(input_action_and_data.get("cik"))
+            result = remove_all_review_requests(
+                input_action_and_data.get("identifier"),
+                input_action_and_data.get("source"),
+            )
         else:
             # Process the input data_
             result = {"status": "error", "message": "Invalid action"}
