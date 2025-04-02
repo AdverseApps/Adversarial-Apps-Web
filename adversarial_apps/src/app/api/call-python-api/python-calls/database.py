@@ -742,6 +742,7 @@ def FetchSamData(uei: str) -> dict:
     Retrieves detailed SAM company data from the database using the Unique Entity ID (UEI).
     """
     import os
+
     import psycopg2
 
     db_url = os.getenv("DATABASE_URL")
