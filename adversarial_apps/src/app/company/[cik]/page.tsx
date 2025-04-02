@@ -170,7 +170,8 @@ export default async function page({ params }: CompanyDetailsProps) {
                 displayIconOnly={false}
               />
               <FavoriteButton
-                cik={cik}
+                identifier={cik}
+                source="SEC"
                 username={username}
                 favorites={favorites || []}
               />
