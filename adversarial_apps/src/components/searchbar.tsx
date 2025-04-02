@@ -8,11 +8,11 @@ interface CompanyResult  {
   source: 'SEC' | 'SAM';
 };
 interface SAMCompanyAPIResponse {
-  name: string;
+  company_name: string;
   uei: string;
 }
 interface SECCompanyAPIResponse {
-  name: string;
+  "Company Name": string;
   CIK: string;
 }
 export default function SearchBar({ placeholder }: { placeholder: string }) {
@@ -67,7 +67,7 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
       if (secResponse.status === 200) {
         const secResult = await secResponse.json();
         secResults = (secResult.companies || []).map((company: SECCompanyAPIResponse) => ({
-          name: company.name,
+          name: company["Company Name"],
           identifier: company.CIK,
           source: "SEC" as const,
         }));
@@ -86,7 +86,7 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
       if (samResponse.status === 200) {
         const samResult = await samResponse.json();
         samResults = (samResult.results || []).map((company: SAMCompanyAPIResponse) => ({
-          name: company.name,
+          name: company.company_name,
           identifier: company.uei,
           source: "SAM" as const,
         }));
