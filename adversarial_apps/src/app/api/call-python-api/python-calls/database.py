@@ -389,20 +389,20 @@ def update_company_score(identifier: str, source: str, risk_score: float) -> dic
             id_column = "entity_id"
 
         # Update riskScore and verification
-        update_query = f'''
+        update_query = f"""
             UPDATE "{table}"
             SET "riskScore" = %s,
                 "isVerified" = TRUE,
                 "lastVerified" = NOW(),
                 "review_requests" = 0
             WHERE "{id_column}" = %s
-        '''
+        """
         cursor.execute(update_query, (risk_score, identifier))
         connection.commit()
-        
+
         return {
             "status": "success",
-            "message": f"Risk score updated for company with {id_column} {identifier}."
+            "message": f"Risk score updated for company with {id_column} {identifier}.",
         }
 
     except psycopg2.Error as e:
@@ -764,8 +764,7 @@ def FetchSamData(uei: str) -> dict:
     """
     Retrieves detailed SAM company data from the database using the Unique Entity ID (UEI).
     """
-    connection = None  
-
+    connection = None
 
     try:
         db_url = os.getenv("DATABASE_URL")
@@ -801,7 +800,7 @@ def FetchSamData(uei: str) -> dict:
                 "address_line2": row[7],
                 "registration_date": row[8] if row[8] else None,
                 "expiration_date": row[9] if row[9] else None,
-                "riskScore": row[10], 
+                "riskScore": row[10],
             }
             return {"status": "success", "company": company}
         else:
