@@ -490,7 +490,7 @@ def generate_excel(username: str) -> dict:
             ws_company_data.append(
                 [
                     uei,
-                    company_info.get("legal_business_name", "N/A"),
+                    company_info.get("company_name", "N/A"),
                     formatted_address,
                     "N/A",  # Phone not available for SAM, can adjust if you store it
                     company_score["riskScore"],
@@ -502,7 +502,7 @@ def generate_excel(username: str) -> dict:
             ws_company_data.append(
                 [
                     uei,
-                    company_info.get("legal_business_name", "N/A"),
+                    company_info.get("company_name", "N/A"),
                     formatted_address,
                     "N/A",  # Phone not available for SAM, can adjust if you store it
                     "Not Verified",
@@ -638,9 +638,15 @@ def get_review_requests() -> dict:
         sam_rows = cursor.fetchall()
 
         combined = [
-            {"identifier": row[0], "requestCount": row[1]}
-            for row in company_rows + sam_rows
+            {"identifier": row[0], "requestCount": row[1], "source": "SEC"}
+            for row in company_rows
+        ] + [
+            {"identifier": row[0], "requestCount": row[1], "source": "SAM"}
+            for row in sam_rows
         ]
+        # ✅ Sort by requestCount descending
+        combined.sort(key=lambda x: x["requestCount"], reverse=True)
+        
         return {"status": "success", "reviewRequests": combined}
 
     except psycopg2.Error as e:
