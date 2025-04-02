@@ -1,10 +1,11 @@
-import os
 import csv
+import os
 import sys
-from dotenv import load_dotenv
-import psycopg2
-from datetime import datetime, timezone
 import tempfile
+from datetime import datetime, timezone
+
+import psycopg2
+from dotenv import load_dotenv
 
 # Increase CSV field size limit safely (max for a 32-bit system)
 csv.field_size_limit(2**31 - 1)

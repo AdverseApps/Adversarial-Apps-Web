@@ -9,6 +9,7 @@ import requests
 from argon2 import PasswordHasher
 from bs4 import BeautifulSoup
 from database import (
+    FetchSamData,
     add_remove_favorite,
     add_user,
     generate_excel,
@@ -19,9 +20,8 @@ from database import (
     get_reviewer_status,
     remove_all_review_requests,
     request_company_review,
-    update_company_score,
     samSearch,
-    FetchSamData,
+    update_company_score,
 )
 from dotenv import load_dotenv
 from edgar import (
