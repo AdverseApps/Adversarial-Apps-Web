@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 
-interface Company {
+interface SECCompany {
   name?: string;
   address?: string;
   street2?: string;
@@ -18,9 +18,22 @@ interface Company {
   phone?: string;
 }
 
+interface SAMCompany {
+  legal_business_name?: string;
+  address_line1?: string;
+  address_line2?: string;
+  city?: string;
+  state_or_province?: string;
+  zip_code?: string;
+  country_code?: string;
+  registration_date?: string;
+  expiration_date?: string;
+}
+
 interface ReviewRequestProps {
-  cik: string;
-  company: Company;
+  identifier: string;
+  source: "SEC" | "SAM";
+  company: SECCompany | SAMCompany;
   requestCount: number;
 }
 /*
@@ -119,12 +132,15 @@ export const ReviewRequestsAccordion = ({ cik, company, username, requestCount }
 
 // Component for displaying review requests in an accordion format
 export const ReviewRequestsAccordion = ({
-  cik,
+  identifier,
+  source,
   company,
   requestCount,
 }: ReviewRequestProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
@@ -134,15 +150,30 @@ export const ReviewRequestsAccordion = ({
     e.stopPropagation();
   };
 
-  const formattedAddress = company
-    ? `${company.address || "N/A"}${
-        company.street2 ? `, ${company.street2}` : ""
-      }, ${company.city || "N/A"}, ${
-        company.stateOrCountryDescription || "N/A"
-      } ${company.zipCode || "N/A"}`
-    : "N/A";
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const formattedAddress =
+    source === "SEC"
+      ? `${(company as SECCompany).address || "N/A"}${
+          (company as SECCompany).street2
+            ? `, ${(company as SECCompany).street2}`
+            : ""
+        }, ${(company as SECCompany).city || "N/A"}, ${
+          (company as SECCompany).stateOrCountryDescription || "N/A"
+        } ${(company as SECCompany).zipCode || "N/A"}`
+      : `${(company as SAMCompany).address_line1 || "N/A"}${
+          (company as SAMCompany).address_line2
+            ? `, ${(company as SAMCompany).address_line2}`
+            : ""
+        }, ${(company as SAMCompany).city || "N/A"}, ${
+          (company as SAMCompany).state_or_province || "N/A"
+        } ${(company as SAMCompany).zip_code || "N/A"}`;
+
+  const moreInfoLink =
+    source === "SEC" ? `/company/${identifier}` : `/company/sam/${identifier}`;
+
+  const companyName =
+    source === "SEC"
+      ? (company as SECCompany).name || "Unknown Company"
+      : (company as SAMCompany).legal_business_name || "Unknown Entity";
 
   const handleRemoveRequest = async () => {
     setLoading(true);
@@ -151,7 +182,8 @@ export const ReviewRequestsAccordion = ({
         method: "POST",
         body: JSON.stringify({
           action: "remove_all_review_requests",
-          cik: cik,
+          identifier,
+          source,
         }),
       });
 
@@ -199,7 +231,7 @@ export const ReviewRequestsAccordion = ({
         }}
       >
         <span className="justify-self-start">{isOpen ? "▲" : "▼"}</span>
-        <span>{company?.name || "Unknown Company"}</span>
+        <span>{companyName}</span>
         <span>{requestCount}</span>
         <button
           onClick={() => setIsModalOpen(true)}
@@ -210,43 +242,72 @@ export const ReviewRequestsAccordion = ({
         >
           {loading ? "Removing..." : "Remove Company Requests"}
         </button>
-        <div onClick={handleQRCodeClick} className="cursor-pointer text-white">
+        <div onClick={handleQRCodeClick}>
           <QRCodeComponent
-            companyName={company.name || ""}
-            cik={cik}
+            companyName={companyName}
+            identifier={identifier}
+            source={source}
             displayIconOnly={true}
           />
         </div>
-        <Link href={`/company/${cik}`} target="_blank">
-          <div className="bg-blue-600 hover:bg-blue-800 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out flex items-center">
-            More Info
-            <Image
-              src="/more.png"
-              height={30}
-              width={30}
-              alt="More"
-              className="invert ml-2"
-            />
-          </div>
-        </Link>
+        <div>
+          <Link href={moreInfoLink} target="_blank">
+            <div className="bg-blue-600 hover:bg-blue-800 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out flex items-center">
+              More Info
+              <Image
+                src="/more.png"
+                height={30}
+                width={30}
+                alt="More"
+                className="invert ml-2"
+              />
+            </div>
+          </Link>
+        </div>
       </div>
-
       {/* Accordion Content */}
       {isOpen && (
         <div className="p-4 bg-blue-950 rounded-lg rounded-t-none">
           <p>
-            <strong>CIK:</strong> {cik}
+            <strong>Identifier:</strong> {identifier}
+          </p>
+          <p>
+            <strong>Source:</strong> {source}
           </p>
           <p>
             <strong>Address:</strong> {formattedAddress}
           </p>
-          <p>
-            <strong>Phone:</strong> {company?.phone || "N/A"}
-          </p>
-          <p>
-            <strong>Most Recent Filing Date:</strong>{" "}
-            {company?.mostRecentFilingDate || "N/A"}
-          </p>
+          {source === "SEC" && (
+            <>
+              <p>
+                <strong>State of Incorporation:</strong>{" "}
+                {(company as SECCompany).stateOfIncorporation || "N/A"}
+              </p>
+              <p>
+                <strong>Phone:</strong> {(company as SECCompany).phone || "N/A"}
+              </p>
+              <p>
+                <strong>Most Recent Filing Date:</strong>{" "}
+                {(company as SECCompany).mostRecentFilingDate || "N/A"}
+              </p>
+            </>
+          )}
+          {source === "SAM" && (
+            <>
+              <p>
+                <strong>Country:</strong>{" "}
+                {(company as SAMCompany).country_code || "N/A"}
+              </p>
+              <p>
+                <strong>Registration Date:</strong>{" "}
+                {(company as SAMCompany).registration_date || "N/A"}
+              </p>
+              <p>
+                <strong>Expiration Date:</strong>{" "}
+                {(company as SAMCompany).expiration_date || "N/A"}
+              </p>
+            </>
+          )}
         </div>
       )}
 
@@ -259,7 +320,7 @@ export const ReviewRequestsAccordion = ({
           >
             <p className="pb-2 text-center">
               Are you sure you want to remove the review request for{" "}
-              {company.name}?
+              {companyName}?
             </p>
             <div className="flex space-x-4">
               <button
