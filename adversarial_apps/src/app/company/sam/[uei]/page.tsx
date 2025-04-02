@@ -192,7 +192,8 @@ export default async function Page({ params }: CompanyDetailsProps) {
             <div className="flex flex-col items-center">
               <p>This Company has not yet been verified</p>
               <RequestReviewButton
-                cik={uei}
+                identifier={uei}
+                source="SAM"
                 username={username || null}
                 role={reviewerData?.role || null}
               />
@@ -200,7 +201,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
           )}
 
           {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany identifier={uei} source="SAM"/>
+            <UpdateCompany identifier={uei} source="SAM" />
           )}
         </div>
       </div>
