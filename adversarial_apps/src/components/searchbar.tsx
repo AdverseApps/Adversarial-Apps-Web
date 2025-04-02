@@ -66,11 +66,15 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
       let secResults: CompanyResult[] = [];
       if (secResponse.status === 200) {
         const secResult = await secResponse.json();
-        secResults = (secResult.companies || []).map((company: SECCompanyAPIResponse) => ({
-          name: company["Company Name"],
-          identifier: company.CIK,
-          source: "SEC" as const,
-        }));
+        console.log("SEC Result:", secResult);
+      
+        if (Array.isArray(secResult.companies)) {
+          secResults = secResult.companies.map((company: SECCompanyAPIResponse) => ({
+            name: company["Company Name"] || "Unknown SEC Company",
+            identifier: company.CIK,
+            source: "SEC" as const,
+          }));
+        }
       }
 
       // --- Fetch SAM results using SAM search endpoint
@@ -85,11 +89,15 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
       let samResults: CompanyResult[] = [];
       if (samResponse.status === 200) {
         const samResult = await samResponse.json();
-        samResults = (samResult.results || []).map((company: SAMCompanyAPIResponse) => ({
-          name: company.company_name,
-          identifier: company.uei,
-          source: "SAM" as const,
-        }));
+        console.log("SAM Result:", samResult);
+      
+        if (Array.isArray(samResult.results)) {
+          samResults = samResult.results.map((company: SAMCompanyAPIResponse) => ({
+            name: company.company_name || "Unknown SAM Company",
+            identifier: company.uei,
+            source: "SAM" as const,
+          }));
+        }
       }
 
       // Combine results from both sources
