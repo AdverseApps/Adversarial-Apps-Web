@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useState } from "react";
 import { QRCodeComponent } from "./QR";
 import Image from "next/image";
@@ -17,7 +17,7 @@ interface SECCompany {
 }
 
 interface SAMCompany {
-  legal_business_name?: string;
+  company_name: string;
   address_line1?: string;
   address_line2?: string;
   city?: string;
@@ -159,7 +159,7 @@ export const FavoriteCompaniesAccordion = ({
   const companyName =
     source === "SEC"
       ? (company as SECCompany).name || "Unknown Company"
-      : (company as SAMCompany).legal_business_name || "Unknown Entity";
+      : (company as SAMCompany).company_name || "Unknown Entity";
   return (
     <div className="mb-2 border border-gray-500 rounded-lg overflow-visible">
       {/* Accordion Header */}
@@ -205,7 +205,7 @@ export const FavoriteCompaniesAccordion = ({
             displayIconOnly={true}
           />
         </div>
-
+        </div>
         {/* Accordion Content */}
         {isOpen && (
           <div className="p-4 bg-blue-950 text-white rounded-lg rounded-t-none">
@@ -263,7 +263,7 @@ export const FavoriteCompaniesAccordion = ({
             </Link>
           </div>
         )}
-      </div>
+      
     </div>
   );
 };

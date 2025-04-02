@@ -128,7 +128,8 @@ export default async function Page({ params }: CompanyDetailsProps) {
                 displayIconOnly={false}
               />
               <FavoriteButton
-                uei={uei}
+                identifier={uei}
+                source="SAM"
                 username={username}
                 favorites={favorites || []}
               />

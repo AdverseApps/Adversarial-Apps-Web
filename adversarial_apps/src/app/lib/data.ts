@@ -208,11 +208,11 @@ export async function getFavorites(username: string) {
     // Combine SEC and SAM favorites into one array with source indicators
     const combinedFavorites = [
       ...(data.sec_favorites || []).map((fav: string) => ({
-        id: fav,
+        identifier: fav,
         source: "SEC" as const,
       })),
       ...(data.sam_favorites || []).map((fav: string) => ({
-        id: fav,
+        identifier: fav,
         source: "SAM" as const,
       })),
     ];
