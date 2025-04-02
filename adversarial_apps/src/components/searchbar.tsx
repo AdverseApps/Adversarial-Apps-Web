@@ -7,7 +7,14 @@ interface CompanyResult  {
   identifier: string; // For SEC: CIK; for SAM: UEI
   source: 'SEC' | 'SAM';
 };
-
+interface SAMCompanyAPIResponse {
+  name: string;
+  uei: string;
+}
+interface SECCompanyAPIResponse {
+  name: string;
+  CIK: string;
+}
 export default function SearchBar({ placeholder }: { placeholder: string }) {
   return (
     <Suspense fallback={<div>Loading search bar...</div>}>
@@ -59,9 +66,9 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
       let secResults: CompanyResult[] = [];
       if (secResponse.status === 200) {
         const secResult = await secResponse.json();
-        secResults = (secResult.companies || []).map((company: any) => ({
-          name: company["Company Name"],
-          identifier: company["CIK"], // Using SEC's CIK
+        secResults = (secResult.companies || []).map((company: SECCompanyAPIResponse) => ({
+          name: company.name,
+          identifier: company.CIK,
           source: "SEC" as const,
         }));
       }
@@ -78,9 +85,9 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
       let samResults: CompanyResult[] = [];
       if (samResponse.status === 200) {
         const samResult = await samResponse.json();
-        samResults = (samResult.results || []).map((company: any) => ({
-          name: company.company_name,
-          identifier: company.uei, // Using Unique Entity ID for SAM
+        samResults = (samResult.results || []).map((company: SAMCompanyAPIResponse) => ({
+          name: company.name,
+          identifier: company.uei,
           source: "SAM" as const,
         }));
       }
