@@ -12,6 +12,12 @@ interface DecodedToken extends JwtPayload {
   role: string;
 }
 
+interface ReviewRequestAPIResponse {
+  identifier: string;
+  requestCount: number;
+  source: string;
+}
+
 export async function FetchSecData(cik: string) {
   try {
     console.log("Fetching SEC data...");
@@ -203,11 +209,11 @@ export async function getFavorites(username: string) {
     const combinedFavorites = [
       ...(data.sec_favorites || []).map((fav: string) => ({
         id: fav,
-        source: "SEC",
+        source: "SEC" as const,
       })),
       ...(data.sam_favorites || []).map((fav: string) => ({
         id: fav,
-        source: "SAM",
+        source: "SAM" as const,
       })),
     ];
 
@@ -410,11 +416,13 @@ export async function getReviewRequests(): Promise<{
 
     // Ensure all entries have identifier + source
     if (result.status === "success" && Array.isArray(result.reviewRequests)) {
-      result.reviewRequests = result.reviewRequests.map((entry: any) => ({
-        identifier: entry.identifier,
-        requestCount: entry.requestCount,
-        source: entry.source,
-      }));
+      result.reviewRequests = result.reviewRequests.map(
+        (entry: ReviewRequestAPIResponse) => ({
+          identifier: entry.identifier,
+          requestCount: entry.requestCount,
+          source: entry.source,
+        })
+      );
     }
 
     return result;
