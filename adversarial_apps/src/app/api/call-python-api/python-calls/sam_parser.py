@@ -142,7 +142,7 @@ def store_subset_in_db(records: list) -> None:
             "address_line2" text,
             "address_line1" text,
             "review_requests" int4 DEFAULT 0,
-            "riskScore" float4 DEFAULT 0,
+            "riskScore" float4,
             "lastVerified" timestamp,
             "isVerified" bool NOT NULL DEFAULT false
         );
@@ -222,7 +222,7 @@ def copy_into_sam_entities(csv_path: str) -> None:
             "naics_primary" text DEFAULT '',
             "exclusions" text DEFAULT '',
             "review_requests" int4 DEFAULT 0,
-            "riskScore" float4 DEFAULT 0,
+            "riskScore" float4,
             "lastVerified" timestamp,
             "isVerified" bool NOT NULL DEFAULT false
         );
