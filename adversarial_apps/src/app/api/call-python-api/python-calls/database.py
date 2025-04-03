@@ -743,8 +743,7 @@ def samSearch(search_term: str) -> dict:
             """
              SELECT legal_business_name, entity_id
              FROM sam_entities
-             WHERE legal_business_name ILIKE %s
-             LIMIT 10;
+             WHERE legal_business_name ILIKE %s;
          """,
             (f"%{search_term}%",),
         )
