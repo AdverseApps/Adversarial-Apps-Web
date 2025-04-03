@@ -11,6 +11,7 @@ import { RiskScoreMeter } from "@/components/RiskScoreMeter";
 import RiskScoreTooltip from "@/components/RiskScoreTooltip";
 import RequestReviewButton from "@/components/RequestReviewButton";
 import { RiskScoreExplanation } from "@/components/RiskScoreExplanation";
+import SAMInfo from "@/components/SAMInfo";
 interface CompanyDetailsProps {
   params: { uei: string };
 }
@@ -158,7 +159,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
             </p>
             <p>
               <span className="font-semibold">Expiration Date:</span>{" "}
-              {expiration_date ? formatDate(expiration_date) : "N/A"}
+              {expiration_date ? formatDate(expiration_date) : "N/A"} <SAMInfo />
             </p>
           </div>
         </div>
