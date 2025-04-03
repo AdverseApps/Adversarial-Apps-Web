@@ -16,7 +16,6 @@ interface CompanyDetailsProps {
   params: { uei: string };
 }
 
-
 function capitalizeWords(input: string | null | undefined): string {
   if (!input) return "";
   return input.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
@@ -159,7 +158,8 @@ export default async function Page({ params }: CompanyDetailsProps) {
             </p>
             <p>
               <span className="font-semibold">Expiration Date:</span>{" "}
-              {expiration_date ? formatDate(expiration_date) : "N/A"} <SAMInfo />
+              {expiration_date ? formatDate(expiration_date) : "N/A"}{" "}
+              <SAMInfo />
             </p>
           </div>
         </div>

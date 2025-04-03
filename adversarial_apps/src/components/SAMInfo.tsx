@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -29,12 +29,14 @@ export default function SAMInfo() {
           onMouseLeave={handleMouseLeave}
         >
           <p>
-            SAM.gov registration lasts one year. If not renewed by the expiration
-            date, the entity becomes ineligible for federal contracts until it's
-            reactivated.
+            SAM.gov registration lasts one year. If not renewed by the
+            expiration date, the entity becomes ineligible for federal contracts
+            until it's reactivated.
           </p>
           <p className="mt-2">
-            <u>Note:</u> If a new registration was recently submitted, it may still be under review. In that case, the old expiration date will show until the renewal is approved.
+            <u>Note:</u> If a new registration was recently submitted, it may
+            still be under review. In that case, the old expiration date will
+            show until the renewal is approved.
           </p>
         </div>
       )}
