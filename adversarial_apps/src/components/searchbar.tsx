@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 
@@ -30,7 +30,6 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
   const [results, setResults] = useState<CompanyResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-
   const resultsPerPage = 10;
   const paginatedResults = results.slice(
     (currentPage - 1) * resultsPerPage,
@@ -42,7 +41,9 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
       if (searchTerm) {
         console.log("Searching for:", searchTerm);
         fetchCombinedResults(searchTerm);
-        setPage();
+        if (currentPage !== 1) {
+          setCurrentPage(1);
+        }
         setShowDropdown(true);
       } else {
         setResults([]);
@@ -159,12 +160,6 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
   function handleSearch(term: string) {
     if (term) {
       replace.push(`/search?query=${term}`);
-    }
-  }
-
-  function setPage() {
-    if (currentPage != 1) {
-      setCurrentPage(1);
     }
   }
 

@@ -31,7 +31,7 @@ export default function SAMInfo() {
           <p>
             SAM.gov registration lasts one year. If not renewed by the
             expiration date, the entity becomes ineligible for federal contracts
-            until it's reactivated.
+            until it&rsquo;s reactivated.
           </p>
           <p className="mt-2">
             <u>Note:</u> If a new registration was recently submitted, it may
