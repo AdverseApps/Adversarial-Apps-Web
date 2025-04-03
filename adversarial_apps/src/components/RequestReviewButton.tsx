@@ -6,13 +6,15 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface RequestReviewButtonProps {
-  cik: string;
+  identifier: string; // Was previously called `cik`
+  source: "SEC" | "SAM";
   username: string | null;
   role: string | null; // Expected values: "TRUE" or "FALSE"
 }
 
 export default function RequestReviewButton({
-  cik,
+  identifier,
+  source,
   username,
   role,
 }: RequestReviewButtonProps) {
@@ -45,7 +47,12 @@ export default function RequestReviewButton({
       try {
         setLoading(true);
         console.log("adding review request ");
-        const payload = { action: "request_company_review", cik, username };
+        const payload = {
+          action: "request_company_review",
+          username,
+          identifier,
+          source,
+        };
         const response = await fetch("/api/call-python-api", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

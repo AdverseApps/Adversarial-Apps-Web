@@ -5,17 +5,28 @@ import Image from "next/image";
 
 interface QRCodeProps {
   companyName: string;
-  cik: string;
+  identifier: string;         // CIK for SEC or entity_id for SAM
+  source: "SEC" | "SAM";  // Company type
   displayIconOnly?: boolean;
 }
 
 export const QRCodeComponent = (props: QRCodeProps) => {
-  const { cik, companyName, displayIconOnly } = props;
+  const { identifier, companyName, source, displayIconOnly } = props;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  // Generate different URLs for SEC and SAM companies
+  const getCompanyUrl = () => {
+    if (source === "SEC") {
+      return `https://adversarialapps.com/company/${identifier}`;
+    } else if (source === "SAM") {
+      return `https://adversarialapps.com/company/sam/${identifier}`;
+    }
+    return "#";
+  };
 
   return (
     <>
@@ -57,7 +68,7 @@ export const QRCodeComponent = (props: QRCodeProps) => {
           >
             <div className="flex flex-col items-center break-words">
               <p className="text-black pb-2 text-center break-words max-w-full">{companyName}</p>
-              <QRCode value={`https://adversarialapps.com/company/` + cik} className="rounded-lg" />
+              <QRCode value={getCompanyUrl()} className="rounded-lg" />
             </div>
             <button className="bg-black text-white px-3 py-1 mt-4 rounded hover:bg-gray-800 transition-colors 
               focus-visible:ring-blue-500 focus-visible:ring-4 focus-visible:ring-offset-4" onClick={closeModal}>Close</button>

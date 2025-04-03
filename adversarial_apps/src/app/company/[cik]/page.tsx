@@ -10,11 +10,11 @@ import {
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import UpdateCompany from "@/components/UpdateCompany";
-import { RecentOwnership } from '@/components/RecentOwnership';
+import { RecentOwnership } from "@/components/RecentOwnership";
 import { RiskScoreMeter } from "@/components/RiskScoreMeter";
 import RiskScoreTooltip from "@/components/RiskScoreTooltip";
 
-import RequestReviewButton from '@/components/RequestReviewButton';
+import RequestReviewButton from "@/components/RequestReviewButton";
 import { RiskScoreExplanation } from "@/components/RiskScoreExplanation";
 
 interface CompanyDetailsProps {
@@ -76,7 +76,7 @@ export default async function page({ params }: CompanyDetailsProps) {
   let riskScore;
   try {
     console.log(cik);
-    riskScore = await getRiskScore(cik);
+    riskScore = await getRiskScore(cik, "SEC");
 
     if (!riskScore || typeof riskScore !== "object") {
       throw new Error("Invalid response from GetRiskScore.");
@@ -154,27 +154,44 @@ export default async function page({ params }: CompanyDetailsProps) {
       <div className="flex flex-wrap gap-6 mt-6 box-border">
         {/* Left side (Company Information) */}
         <div className="w-full md:w-[calc(50%-1.5rem)] bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-navy-600 box-border">
-          <div className="flex items-center justify-between"> {/* Add flex container */}
+          <div className="flex items-center justify-between">
+            {" "}
+            {/* Add flex container */}
             <h2 className="text-3xl font-bold text-navy-300 mb-4 max-w-[65%]">
               {capitalizeWords(name) || "N/A"}
             </h2>
-            <div className="flex items-center space-x-2"> {/* Wrap buttons */}
-              <QRCodeComponent companyName={name} cik={cik} displayIconOnly={false} />
-              <FavoriteButton cik={cik} username={username} favorites={favorites} />
+            <div className="flex items-center space-x-2">
+              {" "}
+              {/* Wrap buttons */}
+              <QRCodeComponent
+                companyName={name}
+                identifier={cik}
+                source="SEC"
+                displayIconOnly={false}
+              />
+              <FavoriteButton
+                identifier={cik}
+                source="SEC"
+                username={username}
+                favorites={favorites || []}
+              />
             </div>
           </div>
 
           {/* Former Names */}
           {formerNames && formerNames.length > 0 && (
             <div className="mt-4">
-              <h3 className="text-lg font-semibold text-gray-300">Former Names:</h3>
+              <h3 className="text-lg font-semibold text-gray-300">
+                Former Names:
+              </h3>
               <ul className="list-disc pl-5 text-gray-400">
                 {formerNames.map((item: FormerName, index: number) => (
                   <li key={index} className="mt-1">
                     <span className="font-medium text-gray-100">
                       {capitalizeWords(item.name)}
                     </span>{" "}
-                    (From: {formatDate(item.fromDate)} To: {formatDate(item.toDate)})
+                    (From: {formatDate(item.fromDate)} To:{" "}
+                    {formatDate(item.toDate)})
                   </li>
                 ))}
               </ul>
@@ -183,16 +200,29 @@ export default async function page({ params }: CompanyDetailsProps) {
 
           {/* Company Info */}
           <div className="mt-6 text-gray-300">
-            <p><span className="font-semibold">Business Address:</span> {capitalizeWords(address)?.replace(/,+$/, "") || "N/A"}
+            <p>
+              <span className="font-semibold">Business Address:</span>{" "}
+              {capitalizeWords(address)?.replace(/,+$/, "") || "N/A"}
               {street2 && `, ${capitalizeWords(street2).replace(/,+$/, "")}`}
               {city && `, ${capitalizeWords(city).replace(/,+$/, "")}`}
               {zipCode && `, ${zipCode}`}
             </p>
 
-            <p className="mt-2"><span className="font-semibold">State or Country:</span> {stateOrCountryDescription || "N/A"}</p>
-            <p className="mt-2"><span className="font-semibold">State of Incorporation:</span> {stateOfIncorporation || "N/A"}</p>
-            <p className="mt-2"><span className="font-semibold">Date of Last Filing:</span> {mostRecentFilingDate ? formatDate(mostRecentFilingDate) : "N/A"}</p>
-            <p className="mt-2"><span className="font-semibold">Phone:</span> {phone || "N/A"}</p>
+            <p className="mt-2">
+              <span className="font-semibold">State or Country:</span>{" "}
+              {stateOrCountryDescription || "N/A"}
+            </p>
+            <p className="mt-2">
+              <span className="font-semibold">State of Incorporation:</span>{" "}
+              {stateOfIncorporation || "N/A"}
+            </p>
+            <p className="mt-2">
+              <span className="font-semibold">Date of Last Filing:</span>{" "}
+              {mostRecentFilingDate ? formatDate(mostRecentFilingDate) : "N/A"}
+            </p>
+            <p className="mt-2">
+              <span className="font-semibold">Phone:</span> {phone || "N/A"}
+            </p>
 
             {/* Website Link */}
             <p className="mt-2">
@@ -208,10 +238,13 @@ export default async function page({ params }: CompanyDetailsProps) {
                     {website}
                   </a>
                   <p className="text-xs text-gray-500 mt-1">
-                    Please note we do not verify any external website linked on this page, click on links at your own risk.
+                    Please note we do not verify any external website linked on
+                    this page, click on links at your own risk.
                   </p>
                 </div>
-              ) : "N/A"}
+              ) : (
+                "N/A"
+              )}
             </p>
           </div>
         </div>
@@ -234,7 +267,12 @@ export default async function page({ params }: CompanyDetailsProps) {
           ) : (
             <div className="flex flex-col items-center">
               <p>This Company has not yet been verified</p>
-              <RequestReviewButton cik={cik} username={username || null} role={reviewerData?.role || null} />
+              <RequestReviewButton
+                identifier={cik}
+                source="SEC"
+                username={username || null}
+                role={reviewerData?.role || null}
+              />
             </div>
           )}
 
@@ -246,15 +284,11 @@ export default async function page({ params }: CompanyDetailsProps) {
               <h3 className="text-xl font-bold mb-2">Additional SEC Data</h3>
               <p>
                 <span className="font-semibold">Total Common Stocks:</span>{" "}
-                {totalCommonStocks ? (
-                  totalCommonStocks.status === "success" ? (
-                    totalCommonStocks.totalCommonStocks
-                  ) : (
-                    totalCommonStocks.message
-                  )
-                ) : (
-                  "N/A"
-                )}
+                {totalCommonStocks
+                  ? totalCommonStocks.status === "success"
+                    ? totalCommonStocks.totalCommonStocks
+                    : totalCommonStocks.message
+                  : "N/A"}
               </p>
               <p>
                 <span className="font-semibold">DEF 14A URL:</span>{" "}
@@ -277,9 +311,9 @@ export default async function page({ params }: CompanyDetailsProps) {
               </p>
             </div>
           )}
-          
+
           {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany cik={cik} />
+            <UpdateCompany identifier={cik} source="SEC" />
           )}
         </div>
       </div>

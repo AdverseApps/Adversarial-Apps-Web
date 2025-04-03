@@ -2,6 +2,19 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 
+interface CompanyResult {
+  name: string;
+  identifier: string; // For SEC: CIK; for SAM: UEI
+  source: "SEC" | "SAM";
+}
+interface SAMCompanyAPIResponse {
+  company_name: string;
+  uei: string;
+}
+interface SECCompanyAPIResponse {
+  "Company Name": string;
+  CIK: string;
+}
 export default function SearchBar({ placeholder }: { placeholder: string }) {
   return (
     <Suspense fallback={<div>Loading search bar...</div>}>
@@ -14,10 +27,9 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
   const searchParams = useSearchParams();
   const replace = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [results, setResults] = useState<{ name: string; cik: string }[]>([]);
+  const [results, setResults] = useState<CompanyResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-
   const resultsPerPage = 10;
   const paginatedResults = results.slice(
     (currentPage - 1) * resultsPerPage,
@@ -28,7 +40,10 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
     const delayDebounceFn = setTimeout(() => {
       if (searchTerm) {
         console.log("Searching for:", searchTerm);
-        fetchResults(searchTerm);
+        fetchCombinedResults(searchTerm);
+        if (currentPage !== 1) {
+          setCurrentPage(1);
+        }
         setShowDropdown(true);
       } else {
         setResults([]);
@@ -38,8 +53,72 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
     return () => clearTimeout(delayDebounceFn); //debouncing to reduce unnecessary requests to the server
   }, [searchTerm]);
 
+  async function fetchCombinedResults(query: string) {
+    try {
+      // --- Fetch SEC/EDGAR results
+      const secData = { action: "obtain_cik_number", search_term: query };
+      const secResponse = await fetch("/api/call-python-api", {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(secData),
+      });
+
+      let secResults: CompanyResult[] = [];
+      if (secResponse.status === 200) {
+        const secResult = await secResponse.json();
+        console.log("SEC Results:", secResult);
+
+        if (Array.isArray(secResult.companies)) {
+          secResults = secResult.companies.map(
+            (company: SECCompanyAPIResponse) => ({
+              name: company["Company Name"] || "Unknown SEC Company",
+              identifier: company.CIK,
+              source: "SEC" as const,
+            })
+          );
+        }
+      }
+
+      // --- Fetch SAM results using SAM search endpoint
+      const samData = { action: "sam_search", search_term: query };
+      const samResponse = await fetch("/api/call-python-api", {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(samData),
+      });
+
+      let samResults: CompanyResult[] = [];
+      if (samResponse.status === 200) {
+        const samResult = await samResponse.json();
+        console.log("SAM Results:", samResult);
+
+        if (Array.isArray(samResult.results)) {
+          samResults = samResult.results.map(
+            (company: SAMCompanyAPIResponse) => ({
+              name: company.company_name || "Unknown SAM Company",
+              identifier: company.uei,
+              source: "SAM" as const,
+            })
+          );
+        }
+      }
+
+      // Combine results from both sources
+      setResults([...secResults, ...samResults]);
+    } catch (error) {
+      console.error("Error fetching combined results:", error);
+      setResults([]);
+    }
+  }
+
+  /*
+     SEC ONLY FETCH
   async function fetchResults(query: string) {
-    //CAN POSSIBLLY REMOVE FOR THE LIB DATA ADDITION
+    
     // Data will hold what will be given in the API body. [query] is what is typed in the box
     console.log("Fetching CIK number...");
     const data = { action: "obtain_cik_number", search_term: query };
@@ -64,6 +143,18 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
       setResults(companies);
       setCurrentPage(1);
     }
+  }
+ */
+
+  // Called when a user clicks a specific result in the dropdown
+  function handleResultClick(result: CompanyResult) {
+    // Redirect to the appropriate company details page based on source.
+    if (result.source === "SEC") {
+      replace.push(`/company/${result.identifier}`);
+    } else if (result.source === "SAM") {
+      replace.push(`/company/sam/${result.identifier}`);
+    }
+    setShowDropdown(false);
   }
 
   function handleSearch(term: string) {
@@ -124,18 +215,13 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
               key={index}
               className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
               tabIndex={0}
-              onClick={() => {
-                replace.push(`/company/${result.cik}`);
-                setShowDropdown(false);
-              }}
+              onClick={() => handleResultClick(result)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  replace.push(`/company/${result.cik}`);
-                  setShowDropdown(false);
-                }
+                if (e.key === "Enter") handleResultClick(result);
               }}
             >
-              {result.name}
+              {result.name}{" "}
+              <span className="text-xs italic">({result.source})</span>
             </li>
           ))}
           <div className="flex justify-between px-4 py-2 border-t border-gray-300">

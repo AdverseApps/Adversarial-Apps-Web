@@ -12,6 +12,12 @@ interface DecodedToken extends JwtPayload {
   role: string;
 }
 
+interface ReviewRequestAPIResponse {
+  identifier: string;
+  requestCount: number;
+  source: string;
+}
+
 export async function FetchSecData(cik: string) {
   try {
     console.log("Fetching SEC data...");
@@ -50,6 +56,46 @@ export async function FetchSecData(cik: string) {
     };
   } catch (error) {
     console.error("Failed to fetch SEC data:", error);
+    return { status: "error", message: "An unexpected error occurred." };
+  }
+}
+
+export async function FetchSamData(uei: string) {
+  try {
+    console.log("Fetching SAM data...");
+
+    const headersList = headers();
+    const domain = headersList.get("host");
+    const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+
+    const data = { action: "fetch_sam_data", uei };
+    const response = await fetch(
+      `${protocol}://${domain}/api/call-python-api`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }
+    );
+
+    if (!response.ok) {
+      return {
+        status: "error",
+        message: `Failed to fetch SAM data: ${response.statusText}`,
+      };
+    }
+
+    const result = await response.json();
+    console.log(result);
+    if (result.status === "success") {
+      return result; // Expected to contain { company: { ... } }
+    }
+    return {
+      status: "error",
+      message: `Failed to fetch SAM data: ${response.statusText}`,
+    };
+  } catch (error) {
+    console.error("Failed to fetch SAM data:", error);
     return { status: "error", message: "An unexpected error occurred." };
   }
 }
@@ -153,27 +199,39 @@ export async function getFavorites(username: string) {
 
     if (!response.ok) {
       console.error(`Favorites fetch failed: ${response.statusText}`);
-      return { favorites: [], error: response.statusText };
+      return { secFavorites: [], samFavorites: [], error: response.statusText };
     }
 
     const data = await response.json();
     console.log("Favorites Data:", data);
 
-    return { favorites: data.favorites || [] };
+    // Combine SEC and SAM favorites into one array with source indicators
+    const combinedFavorites = [
+      ...(data.sec_favorites || []).map((fav: string) => ({
+        identifier: fav,
+        source: "SEC" as const,
+      })),
+      ...(data.sam_favorites || []).map((fav: string) => ({
+        identifier: fav,
+        source: "SAM" as const,
+      })),
+    ];
+
+    return { favorites: combinedFavorites };
   } catch (error) {
     console.error("Error fetching favorites:", error);
     return { favorites: [], error: "Unexpected error occurred." };
   }
 }
 
-export async function getRiskScore(cik: string) {
+export async function getRiskScore(identifier: string, source: string) {
   try {
     console.log("Getting Risk Score:");
     const headersList = headers();
     const domain = headersList.get("host");
     const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
 
-    const data = { action: "get_company_score", cik };
+    const data = { action: "get_company_score", identifier, source };
     const response = await fetch(
       `${protocol}://${domain}/api/call-python-api`,
       {
@@ -321,7 +379,15 @@ export async function getDefUrl(cik: string) {
   }
 }
 
-export async function getReviewRequests(): Promise<{ status: string; reviewRequests?: { cik: string; requestCount: number }[]; message?: string }> {
+export async function getReviewRequests(): Promise<{
+  status: string;
+  reviewRequests?: {
+    identifier: string;
+    requestCount: number;
+    source: string;
+  }[];
+  message?: string;
+}> {
   try {
     console.log("Getting Review Requests:");
     const headersList = headers();
@@ -347,6 +413,18 @@ export async function getReviewRequests(): Promise<{ status: string; reviewReque
     }
     const result = await response.json();
     console.log(result);
+
+    // Ensure all entries have identifier + source
+    if (result.status === "success" && Array.isArray(result.reviewRequests)) {
+      result.reviewRequests = result.reviewRequests.map(
+        (entry: ReviewRequestAPIResponse) => ({
+          identifier: entry.identifier,
+          requestCount: entry.requestCount,
+          source: entry.source,
+        })
+      );
+    }
+
     return result;
   } catch (error) {
     console.error("Error fetching review requests:", error);
