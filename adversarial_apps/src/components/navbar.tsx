@@ -128,7 +128,7 @@ const HamburgerMenu = () => {
                 className="block hover:bg-blue-800 rounded p-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Tackling The Threat
+                Compliance
               </Link>
             </li>
             <li>
@@ -301,7 +301,7 @@ export default function NavBar() {
                 onFocus={openSubMenu}
                 */
               >
-                TacklingTheThreat
+                Compliance
               </Link>
               {/* Submenu for education: NO LONGER NEEDED */}
               {/* <EducationSubNavBar isSubMenuOpen={isSubMenuOpen} /> */}
