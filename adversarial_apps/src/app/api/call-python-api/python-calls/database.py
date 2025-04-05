@@ -153,7 +153,9 @@ def get_reviewer_status(username: str) -> dict:
     }
 
 
-def add_remove_favorite(username: str, identifier: str, source: str, entityName: str) -> dict:
+def add_remove_favorite(
+    username: str, identifier: str, source: str, entityName: str
+) -> dict:
     """
     Add or remove a favorite company for the user, supporting both SEC and SAM companies.
 
@@ -349,7 +351,9 @@ def get_company_score(identifier: str, source: str) -> dict:
         return {"status": "error", "message": f"Database error: {e}"}
 
 
-def update_company_score(identifier: str, source: str, risk_score: float, entityName: str) -> dict:
+def update_company_score(
+    identifier: str, source: str, risk_score: float, entityName: str
+) -> dict:
     """
     Update the risk score for a company based on the identifier (CIK or UEI) and source.
 
@@ -538,7 +542,9 @@ def generate_excel(username: str) -> dict:
     }
 
 
-def request_company_review(username: str, identifier: str, source: str, entityName: str) -> dict:
+def request_company_review(
+    username: str, identifier: str, source: str, entityName: str
+) -> dict:
     """
     Process a review request for a company:
     - Retrieves the user's ID from the USERS table.
