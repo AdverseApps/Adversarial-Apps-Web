@@ -10,6 +10,7 @@ interface RequestReviewButtonProps {
   source: "SEC" | "SAM";
   username: string | null;
   role: string | null; // Expected values: "TRUE" or "FALSE"
+  entityName: string | null;
 }
 
 export default function RequestReviewButton({
@@ -17,6 +18,7 @@ export default function RequestReviewButton({
   source,
   username,
   role,
+  entityName,
 }: RequestReviewButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -52,6 +54,7 @@ export default function RequestReviewButton({
           username,
           identifier,
           source,
+          entityName,
         };
         const response = await fetch("/api/call-python-api", {
           method: "POST",

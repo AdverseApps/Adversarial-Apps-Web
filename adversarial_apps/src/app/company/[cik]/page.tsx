@@ -272,6 +272,7 @@ export default async function page({ params }: CompanyDetailsProps) {
                 source="SEC"
                 username={username || null}
                 role={reviewerData?.role || null}
+                entityName={name}
               />
             </div>
           )}

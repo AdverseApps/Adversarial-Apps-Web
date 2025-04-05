@@ -531,7 +531,7 @@ def generate_excel(username: str) -> dict:
     }
 
 
-def request_company_review(username: str, identifier: str, source: str) -> dict:
+def request_company_review(username: str, identifier: str, source: str, entityName: str) -> dict:
     """
     Process a review request for a company:
     - Retrieves the user's ID from the USERS table.
@@ -573,10 +573,16 @@ def request_company_review(username: str, identifier: str, source: str) -> dict:
         company_row = cursor.fetchone()
         if not company_row:
             # Insert the company with default values if it doesn't exist.
-            cursor.execute(
-                f'INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "review_requests") VALUES (%s, %s, %s, %s)',
-                (identifier, False, 0, 0),
-            )
+            if table == "COMPANIES":
+                cursor.execute(
+                    f'INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "review_requests", "entityName") VALUES (%s, %s, %s, %s, %s)',
+                    (identifier, False, 0, 0, entityName),
+                )
+            else:
+                cursor.execute(
+                    f'INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "review_requests") VALUES (%s, %s, %s, %s)',
+                    (identifier, False, 0, 0),
+                )
             connection.commit()  # Commit the new company insertion.
 
         # 3. Check if the user has already requested a review for this company.
