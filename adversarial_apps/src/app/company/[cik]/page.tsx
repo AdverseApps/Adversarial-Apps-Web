@@ -315,7 +315,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           )}
 
           {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany identifier={cik} source="SEC" />
+            <UpdateCompany identifier={cik} source="SEC" entityName={name} />
           )}
         </div>
       </div>

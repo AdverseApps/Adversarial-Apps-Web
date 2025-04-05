@@ -201,6 +201,7 @@ if __name__ == "__main__":
                 input_action_and_data.get("identifier"),
                 input_action_and_data.get("source"),
                 input_action_and_data.get("risk_score"),
+                input_action_and_data.get("entityName"),
             )
         elif action == "get_def_url":
             # Expecting JSON like { "action": "get_def_url", "cik": "0000123456" }

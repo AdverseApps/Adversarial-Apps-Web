@@ -7,11 +7,13 @@ import { toast } from "react-toastify";
 interface VerifyButtonProps {
   identifier: string; // CIK for SEC, UEI for SAM
   source: "SEC" | "SAM"; // New prop to indicate the source
+  entityName: string;
 }
 
 export default function VerifyUpdate({
   identifier,
   source,
+  entityName,
 }: VerifyButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -35,6 +37,7 @@ export default function VerifyUpdate({
         identifier, // CIK or UEI
         source, // SEC or SAM
         risk_score: numericScore,
+        entityName,
       }; // Use state value
 
       console.log("Submitting Data:", data);

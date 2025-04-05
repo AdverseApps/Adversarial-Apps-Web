@@ -349,7 +349,7 @@ def get_company_score(identifier: str, source: str) -> dict:
         return {"status": "error", "message": f"Database error: {e}"}
 
 
-def update_company_score(identifier: str, source: str, risk_score: float) -> dict:
+def update_company_score(identifier: str, source: str, risk_score: float, entityName: str) -> dict:
     """
     Update the risk score for a company based on the identifier (CIK or UEI) and source.
 
@@ -376,11 +376,18 @@ def update_company_score(identifier: str, source: str, risk_score: float) -> dic
 
             # Insert if it doesn't exist
             if not company_exists:
-                insert_query = f"""
-                    INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests")
-                    VALUES (%s, %s, %s, NOW(), 0)
-                """
-                insert_values = (identifier, False, 0)
+                if table == "COMPANIES":
+                    insert_query = f"""
+                    INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests", "entityName")
+                    VALUES (%s, %s, %s, NOW(), 0, %s)
+                    """
+                    insert_values = (identifier, False, 0, entityName)
+                else:
+                    insert_query = f"""
+                        INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests")
+                        VALUES (%s, %s, %s, NOW(), 0)
+                    """
+                    insert_values = (identifier, False, 0)
                 cursor.execute(insert_query, insert_values)
                 connection.commit()
 
