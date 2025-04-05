@@ -174,6 +174,7 @@ export default async function page({ params }: CompanyDetailsProps) {
                 source="SEC"
                 username={username}
                 favorites={favorites || []}
+                entityName={name}
               />
             </div>
           </div>

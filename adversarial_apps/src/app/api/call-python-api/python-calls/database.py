@@ -153,7 +153,7 @@ def get_reviewer_status(username: str) -> dict:
     }
 
 
-def add_remove_favorite(username: str, identifier: str, source: str) -> dict:
+def add_remove_favorite(username: str, identifier: str, source: str, entityName: str) -> dict:
     """
     Add or remove a favorite company for the user, supporting both SEC and SAM companies.
 
@@ -195,8 +195,8 @@ def add_remove_favorite(username: str, identifier: str, source: str) -> dict:
             # do the the CIK in FAVORITES table is a foreign key to the CIK in COMPANIES table
             if source == "SEC":
                 cursor.execute(
-                    'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
-                    (identifier, False, 0),
+                    'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore", "entityName") VALUES (%s, %s, %s, %s)',
+                    (identifier, False, 0, entityName),
                 )
             connection.commit()
 
