@@ -149,7 +149,7 @@ export default function Page() {
                 }}
             >
                 <span className="justify-self-start mr-4">{isPrivacyOpen ? "▲" : "▼"}</span>
-                <span className="font-bold text-xl">Privacy</span>
+                <span className="font-bold text-xl">Privacy Statement</span>
                 {isPrivacyOpen && (
                     <div className="p-5">
                         <p>Your privacy is important to us. Adversarial Apps does not collect or store any personal identifying information about our users. All searches and assessments are anonymous.</p>

@@ -27,6 +27,10 @@ export default function Home() {
                     </div>
                 </nav>
 
+                <div className="text-sm text-center"><br />
+                    <p><b>Your privacy is important to us.</b> We do not track entity searches for users.</p>
+                    <p>For more information, please visit our About page to review our Privacy Statement.</p>
+                </div>
 
             </main>
 
