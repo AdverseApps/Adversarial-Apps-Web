@@ -795,7 +795,7 @@ def FetchSamData(uei: str) -> dict:
             """
             SELECT legal_business_name, cage_code, country_code,
                    state_or_province, city, zip_code, address_line1, address_line2,
-                   registration_date, expiration_date, "riskScore"
+                   registration_date, expiration_date, "riskScore", exclusions
             FROM sam_entities
             WHERE entity_id = %s
             LIMIT 1;
@@ -807,6 +807,9 @@ def FetchSamData(uei: str) -> dict:
         connection.close()
 
         if row:
+            raw_exclusions = row[11]  # This might be a string like "A411|R799"
+            translated = translate_exclusions(raw_exclusions) if raw_exclusions else []
+
             company = {
                 "company_name": row[0],
                 "cage_code": row[1],
@@ -819,6 +822,7 @@ def FetchSamData(uei: str) -> dict:
                 "registration_date": row[8] if row[8] else None,
                 "expiration_date": row[9] if row[9] else None,
                 "riskScore": row[10],
+                "exclusions": translated if translated else None,
             }
             return {"status": "success", "company": company}
         else:
@@ -829,3 +833,78 @@ def FetchSamData(uei: str) -> dict:
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+EXCLUSION_CODE_MAP = {
+    "A411": "Debarment by another Federal agency",  # description inferred (non-official phrasing)
+    "A700": "Voluntary exclusion (administrative agreement)",
+    "AF11": "Violation of Armed Forces procurement policies",
+    "AF12": "Improper conduct in defense-related contracts",
+    "AF13": "Failure to perform under military contracts",
+    "AF23": "Classified as a security risk",
+    "B506": "Violation of Buy American Act provisions",
+    "B542": "Violation of domestic sourcing requirements",
+    "C221": "Criminal conviction related to public contracting",
+    "C233": "Felony conviction affecting federal assistance eligibility",
+    "C241": "Corruption, bribery, or kickbacks",
+    "E111": "Excluded under Executive Order authority",
+    "F202": "False representation in SAM or contract documents",
+    "R202": "Responsibility determination (integrity issues)",
+    "R404": "Violation of the False Claims Act",
+    "R425": "Serious performance issues on prior federal contracts",
+    "R799": "Exclusion for responsibility matters (e.g., business integrity issues)",  # non-official phrasing
+    "S208": "Suspension pending investigation",
+    "S209": "Suspension pending indictment or legal proceedings",
+    "T008": "Delinquent federal taxes or serious tax issues",
+    "T009": "Default on a federal loan or financing instrument",
+    "U006": "Violation of procurement regulations",
+    "U008": "Violation of small business subcontracting plan",
+    "U009": "Improper or fraudulent billing practices",
+    "Z999": "Unknown or administrative exclusion category",
+    "A": "Debarment by a Federal agency (for cause under FAR 9.406-2)",
+    "A1": "Proposed debarment by a Federal agency (action pending)",
+    "B": "Denial of all federal benefits by court (Anti-Drug Abuse Act of 1988)",
+    "BB": "Partial denial of federal benefits by court (Anti-Drug Abuse Act of 1988)",
+    "C": "Debarment by Comptroller General (Davis-Bacon Act violations)",
+    "C1": "Debarment (Davis-Bacon Act) – consent agreement with DOL",
+    "CC": "Excluded from acting as an individual surety (FAR 28.203-7)",
+    "D": "Debarment by Secretary of Labor (Service Contract Act violations)",
+    "E": "Debarment for Buy American Act violations",
+    "F": "Ineligible – EO 11246/affirmative action non-compliance (indefinite)",
+    "G": "Ineligible – labor standards violations (multiple statutes, Reorg. Plan No. 14)",
+    "H": "Debarment by Federal agency (nonprocurement program exclusion)",
+    "H1": "Proposed debarment by Federal agency (nonprocurement)",
+    "J": "Debarment under Federal Property Management Regulations (personal property)",
+    "J1": "Proposed debarment under FPMR (personal property)",
+    "JJJ": "Sanctioned by State Dept (Iran-Iraq Arms Non-Proliferation Act of 1992)",
+    "K": "Suspension by a Federal agency (pending investigation/proceedings)",
+    "L": "Debarment by Secretary of Labor (Walsh-Healey Act violations)",
+    "M": "Debarment under other specific statutory authority",
+    "N": "Debarment by agency (Drug-Free Workplace Act violation)",
+    "N1": "Proposed debarment by agency (Drug-Free Workplace Act)",
+    "O": "Suspension by agency (Drug-Free Workplace Act violation)",
+    "P": "Debarment by any Federal agency (Drug-Free Workplace Act, nonprocurement)",
+    "Q": "Voluntary exclusion (agreed settlement – self-imposed)",
+    "FF": "Debarment by DoJ (10 U.S.C. 4656 – defense contract felony conviction)",
+    "03-BSE-01": "Sanction – Burmese Sanctions Regulations (31 CFR 537)",
+    "03-DP-01": "Denial of export privileges (BIS Export Admin Regulations)",
+    "03-ENT-01": "Entity List restrictions (15 CFR 744 Supplement No. 4)",
+    "03-FTO-01": "Sanction – Foreign Terrorist Organizations (31 CFR 597)",
+    "03-SDGT-01": "Sanction – Specially Designated Global Terrorist (EO 13224)",
+    "03-SDN-01": "Sanction – Specially Designated National (OFAC sanctions program)",
+    "BPI-SDGT": "Blocked Pending Investigation – potential terrorist designation",
+    "BPI-SDNT": "Blocked Pending Investigation – potential narcotics trafficker",
+    "BPI-SDNTK": "Blocked Pending Investigation – potential Kingpin Act designation",
+    # ADD MORE CODES HERE
+}
+
+import re
+
+
+def translate_exclusions(exclusion_string: str):
+    if not exclusion_string:
+        return []
+    codes = re.split(r"[~,\s]+", exclusion_string.strip())
+    return [
+        EXCLUSION_CODE_MAP.get(code, f"Unknown code: {code}") for code in codes if code
+    ]
