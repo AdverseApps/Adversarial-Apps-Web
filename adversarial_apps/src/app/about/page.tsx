@@ -156,7 +156,7 @@ export default function Page() {
                         <p className="mt-4">We do not use cookies, third-party tracking, or analytics services that compromise your anonymity. Any data used to display risk assessments is sourced from publicly available government databases and is not linked to individual users.
                             Adversarial Apps is an open-source project and all functions of searching are publicly available.
                         </p>
-                        <p className="mt-4">Regarding User Creation, we properly hash all passwords and only track user favorites. Nothing else is recorded.
+                        <p className="mt-4">Regarding User Creation, we properly hash all passwords and only track user favorites. Nothing else is recorded. While being a user increases website functionality, it is not required.
                         </p>
                         <p className="mt-4">If you have questions or concerns about privacy, feel free to contact us via email at adversarialapps@gmail.com</p>
                     </div>
