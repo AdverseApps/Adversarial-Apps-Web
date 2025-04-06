@@ -45,7 +45,7 @@ export default async function Page() {
             <p>user data for login credentials and user-favorited companies. For website demonstration inquiries, please email: adversarialapps@gmail.com</p>
           </div>
         </section>
-        <div className="flex justify-center mt-8 mb-64">
+        <div className="flex justify-center mt-4 mb-64">
           {companiesData.status === 'success' && companiesData.reviewedCompanies ? (
             <ReviewedCompaniesTable reviewedCompanies={companiesData.reviewedCompanies} />
           ) : companiesData.status === 'error' ? (
