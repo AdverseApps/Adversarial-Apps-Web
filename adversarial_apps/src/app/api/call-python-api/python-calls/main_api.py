@@ -22,6 +22,7 @@ from database import (
     request_company_review,
     samSearch,
     update_company_score,
+    get_reviewed_companies,
 )
 from dotenv import load_dotenv
 from edgar import (
@@ -221,6 +222,8 @@ if __name__ == "__main__":
             )
         elif action == "get_review_requests":
             result = get_review_requests()
+        elif action == "get_reviewed_companies":
+            result = get_reviewed_companies()
         elif action == "remove_all_review_requests":
             result = remove_all_review_requests(
                 input_action_and_data.get("identifier"),

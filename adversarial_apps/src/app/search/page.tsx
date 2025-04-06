@@ -1,6 +1,10 @@
 import SearchBar from "@/components/searchbar";
+import { getReviewedCompanies } from "../lib/data";
 
-export default function Page() {
+export default async function Page() {
+
+  const companies = await getReviewedCompanies();
+  console.log(companies);
 
   return (
     <>
@@ -41,7 +45,7 @@ export default function Page() {
               is displayed. (If a company isn’t verified, you’ll see a message
               indicating that verification is pending.)
             </li>
-          </ul> 
+          </ul>
 
           <p className="text-lg mt-4">
             <strong>Note:</strong> For best results, please log in or sign up to
@@ -54,7 +58,7 @@ export default function Page() {
           </p>
         </section>
 
-        
+
         {/* if we still want to show full-page results after submission, add that section here */}
         {/*
         {query && (
