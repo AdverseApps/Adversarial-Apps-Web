@@ -1,6 +1,7 @@
 import SearchBar from "@/components/searchbar";
 import { getReviewedCompanies } from "../lib/data";
 
+
 export default async function Page() {
 
   const companies = await getReviewedCompanies();
