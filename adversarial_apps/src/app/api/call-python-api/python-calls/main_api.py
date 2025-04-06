@@ -164,7 +164,6 @@ if __name__ == "__main__":
                 input_action_and_data.get("username"),
                 input_action_and_data.get("identifier"),
                 input_action_and_data.get("source"),
-                input_action_and_data.get("entityName"),
             )
         elif action == "get_favorites":
             # Then the inputActionAndData is formatted as such:
@@ -201,7 +200,6 @@ if __name__ == "__main__":
                 input_action_and_data.get("identifier"),
                 input_action_and_data.get("source"),
                 input_action_and_data.get("risk_score"),
-                input_action_and_data.get("entityName"),
             )
         elif action == "get_def_url":
             # Expecting JSON like { "action": "get_def_url", "cik": "0000123456" }
@@ -217,7 +215,6 @@ if __name__ == "__main__":
                 input_action_and_data.get("username"),
                 input_action_and_data.get("identifier"),
                 input_action_and_data.get("source"),
-                input_action_and_data.get("entityName"),
             )
         elif action == "get_review_requests":
             result = get_review_requests()

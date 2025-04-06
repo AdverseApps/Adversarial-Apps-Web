@@ -9,11 +9,10 @@ interface Props {
   source: "SEC" | "SAM"; // Company type
   username: string;
   favorites: string[];
-  entityName: string;
 }
 
 export const FavoriteButton = (props: Props) => {
-  const { identifier, source, username, favorites, entityName } = props;
+  const { identifier, source, username, favorites } = props;
 
   const [isFavorite, setIsFavorite] = useState(favorites.includes(identifier));
   const [showLoginMessage, setShowLoginMessage] = useState(false);
@@ -31,7 +30,6 @@ export const FavoriteButton = (props: Props) => {
             username,
             identifier,
             source, // Send either CIK or UEI
-            entityName,
           }),
         });
 

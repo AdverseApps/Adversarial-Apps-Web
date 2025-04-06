@@ -174,7 +174,6 @@ export default async function page({ params }: CompanyDetailsProps) {
                 source="SEC"
                 username={username}
                 favorites={favorites || []}
-                entityName={name}
               />
             </div>
           </div>
@@ -273,7 +272,6 @@ export default async function page({ params }: CompanyDetailsProps) {
                 source="SEC"
                 username={username || null}
                 role={reviewerData?.role || null}
-                entityName={name}
               />
             </div>
           )}
@@ -315,7 +313,7 @@ export default async function page({ params }: CompanyDetailsProps) {
           )}
 
           {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany identifier={cik} source="SEC" entityName={name} />
+            <UpdateCompany identifier={cik} source="SEC" />
           )}
         </div>
       </div>

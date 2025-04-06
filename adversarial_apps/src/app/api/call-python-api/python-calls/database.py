@@ -153,9 +153,7 @@ def get_reviewer_status(username: str) -> dict:
     }
 
 
-def add_remove_favorite(
-    username: str, identifier: str, source: str, entityName: str
-) -> dict:
+def add_remove_favorite(username: str, identifier: str, source: str) -> dict:
     """
     Add or remove a favorite company for the user, supporting both SEC and SAM companies.
 
@@ -197,8 +195,8 @@ def add_remove_favorite(
             # do the the CIK in FAVORITES table is a foreign key to the CIK in COMPANIES table
             if source == "SEC":
                 cursor.execute(
-                    'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore", "entityName") VALUES (%s, %s, %s, %s)',
-                    (identifier, False, 0, entityName),
+                    'INSERT INTO "COMPANIES" ("CIK", "isVerified", "riskScore") VALUES (%s, %s, %s)',
+                    (identifier, False, 0),
                 )
             connection.commit()
 
@@ -351,9 +349,7 @@ def get_company_score(identifier: str, source: str) -> dict:
         return {"status": "error", "message": f"Database error: {e}"}
 
 
-def update_company_score(
-    identifier: str, source: str, risk_score: float, entityName: str
-) -> dict:
+def update_company_score(identifier: str, source: str, risk_score: float) -> dict:
     """
     Update the risk score for a company based on the identifier (CIK or UEI) and source.
 
@@ -380,18 +376,11 @@ def update_company_score(
 
             # Insert if it doesn't exist
             if not company_exists:
-                if table == "COMPANIES":
-                    insert_query = f"""
-                    INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests", "entityName")
-                    VALUES (%s, %s, %s, NOW(), 0, %s)
-                    """
-                    insert_values = (identifier, False, 0, entityName)
-                else:
-                    insert_query = f"""
-                        INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests")
-                        VALUES (%s, %s, %s, NOW(), 0)
-                    """
-                    insert_values = (identifier, False, 0)
+                insert_query = f"""
+                    INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "lastVerified", "review_requests")
+                    VALUES (%s, %s, %s, NOW(), 0)
+                """
+                insert_values = (identifier, False, 0)
                 cursor.execute(insert_query, insert_values)
                 connection.commit()
 
@@ -542,9 +531,7 @@ def generate_excel(username: str) -> dict:
     }
 
 
-def request_company_review(
-    username: str, identifier: str, source: str, entityName: str
-) -> dict:
+def request_company_review(username: str, identifier: str, source: str) -> dict:
     """
     Process a review request for a company:
     - Retrieves the user's ID from the USERS table.
@@ -586,16 +573,10 @@ def request_company_review(
         company_row = cursor.fetchone()
         if not company_row:
             # Insert the company with default values if it doesn't exist.
-            if table == "COMPANIES":
-                cursor.execute(
-                    f'INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "review_requests", "entityName") VALUES (%s, %s, %s, %s, %s)',
-                    (identifier, False, 0, 0, entityName),
-                )
-            else:
-                cursor.execute(
-                    f'INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "review_requests") VALUES (%s, %s, %s, %s)',
-                    (identifier, False, 0, 0),
-                )
+            cursor.execute(
+                f'INSERT INTO "{table}" ("{id_column}", "isVerified", "riskScore", "review_requests") VALUES (%s, %s, %s, %s)',
+                (identifier, False, 0, 0),
+            )
             connection.commit()  # Commit the new company insertion.
 
         # 3. Check if the user has already requested a review for this company.
