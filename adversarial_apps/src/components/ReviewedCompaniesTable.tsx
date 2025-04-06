@@ -19,7 +19,7 @@ export function ReviewedCompaniesTable({ reviewedCompanies }: ReviewedCompaniesT
         id: index, // Needed for DataGrid
         cik: row.cik,
         entityName: row.entityName,
-        riskScore: `${row.riskScore}/5`,
+        riskScore: row.riskScore,
         lastVerified: row.lastVerified ? new Date(row.lastVerified).toLocaleDateString() : 'N/A',
     }));
 
