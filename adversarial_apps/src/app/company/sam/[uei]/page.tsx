@@ -132,6 +132,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
                 source="SAM"
                 username={username}
                 favorites={favorites || []}
+                entityName={company_name}
               />
             </div>
           </div>
@@ -187,12 +188,13 @@ export default async function Page({ params }: CompanyDetailsProps) {
                 source="SAM"
                 username={username || null}
                 role={reviewerData?.role || null}
+                entityName={company_name}
               />
             </div>
           )}
 
           {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany identifier={uei} source="SAM" />
+            <UpdateCompany identifier={uei} source="SAM" entityName={company_name} />
           )}
         </div>
       </div>
