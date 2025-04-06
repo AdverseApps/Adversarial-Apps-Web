@@ -3,6 +3,11 @@ import NavBar from "@/components/navbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+export const metadata = {
+  title: "Adversarial Apps",
+  description: "We offer an extensive database with powerful search tools to locate business partners that meet federal contracting security standards for U.S.-based supply chains.",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
