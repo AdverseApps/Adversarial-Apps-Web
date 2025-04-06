@@ -27,7 +27,7 @@ export function ReviewedCompaniesTable({ reviewedCompanies }: ReviewedCompaniesT
         { field: 'entityName', headerName: 'Entity Name', width: 250, flex: 2 },
         { field: 'cik', headerName: 'CIK', width: 150, flex: 1 },
         { field: 'riskScore', headerName: 'Risk Score', width: 120, flex: 1 },
-        { field: 'lastVerified', headerName: 'Last Verified', width: 180, flex: 1 },
+        { field: 'lastVerified', headerName: 'Date Verified', width: 180, flex: 1 },
     ];
 
     const rows: GridRowsProp = formattedCompanies.map((company, index) => ({
