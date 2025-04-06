@@ -1,11 +1,23 @@
 import SearchBar from "@/components/searchbar";
 import { getReviewedCompanies } from "../lib/data";
+import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
 
+
+const rows: GridRowsProp = [
+  { id: 1, col1: 'Hello', col2: 'World' },
+  { id: 2, col1: 'DataGridPro', col2: 'is Awesome' },
+  { id: 3, col1: 'MUI', col2: 'is Amazing' },
+];
+
+const columns: GridColDef[] = [
+  { field: 'col1', headerName: 'Column 1', width: 150 },
+  { field: 'col2', headerName: 'Column 2', width: 150 },
+];
 
 export default async function Page() {
 
   const companies = await getReviewedCompanies();
-  console.log(companies);
+  console.log(companies.reviewedCompanies);
 
   return (
     <>
@@ -58,6 +70,11 @@ export default async function Page() {
             <p>user data for login credentials and user-favorited companies. For website demonstration inquiries, please email: adversarialapps@gmail.com</p>
           </p>
         </section>
+
+        {/* Reviewed Companies Table */}
+        <div>
+          <DataGrid rows={rows} columns={columns} />
+        </div>
 
 
         {/* if we still want to show full-page results after submission, add that section here */}
