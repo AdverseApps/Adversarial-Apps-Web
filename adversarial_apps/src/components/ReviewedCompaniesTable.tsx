@@ -15,14 +15,24 @@ interface ReviewedCompaniesTableProps {
 export function ReviewedCompaniesTable({ reviewedCompanies }: ReviewedCompaniesTableProps) {
     const apiRef = useGridApiRef();
 
+    const formattedCompanies = reviewedCompanies.map((row, index) => ({
+        id: index, // Needed for DataGrid
+        cik: row.cik,
+        entityName: row.entityName,
+        riskScore: `${row.riskScore}/5`,
+        lastVerified: row.lastVerified ? new Date(row.lastVerified).toLocaleDateString() : 'N/A',
+    }));
+
     const columns: GridColDef[] = [
         { field: 'entityName', headerName: 'Entity Name', width: 250, flex: 2 },
         { field: 'cik', headerName: 'CIK', width: 150, flex: 1 },
         { field: 'riskScore', headerName: 'Risk Score', width: 120, flex: 1 },
-        { field: 'lastVerified', headerName: 'Last Verified', width: 180, flex: 1 },
+        {
+            field: 'lastVerified', headerName: 'Last Verified', width: 180, flex: 1,
+        },
     ];
 
-    const rows: GridRowsProp = reviewedCompanies.map((company, index) => ({
+    const rows: GridRowsProp = formattedCompanies.map((company, index) => ({
         id: index,
         entityName: company.entityName,
         cik: company.cik,

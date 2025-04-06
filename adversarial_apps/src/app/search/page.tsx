@@ -33,32 +33,8 @@ export default async function Page() {
         <section className="mt-6 mx-6 text-center">
           <p className="text-lg mb-4">
             Enter a company name above to search for detailed company
-            information from SEC filings and SAM.gov website. Your search results will include:
+            information from SEC filings and SAM.gov website.
           </p>
-          <ul className="list-disc list-inside text-left inline-block">
-            <li>
-              <strong>Company Name:</strong> The official, formatted name of the
-              company.
-            </li>
-            <li>
-              <strong>Business Address:</strong> The primary address, including
-              street, city, state/country, and ZIP code.
-            </li>
-            <li>
-              <strong>Former Names:</strong> Any previous names the company has
-              used.
-            </li>
-            <li>
-              <strong>Date of Last Filing:</strong> The most recent filing date
-              from SEC data.
-            </li>
-            <li>
-              <strong>Risk Score:</strong> For verified companies, a risk score
-              is displayed. (If a company isn’t verified, you’ll see a message
-              indicating that verification is pending.)
-            </li>
-          </ul>
-
           <p className="text-lg mt-4">
             <strong>Note:</strong> For best results, please log in or sign up to
             access all features.
