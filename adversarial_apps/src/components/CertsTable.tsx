@@ -21,7 +21,7 @@ export const CertsTable = ({ certifications }: Props) => {
             <thead className="bg-gray-700">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Exclusion Description
+                  Certification Description
                 </th>
               </tr>
             </thead>
