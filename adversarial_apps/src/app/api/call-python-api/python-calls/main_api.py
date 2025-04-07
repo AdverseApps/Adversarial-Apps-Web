@@ -17,6 +17,7 @@ from database import (
     get_favorites,
     get_password,
     get_review_requests,
+    get_reviewed_companies,
     get_reviewer_status,
     remove_all_review_requests,
     request_company_review,
@@ -221,6 +222,8 @@ if __name__ == "__main__":
             )
         elif action == "get_review_requests":
             result = get_review_requests()
+        elif action == "get_reviewed_companies":
+            result = get_reviewed_companies()
         elif action == "remove_all_review_requests":
             result = remove_all_review_requests(
                 input_action_and_data.get("identifier"),
