@@ -44,7 +44,7 @@ export function ReviewedCompaniesTable({ reviewedCompanies }: ReviewedCompaniesT
                 Reviewed SEC Companies
             </h1>
             <p className="text-center">The table below showcases SEC companies that have been reviewed by our team.
-                If the company you're looking for is not listed, please use the search bar above to find it and submit a review request so that our team can evaluate it.</p>
+                If the company you&apos;re looking for is not listed, please use the search bar above to find it and submit a review request so that our team can evaluate it.</p>
             <p className="text-center mb-4">Please note that only SEC companies will appear in the table. For SAM companies, please use the search bar above instead.</p>
             <DataGrid
                 apiRef={apiRef}
