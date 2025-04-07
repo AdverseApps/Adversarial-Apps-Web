@@ -1,5 +1,6 @@
-import pandas as pd
 from collections import defaultdict
+
+import pandas as pd
 
 
 def load_exclusion_dict_from_excel(excel_path: str) -> dict:
