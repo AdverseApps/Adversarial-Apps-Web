@@ -34,7 +34,7 @@ interface FavoriteCompanyProps {
   company: SECCompany | SAMCompany;
   source: "SEC" | "SAM";
   username: string;
-  riskScore: number | null;
+  riskScore: number | string | null;
 }
 
 interface ReviewRequestProps {
@@ -68,6 +68,12 @@ export default async function DashboardPage() {
     );
   }
 
+  function parseDate(dateString: string) {
+    if (dateString.length !== 8) return new Date(NaN);
+    const formattedDate = `${dateString.slice(0, 4)}-${dateString.slice(4, 6)}-${dateString.slice(6, 8)}`;
+    return new Date(formattedDate);
+  }
+
   let favoritesData: FavoriteCompanyProps[] = [];
   if (userStatus.role === "false") {
     // Getting CIK of Favorites
@@ -93,15 +99,21 @@ export default async function DashboardPage() {
             if (!company) console.warn("SAM company not found for:", item.identifier);
           }
 
-            // Fetching risk score
-            const riskScoreData = await getRiskScore(
-              item.identifier,
-              item.source
-            );
+            let riskScore;
+            if (item.source === "SAM") {
+              // For SAM companies, use expiration_date to determine compliance.
+              if (company && company.expiration_date) {
+                const isCompliant = parseDate(company.expiration_date) > new Date();
+                riskScore = isCompliant ? "SAM Compliant" : "Expired";
+              } else {
+                riskScore = "N/A";
+              }
+            } else {
+              // For SEC companies, fetch the risk score.
+              const riskScoreData = await getRiskScore(item.identifier, item.source);
+              riskScore = riskScoreData.status === "success" ? riskScoreData.riskScore : -1;
+            }
 
-            // Check if the status is 'success' or 'error'
-            const riskScore =
-              riskScoreData.status === "success" ? riskScoreData.riskScore : -1; // Return -1 if the company is not verified
             return {
               identifier: item.identifier,
               company,
@@ -126,27 +138,6 @@ export default async function DashboardPage() {
       )
     );
   }
-
-  /*
-  // Getting company data
-  const favoritesData = await Promise.all(
-    favorites.map(async (cik: string) => {
-      try {
-        const result = await FetchSecData(cik);
-
-        // Fetching risk score
-        const riskScoreData = await getRiskScore(cik);
-
-        // Check if the status is 'success' or 'error'
-        const riskScore = riskScoreData.status === 'success' ? riskScoreData.riskScore : -1; // Return -1 if the company is not verified
-        return { cik, data: result, riskScore };
-      } catch (error) {
-        console.error(`Error fetching SEC data or risk score for CIK ${cik}:`, error);
-        return { cik, data: null, riskScore: -1 }; // In case of any error, return -1 for riskScore
-      }
-    })
-  );
-  */
 
   let reviewRequests: ReviewRequestProps[] = [];
 
@@ -267,11 +258,20 @@ export default async function DashboardPage() {
           )}
         </div>
       )}
-      {/* Logout button */}
-      <div className="flex items-center justify-center pt-2 gap-x-4">
+
+      {/* Logout/Excel button group */}
+      {/* Style changes depending on reviewer status */}
+      {userStatus.role === "true" && (
+        <div className="flex items-center justify-center pt-2 gap-x-4">
+        <LogoutButton />
+      </div>
+      )}
+      {userStatus.role === "false" && (
+        <div className="flex items-center justify-center pt-2 gap-x-4">
         <LogoutButton />
         <DownloadExcelButton username={userStatus.username} />
       </div>
+      )}
     </div>
   );
 }
