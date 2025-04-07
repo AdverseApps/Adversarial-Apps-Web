@@ -822,8 +822,8 @@ def FetchSamData(uei: str) -> dict:
                 "registration_date": row[8] if row[8] else None,
                 "expiration_date": row[9] if row[9] else None,
                 "riskScore": row[10],
-                "certifications": get_certification_names(row[11]) if row[11] else None,
                 "exclusions": translated if translated else None,
+                "certifications": get_certification_names(row[12]) if row[12] else None,
             }
             return {"status": "success", "company": company}
         else:
@@ -924,8 +924,9 @@ def get_certification_names(code_string):
     codes = code_string.split("~")
     return [
         CERTIFICATION_CODE_MAP.get(code, f"Unknown Code ({code})") for code in codes
-      
-      
+    ]
+
+
 EXCLUSION_CODE_MAP = {
     "A411": "Debarment by another Federal agency",  # description inferred (non-official phrasing)
     "A700": "Voluntary exclusion (administrative agreement)",
