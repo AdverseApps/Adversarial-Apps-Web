@@ -94,7 +94,6 @@ export default async function Page({ params }: CompanyDetailsProps) {
     address_line2,
     registration_date,
     expiration_date,
-    riskScore,
     certifications,
     exclusion_type,
     excluding_agency,
