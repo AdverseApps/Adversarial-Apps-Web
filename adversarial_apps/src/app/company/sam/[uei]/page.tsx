@@ -6,11 +6,6 @@ import {
 } from "@/app/lib/data";
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
-import UpdateCompany from "@/components/UpdateCompany";
-import { RiskScoreMeter } from "@/components/RiskScoreMeter";
-import RiskScoreTooltip from "@/components/RiskScoreTooltip";
-import RequestReviewButton from "@/components/RequestReviewButton";
-import { RiskScoreExplanation } from "@/components/RiskScoreExplanation";
 import SAMInfo from "@/components/SAMInfo";
 import Link from "next/link";
 interface CompanyDetailsProps {
@@ -95,26 +90,8 @@ export default async function Page({ params }: CompanyDetailsProps) {
     address_line2,
     registration_date,
     expiration_date,
-    riskScore,
     exclusions,
   } = result.company;
-
-
-  function capitalizeWords(input: string | null | undefined): string {
-    if (!input) return "";
-    return input.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-  }
-
-  function parseDate(dateString: string) {
-    if (dateString.length !== 8) {
-      return new Date(NaN);
-    }
-    const formattedDate = `${dateString.slice(0, 4)}-${dateString.slice(
-      4,
-      6
-    )}-${dateString.slice(6, 8)}`;
-    return new Date(formattedDate);
-  }
 
   const formatDate = (date: string): string => {
     const formatted = parseDate(date);
@@ -230,62 +207,4 @@ export default async function Page({ params }: CompanyDetailsProps) {
       {/* Only display additional SEC API data for reviewer users */}
     </div>
   );
-
-  {
-    /*
-     <div>
-       <div className="flex mt-6">
-         {/* Left side */
-    /*} 
-         <div className="w-1/2 text-left text-xl p-6 rounded-lg shadow-md">
-           <h2 className="text-2xl font-bold mb-4">{capitalizeWords(company_name) || "N/A"}</h2>
-           <br />
-           <p>
-             <span className="font-semibold">CAGE Code:</span> {cage_code || "N/A"}
-           </p>
-           <br />
-           <p>
-             <span className="font-semibold">Business Address:</span>{" "}
-             {address_line1 && `${capitalizeWords(address_line1)}, `}{address_line2 && `${capitalizeWords(address_line2)}, `}{capitalizeWords(city)}, {state_or_province}, {zip_code}
-           </p>
-           <br />
-           <p>
-             <span className="font-semibold">Country Code:</span> {country_code || "N/A"}
-           </p>
-           <br />
-           <p>
-             <span className="font-semibold">Registration Date:</span> {registration_date ? formatDate(registration_date) : "N/A"}
-           </p>
-           <br />
-           {expiration_date && (
-             <p>
-               <span className="font-semibold">Expiration Date:</span> {formatDate(expiration_date)}
-             </p>
-           )}
-           <br />
-           {/* Additional components: RecentOwnership, QRCode, Favorite, Verify (if reviewer) */
-    /*}
-         </div>
-         {/* Right side */
-    /*}
-         <div className="w-1/2 text-right text-xl p-6 rounded-lg shadow-md">
-           <h2 className="text-2xl font-bold mb-4">Risk Report Feature Coming Soon!</h2>
-           {result.company.riskScore !== undefined && result.company.riskScore !== null ? (
-             <p>
-               <span className="font-semibold">Risk Score:</span> {result.company.riskScore}
-             </p>
-           ) : (
-             <p>This Company has not yet been verified</p>
-           )}
-         </div>
-       </div>
-       <footer>
-         <p>Company data is provided by the official U.S. System for Award Management.</p>
-       </footer>
-     </div>
-   );
- }
-
- */
-  }
 }
