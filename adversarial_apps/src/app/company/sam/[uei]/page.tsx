@@ -237,9 +237,13 @@ export default async function Page({ params }: CompanyDetailsProps) {
           ex_termination_date={ex_termination_date}
         />
       )}
-      <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
-        {certifications && <CertsTable certifications={certifications} />}
-      </div>
+
+      {certifications &&
+        <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
+          <CertsTable certifications={certifications} />
+        </div>
+      }
+
       <footer className="mt-12 text-center text-sm">
         <p>
           Company data is provided by the official U.S. System for Award
