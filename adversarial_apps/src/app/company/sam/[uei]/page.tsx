@@ -95,7 +95,10 @@ export default async function Page({ params }: CompanyDetailsProps) {
     registration_date,
     expiration_date,
     riskScore,
+    exclusions,
   } = result.company;
+
+  console.log("Exclusions are:",exclusions)
 
   function capitalizeWords(input: string | null | undefined): string {
     if (!input) return "";
@@ -200,14 +203,17 @@ export default async function Page({ params }: CompanyDetailsProps) {
           </div>
         </div>
       </div>
-
+      <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
+        <p>Exclusions are:</p>
+      </div>
       <footer className="mt-12 text-center text-sm">
         <p>
           Company data is provided by the official U.S. System for Award
           Management.
         </p>
       </footer>
-    </div>
+      {/* Only display additional SEC API data for reviewer users */}
+      </div>
   );
 
   {
