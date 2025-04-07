@@ -11,6 +11,9 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/x-data-grid": "^7.28.3",
     "argon2": "^0.41.1",
     "jsonwebtoken": "^9.0.2",
     "next": "14.2.15",

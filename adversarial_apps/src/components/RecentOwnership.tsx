@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-
+import { useEffect, useState, useCallback, useRef } from 'react';
+import Image from "next/image";
 interface Props {
     cik: string;
 }
@@ -14,6 +14,99 @@ interface FilingReport {
     issuer: string;
     reporter: string;
     transaction_code: string;
+}
+
+interface CodeProp {
+    code: string;
+}
+
+const CodeExplanationTooltip = (props: CodeProp) => {
+    const { code } = props;
+    const [isHovered, setIsHovered] = useState(false);
+    // Used a timed interval to fix a bug in the popup
+    const timeoutId = useRef<NodeJS.Timeout | number | undefined>(undefined);
+    console.log("Code Prop:", code);
+    let definition: string | undefined;
+
+    if (code === 'P') {
+        definition = 'Open market or private purchase of non-derivative or derivative security';
+    } else if (code === 'S') {
+        definition = 'Open market or private sale of non-derivative or derivative security';
+    } else if (code === 'V') {
+        definition = 'Transaction voluntarily reported earlier than required';
+    } else if (code === 'A') {
+        definition = 'Grant, award or other acquisition pursuant to Rule 16b-3(d)';
+    } else if (code === 'D') {
+        definition = 'Disposition to the issuer of issuer equity securities pursuant to Rule 16b-3(e)';
+    } else if (code === 'F') {
+        definition = 'Payment of exercise price or tax liability by delivering or withholding securities incident to the receipt, exercise or vesting of a security issued in accordance with Rule 16b-3';
+    } else if (code === 'I') {
+        definition = 'Discretionary transaction in accordance with Rule 16b-3(f) resulting in acquisition or disposition of issuer securities';
+    } else if (code === 'M') {
+        definition = 'Exercise or conversion of derivative security exempted pursuant to Rule 16b-3';
+    } else if (code === 'C') {
+        definition = 'Conversion of derivative security';
+    } else if (code === 'E') {
+        definition = 'Expiration of short derivative position';
+    } else if (code === 'H') {
+        definition = 'Expiration (or cancellation) of long derivative position with value received';
+    } else if (code === 'O') {
+        definition = 'Exercise of out-of-the-money derivative security';
+    } else if (code === 'X') {
+        definition = 'Exercise of in-the-money or at-the-money derivative security';
+    } else if (code === 'G') {
+        definition = 'Bona fide gift';
+    } else if (code === 'L') {
+        definition = 'Small acquisition under Rule 16a-6';
+    } else if (code === 'W') {
+        definition = 'Acquisition or disposition by will or the laws of descent and distribution';
+    } else if (code === 'Z') {
+        definition = 'Deposit into or withdrawal from voting trust';
+    } else if (code === 'J') {
+        definition = 'Other acquisition or disposition (describe transaction)';
+    } else if (code === 'K') {
+        definition = 'Transaction in equity swap or instrument with similar characteristics';
+    } else if (code === 'U') {
+        definition = 'Disposition pursuant to a tender of shares in a change of control transaction';
+    }
+
+
+    const handleMouseEnter = () => {
+        clearTimeout(timeoutId.current);
+        setIsHovered(true);
+    };
+
+    const handleMouseLeave = () => {
+        timeoutId.current = setTimeout(() => {
+            setIsHovered(false);
+        }, 150); // Adjust delay (milliseconds) as needed
+    };
+
+    return (
+        <div
+            className="relative inline-block" // Use inline-block for better sizing
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            <Image
+                src="/info.png"
+                height={20}
+                width={20}
+                alt="Info"
+                className="invert cursor-pointer"
+            />
+
+            {isHovered && (
+                <div
+                    className="z-50 absolute left-1/2 -translate-x-1/2 top-full bg-blue-800 text-white text-sm p-2 rounded shadow-lg transition-opacity duration-300"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                >
+                    Code {code}: {definition}
+                </div>
+            )}
+        </div>
+    );
 }
 
 export const RecentOwnership = (props: Props) => {
@@ -106,11 +199,11 @@ export const RecentOwnership = (props: Props) => {
             <h2 className="text-2xl font-semibold text-white mb-4">Ownership Tracking:</h2>
             <br />
             <p>
-                Below is a table of most recent changes in ownership of the company as provided by Form 4 submissions if there are any.
+                Below is a table of most recent changes in ownership of the company as provided by Form 4 submissions.
                 This provides a live updated view of how ownership is changing in real time, as our risk score is only calculated on data given once per year from the annual DEF 14A form.
                 <br></br>
                 <br></br>
-                The letter relates to the exact type of transaction that has occurred. For covnince we summed up the transaction codes and provided the key:
+                The letter relates to the exact type of transaction that has occurred. For covenience, we summed up the transaction codes and provided the key:
             </p>
             <ul className='list-disc ml-5'>
                 <li>If the transaction code letter has a &quot;+&quot; that means the Receiver has obtained more control over the company.</li>
@@ -151,8 +244,8 @@ export const RecentOwnership = (props: Props) => {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {filing.accessionNumber}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        {filing.transaction_code} {getTransactionSymbol(filing.transaction_code)}
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm flex items-center gap-2 relative">
+                                        {filing.transaction_code} {getTransactionSymbol(filing.transaction_code)} <CodeExplanationTooltip code={filing.transaction_code} />
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {filing.issuer}

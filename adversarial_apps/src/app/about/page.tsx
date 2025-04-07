@@ -6,6 +6,7 @@ export default function Page() {
     const [isAdversarialAppsOpen, setIsAdversarialAppsOpen] = useState(false);
     const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
     const [isRiskLevelsOpen, setIsRiskLevelsOpen] = useState(false);
+    const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
     return (
         <main aria-label="main-content">
@@ -132,6 +133,32 @@ export default function Page() {
                         <p><br /><b>3 - 4 (High Risk):</b> A Risk Score of 3 to 4 indicates a high risk of foreign adversary involvement. Potential indicators of influence raise significant concerns regarding defense or federal contract eligibility. A thorough assessment is necessary before proceeding.</p>
                         <p><br /><b>4 - 5 (Very High Risk):</b> A Risk Score of 4 to 5 indicates a very high risk of foreign adversary involvement. Significant indicators of influence pose a serious threat to defense or federal contract eligibility. A detailed risk evaluation is strongly recommended.</p>
                         <p><br /><b>5+ (Extreme Risk):</b> A Risk Score of 5 or more indicates an extreme risk of foreign adversary involvement. Critical indicators of compromise or influence pose an immediate and severe threat to defense or federal contract eligibility. Extensive due diligence and expert consultation are imperative.</p>
+                    </div>
+                )}
+            </div>
+
+            {/* NEW: Privacy Accordion */}
+            <div className="w-full text-lg text-left px-5 py-3 bg-gray-700 rounded-lg mt-5 mb-5 focus-visible:ring-blue-500 focus-visible:ring-12 focus-visible:ring-offset-4"
+                tabIndex={0}
+                role="button"
+                onClick={() => setIsPrivacyOpen(!isPrivacyOpen)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        setIsPrivacyOpen(!isPrivacyOpen);
+                    }
+                }}
+            >
+                <span className="justify-self-start mr-4">{isPrivacyOpen ? "▲" : "▼"}</span>
+                <span className="font-bold text-xl">Privacy Statement</span>
+                {isPrivacyOpen && (
+                    <div className="p-5">
+                        <p>Your privacy is important to us. Adversarial Apps does not collect or store any personal identifying information about our users. All searches and assessments are anonymous.</p>
+                        <p className="mt-4">We do not use cookies, third-party tracking, or analytics services that compromise your anonymity. Any data used to display risk assessments is sourced from publicly available government databases and is not linked to individual users.
+                            Adversarial Apps is an open-source project and all functions of searching are publicly available.
+                        </p>
+                        <p className="mt-4">Regarding User Creation, we properly hash all passwords and only track user favorites. Nothing else is recorded. While being a user increases website functionality, it is not required.
+                        </p>
+                        <p className="mt-4">If you have questions or concerns about privacy, feel free to contact us via email at adversarialapps@gmail.com</p>
                     </div>
                 )}
             </div>

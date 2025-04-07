@@ -182,7 +182,7 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
 
   return (
     // Changing this to just "flex", does not display the results correctly.
-    <div className="relative flex">
+    <div className="relative flex z-50">
       <label htmlFor="search" className="sr-only">
         Search
       </label>

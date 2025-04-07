@@ -258,11 +258,20 @@ export default async function DashboardPage() {
           )}
         </div>
       )}
-      {/* Logout button */}
-      <div className="flex items-center justify-center pt-2 gap-x-4">
+
+      {/* Logout/Excel button group */}
+      {/* Style changes depending on reviewer status */}
+      {userStatus.role === "true" && (
+        <div className="flex items-center justify-center pt-2 gap-x-4">
+        <LogoutButton />
+      </div>
+      )}
+      {userStatus.role === "false" && (
+        <div className="flex items-center justify-center pt-2 gap-x-4">
         <LogoutButton />
         <DownloadExcelButton username={userStatus.username} />
       </div>
+      )}
     </div>
   );
 }

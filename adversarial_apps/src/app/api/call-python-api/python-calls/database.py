@@ -835,6 +835,52 @@ def FetchSamData(uei: str) -> dict:
         return {"status": "error", "message": str(e)}
 
 
+def get_reviewed_companies() -> dict:
+    """
+    Retrieve a list of companies that have been reviewed by checking the
+    'isVerified' field in the COMPANIES table. Only returns companies where
+    isVerified == TRUE.
+
+    :return: Dictionary with status and a list of objects, each having 'cik', 'riskScore', 'lastVerified', and "entityName"
+    """
+    connection = None
+    try:
+        db_url = os.getenv("DATABASE_URL")
+        connection = psycopg2.connect(db_url)
+        cursor = connection.cursor()
+
+        # Query the COMPANIES table for verified companies
+        cursor.execute(
+            'SELECT "CIK", "riskScore", "lastVerified", "entityName" FROM "COMPANIES" WHERE "isVerified" = TRUE'
+        )
+        rows = cursor.fetchall()
+        reviewed_companies = []
+        if rows:
+            for row in rows:
+                last_verified = row[2]
+                # Convert datetime object to ISO 8601 string
+                last_verified_str = last_verified.isoformat() if last_verified else None
+                reviewed_companies.append(
+                    {
+                        "cik": row[0],
+                        "riskScore": row[1],
+                        "lastVerified": last_verified_str,
+                        "entityName": row[3],
+                    }
+                )
+
+        return {"status": "success", "reviewedCompanies": reviewed_companies}
+
+    except psycopg2.Error as e:
+        if connection:
+            connection.rollback()
+        return {"status": "error", "message": f"Database error: {e}"}
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
 EXCLUSION_CODE_MAP = {
     "A411": "Debarment by another Federal agency",  # description inferred (non-official phrasing)
     "A700": "Voluntary exclusion (administrative agreement)",

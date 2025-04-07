@@ -117,21 +117,39 @@ export default async function Page({ params }: CompanyDetailsProps) {
             <h2 className="text-3xl font-bold text-navy-300 mb-4 max-w-[65%]">
               {capitalizeWords(company_name) || "N/A"}
             </h2>
-            <div className="flex items-center space-x-2">
-              <QRCodeComponent
+
+            {/* Split div into reviewer/user conditions */}
+            {reviewerData && reviewerData.role === "true" && (
+              <div className="flex items-center space-x-2">
+                {" "}
+                {/* Wrap buttons */}
+                <QRCodeComponent
                 companyName={company_name}
                 identifier={uei}
                 source="SAM"
                 displayIconOnly={false}
               />
-              <FavoriteButton
+              </div>
+            )}
+            {reviewerData && reviewerData.role === "false" && (
+              <div className="flex items-center space-x-2">
+                {" "}
+                {/* Wrap buttons */}
+                <QRCodeComponent
+                companyName={company_name}
+                identifier={uei}
+                source="SAM"
+                displayIconOnly={false}
+              />
+                <FavoriteButton
                 identifier={uei}
                 source="SAM"
                 username={username}
                 favorites={favorites || []}
                 entityName={company_name}
               />
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Company Info */}
