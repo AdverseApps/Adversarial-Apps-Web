@@ -34,8 +34,9 @@ export default function ExclusionsTable({
         <p>
           {company_name} has active exclusions that may disqualify them from
           participating in certain federal contracts, subcontracts, grants,
-          loans, and/or other federal assistance programs. It is recommended to ask any entity about potential
-          exclusions before partnering. Please refer to{" "}
+          loans, and/or other federal assistance programs. It is recommended to
+          ask any entity about potential exclusions before partnering. Please
+          refer to{" "}
           <a
             href="https://sam.gov"
             target="_blank"
