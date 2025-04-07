@@ -162,7 +162,7 @@ export default async function page({ params }: CompanyDetailsProps) {
             </h2>
 
             {/* Split div into reviewer/user conditions */}
-            {reviewerData && reviewerData.role === "true" && (
+            {((!reviewerData) || (reviewerData && reviewerData.role === "true")) && (
               <div className="flex items-center space-x-2">
                 {" "}
                 {/* Wrap buttons */}
