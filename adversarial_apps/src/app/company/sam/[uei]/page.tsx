@@ -190,7 +190,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
           </div>
         </div>
 
-        {/* Right Side (Risk Score) */}
+        {/* Right Side (SAM registration) */}
         <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white text-center box-border">
           <div className="flex items-center gap-2 relative">
             <h2 className="text-3xl font-bold">SAM Registration Status</h2>

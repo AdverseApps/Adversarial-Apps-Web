@@ -47,52 +47,49 @@ export default function ExclusionsTable({
           </a>{" "}
           for more information.
         </p>
+        {hasExclusion ? (
+          <div className="overflow-x-auto mt-4">
+            <table className="min-w-full divide-y divide-gray-700">
+              <thead className="bg-gray-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    Exclusion Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    Excluding Agency
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    Active Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    Termination Date
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-gray-800 divide-y divide-gray-700">
+                <tr className="bg-gray-900 text-gray-100">
+                  <td className="px-6 py-4 whitespace-pre-wrap text-sm">
+                    {exclusion_type || "—"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-pre-wrap text-sm">
+                    {excluding_agency || "—"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-pre-wrap text-sm">
+                    {ex_active_date || "—"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-pre-wrap text-sm">
+                    {ex_termination_date || "—"}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-sm text-gray-400">
+            This entity has no reported exclusions in SAM.gov.
+          </p>
+        )}
       </div>
-      <h2 className="text-2xl mt-6 font-semibold text-white mb-4">
-        Federal Exclusions
-      </h2>
-      {hasExclusion ? (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border border-gray-700 rounded-md overflow-hidden">
-            <thead className="bg-gray-800 text-gray-100">
-              <tr>
-                <th className="px-4 py-2 border border-gray-700 text-left">
-                  Exclusion Type
-                </th>
-                <th className="px-4 py-2 border border-gray-700 text-left">
-                  Excluding Agency
-                </th>
-                <th className="px-4 py-2 border border-gray-700 text-left">
-                  Active Date
-                </th>
-                <th className="px-4 py-2 border border-gray-700 text-left">
-                  Termination Date
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="bg-gray-900 text-gray-100">
-                <td className="px-4 py-2 border border-gray-700">
-                  {exclusion_type || "—"}
-                </td>
-                <td className="px-4 py-2 border border-gray-700">
-                  {excluding_agency || "—"}
-                </td>
-                <td className="px-4 py-2 border border-gray-700">
-                  {ex_active_date || "—"}
-                </td>
-                <td className="px-4 py-2 border border-gray-700">
-                  {ex_termination_date || "—"}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <p className="text-sm text-gray-400">
-          This entity has no reported exclusions in SAM.gov.
-        </p>
-      )}
     </div>
   );
 }
