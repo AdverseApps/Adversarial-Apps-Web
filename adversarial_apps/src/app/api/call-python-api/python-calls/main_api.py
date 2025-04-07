@@ -17,12 +17,12 @@ from database import (
     get_favorites,
     get_password,
     get_review_requests,
+    get_reviewed_companies,
     get_reviewer_status,
     remove_all_review_requests,
     request_company_review,
     samSearch,
     update_company_score,
-    get_reviewed_companies,
 )
 from dotenv import load_dotenv
 from edgar import (
