@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 interface Props {
   certifications: string[];
@@ -7,9 +7,12 @@ interface Props {
 export const CertsTable = ({ certifications }: Props) => {
   return (
     <div className="mt-8">
-      <h2 className="text-2xl font-semibold text-white mb-4">Federal Exclusions</h2>
+      <h2 className="text-2xl font-semibold text-white mb-4">Certifications</h2>
       <p className="mb-4">
-      Below are the small business and eligibility certifications associated with this company according to SAM.gov data. These designations help determine qualification for set-aside contracts and specialized federal procurement programs.
+        Below are the small business and eligibility certifications associated
+        with this company according to SAM.gov data. These designations help
+        determine qualification for set-aside contracts and specialized federal
+        procurement programs.
       </p>
 
       {certifications.length > 0 ? (
@@ -25,7 +28,9 @@ export const CertsTable = ({ certifications }: Props) => {
             <tbody className="bg-gray-800 divide-y divide-gray-700">
               {certifications.map((desc, idx) => (
                 <tr key={idx}>
-                  <td className="px-6 py-4 whitespace-pre-wrap text-sm">{desc}</td>
+                  <td className="px-6 py-4 whitespace-pre-wrap text-sm">
+                    {desc}
+                  </td>
                 </tr>
               ))}
             </tbody>

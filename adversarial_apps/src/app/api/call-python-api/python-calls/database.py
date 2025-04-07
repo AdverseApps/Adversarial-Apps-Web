@@ -795,7 +795,7 @@ def FetchSamData(uei: str) -> dict:
             """
             SELECT legal_business_name, cage_code, country_code,
                    state_or_province, city, zip_code, address_line1, address_line2,
-                   registration_date, expiration_date, "riskScore"
+                   registration_date, expiration_date, "riskScore", certifications
             FROM sam_entities
             WHERE entity_id = %s
             LIMIT 1;
@@ -819,6 +819,7 @@ def FetchSamData(uei: str) -> dict:
                 "registration_date": row[8] if row[8] else None,
                 "expiration_date": row[9] if row[9] else None,
                 "riskScore": row[10],
+                "certifications": get_certification_names(row[11]) if row[9] else None,
             }
             return {"status": "success", "company": company}
         else:
@@ -914,6 +915,9 @@ CERTIFICATION_CODE_MAP = {
     "2N": "For-Profit Organization",
 }
 
+
 def get_certification_names(code_string):
     codes = code_string.split("~")
-    return [CERTIFICATION_CODE_MAP.get(code, f"Unknown Code ({code})") for code in codes]
+    return [
+        CERTIFICATION_CODE_MAP.get(code, f"Unknown Code ({code})") for code in codes
+    ]

@@ -18,7 +18,6 @@ def get_safe(row, idx):
         return ""
 
 
-
 def parse_sam_dat_file(data_file_path: str, output_file_path: str) -> int:
     """
     Parses the SAM .DAT file and writes necessary fields into a CSV for PostgreSQL COPY.
@@ -58,7 +57,9 @@ def parse_sam_dat_file(data_file_path: str, output_file_path: str) -> int:
                     exclusions = get_safe(row, 36)
 
                     if not country_code:
-                        log.write(f"Row {row_num} warning: country_code is empty | Entity ID: {get_safe(row, 0)}\n")
+                        log.write(
+                            f"Row {row_num} warning: country_code is empty | Entity ID: {get_safe(row, 0)}\n"
+                        )
 
                     if len(row) < 40:
                         log.write(

@@ -12,6 +12,7 @@ import RiskScoreTooltip from "@/components/RiskScoreTooltip";
 import RequestReviewButton from "@/components/RequestReviewButton";
 import { RiskScoreExplanation } from "@/components/RiskScoreExplanation";
 import SAMInfo from "@/components/SAMInfo";
+import { CertsTable } from "@/components/CertsTable";
 interface CompanyDetailsProps {
   params: { uei: string };
 }
@@ -97,6 +98,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
     registration_date,
     expiration_date,
     riskScore,
+    certifications,
   } = result.company;
 
   const formatDate = (date: string): string => {
@@ -194,9 +196,16 @@ export default async function Page({ params }: CompanyDetailsProps) {
           )}
 
           {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany identifier={uei} source="SAM" entityName={company_name} />
+            <UpdateCompany
+              identifier={uei}
+              source="SAM"
+              entityName={company_name}
+            />
           )}
         </div>
+      </div>
+      <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
+        {certifications && <CertsTable certifications={certifications} />}
       </div>
 
       <footer className="mt-12 text-center text-sm">
