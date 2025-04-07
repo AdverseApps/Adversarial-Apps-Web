@@ -19,7 +19,8 @@ def get_safe(row, idx):
         return row[idx].strip()
     except IndexError:
         return ""
-    
+
+
 def clean(val):
     if val is None:
         return None
@@ -29,6 +30,7 @@ def clean(val):
         return None
     val_str = str(val).strip()
     return val_str if val_str.lower() not in ["nan", "none"] else None
+
 
 def parse_sam_dat_file_with_exclusions(
     data_file_path: str, output_file_path: str, exclusion_lookup: dict
@@ -73,22 +75,22 @@ def parse_sam_dat_file_with_exclusions(
                     naics_primary = get_safe(row, 32)
                     exclusions = get_safe(row, 36)
 
-                    #matches exclusions from the exclusions file to the entity file by using the UEI
+                    # matches exclusions from the exclusions file to the entity file by using the UEI
                     matched = exclusion_lookup.get(entity_id, [])
                     is_excluded = bool(matched)
-                    
-                    
+
                     if matched:
                         exclusion_type = clean(matched[0].get("exclusion_type"))
                         excluding_agency = clean(matched[0].get("excluding_agency"))
                         ex_active_date = clean(matched[0].get("ex_active_date"))
-                        ex_termination_date = clean(matched[0].get("ex_termination_date")) or "Indefinite"
+                        ex_termination_date = (
+                            clean(matched[0].get("ex_termination_date")) or "Indefinite"
+                        )
                     else:
                         exclusion_type = None
                         excluding_agency = None
                         ex_active_date = None
                         ex_termination_date = None
-
 
                     if matched:
                         match_log.write(
@@ -251,7 +253,12 @@ def main():
     # Set the actual path to your exclusions Excel file
     exclusion_file_path = os.path.normpath(
         os.path.join(
-            script_dir, "..", "..", "..", "lib", "SAM_Exclusions_Public_Extract_V2_25096.CSV"
+            script_dir,
+            "..",
+            "..",
+            "..",
+            "lib",
+            "SAM_Exclusions_Public_Extract_V2_25096.CSV",
         )
     )
 
@@ -267,4 +274,3 @@ def main():
 if __name__ == "__main__":
     load_dotenv()
     main()
-
