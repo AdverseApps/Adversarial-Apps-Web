@@ -124,7 +124,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
 
   // Determine if the company is active based on the expiration date
   const isActive =
-    expiration_date && parseDate(expiration_date) > new Date();
+    parseDate(expiration_date) > new Date();
 
   return (
     <div className="text-white min-h-screen p-8 box-border">
