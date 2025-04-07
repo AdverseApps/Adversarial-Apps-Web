@@ -795,7 +795,7 @@ def FetchSamData(uei: str) -> dict:
             """
             SELECT legal_business_name, cage_code, country_code,
                    state_or_province, city, zip_code, address_line1, address_line2,
-                   registration_date, expiration_date, "riskScore", exclusions, certifications, exclusion_type, excluding_agency, ex_active_date, ex_termination_date
+                   registration_date, expiration_date, "riskScore", certifications, exclusion_type, excluding_agency, ex_active_date, ex_termination_date
             FROM sam_entities
             WHERE entity_id = %s
             LIMIT 1;
@@ -807,8 +807,8 @@ def FetchSamData(uei: str) -> dict:
         connection.close()
 
         if row:
-            raw_exclusions = row[11]  # This might be a string like "A411|R799"
-            translated = translate_exclusions(raw_exclusions) if raw_exclusions else []
+        
+          
 
             company = {
                 "company_name": row[0],
@@ -822,12 +822,11 @@ def FetchSamData(uei: str) -> dict:
                 "registration_date": row[8] if row[8] else None,
                 "expiration_date": row[9] if row[9] else None,
                 "riskScore": row[10],
-                "exclusions": translated if translated else None,
-                "certifications": get_certification_names(row[12]) if row[12] else None,
-                "exclusion_type": row[13] if row[13] else None,
-                "excluding_agency": row[14] if row[14] else None,
-                "ex_active_date": row[15] if row[15] else None,
-                "ex_termination_date": row[16] if row[16] else None,
+                "certifications": get_certification_names(row[11]) if row[11] else None,
+                "exclusion_type": row[12] if row[12] else None,
+                "excluding_agency": row[13] if row[13] else None,
+                "ex_active_date": row[14] if row[14] else None,
+                "ex_termination_date": row[15] if row[15] else None,
             }
             return {"status": "success", "company": company}
         else:

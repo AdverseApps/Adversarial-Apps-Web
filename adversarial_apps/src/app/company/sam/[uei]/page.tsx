@@ -8,7 +8,6 @@ import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import SAMInfo from "@/components/SAMInfo";
 import { CertsTable } from "@/components/CertsTable";
-import Link from "next/link";
 import Image from "next/image";
 import { RiskScoreMeter } from "@/components/RiskScoreMeter";
 import { RiskScoreExplanation } from "@/components/RiskScoreExplanation";
@@ -100,7 +99,6 @@ export default async function Page({ params }: CompanyDetailsProps) {
     registration_date,
     expiration_date,
     riskScore,
-    exclusions,
     certifications,
     exclusion_type,
     excluding_agency,
