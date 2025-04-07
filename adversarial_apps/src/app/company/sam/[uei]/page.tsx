@@ -7,8 +7,9 @@ import {
 import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import SAMInfo from "@/components/SAMInfo";
-import Link from "next/link";
+import { CertsTable } from "@/components/CertsTable";
 import Image from "next/image";
+import ExclusionsTable from "@/components/ExclusionsTable";
 
 interface CompanyDetailsProps {
   params: { uei: string };
@@ -49,7 +50,8 @@ export default async function Page({ params }: CompanyDetailsProps) {
         <div className="text-center text-xl text-red-500">
           <h2>Error</h2>
           <p>
-            Unable to fetch company details at this time. Please try again later.
+            Unable to fetch company details at this time. Please try again
+            later.
           </p>
         </div>
       </div>
@@ -92,7 +94,11 @@ export default async function Page({ params }: CompanyDetailsProps) {
     address_line2,
     registration_date,
     expiration_date,
-    exclusions,
+    certifications,
+    exclusion_type,
+    excluding_agency,
+    ex_active_date,
+    ex_termination_date,
   } = result.company;
 
   const formatDate = (date: string): string => {
@@ -105,8 +111,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
   const { favorites } = await getFavorites(username);
 
   // Determine if the company is active based on the expiration date
-  const isActive =
-    parseDate(expiration_date) > new Date();
+  const isActive = parseDate(expiration_date) > new Date();
 
   return (
     <div className="text-white min-h-screen p-8 box-border">
@@ -124,11 +129,11 @@ export default async function Page({ params }: CompanyDetailsProps) {
                 {" "}
                 {/* Wrap buttons */}
                 <QRCodeComponent
-                companyName={company_name}
-                identifier={uei}
-                source="SAM"
-                displayIconOnly={false}
-              />
+                  companyName={company_name}
+                  identifier={uei}
+                  source="SAM"
+                  displayIconOnly={false}
+                />
               </div>
             )}
             {reviewerData && reviewerData.role === "false" && (
@@ -136,18 +141,18 @@ export default async function Page({ params }: CompanyDetailsProps) {
                 {" "}
                 {/* Wrap buttons */}
                 <QRCodeComponent
-                companyName={company_name}
-                identifier={uei}
-                source="SAM"
-                displayIconOnly={false}
-              />
+                  companyName={company_name}
+                  identifier={uei}
+                  source="SAM"
+                  displayIconOnly={false}
+                />
                 <FavoriteButton
-                identifier={uei}
-                source="SAM"
-                username={username}
-                favorites={favorites || []}
-                entityName={company_name}
-              />
+                  identifier={uei}
+                  source="SAM"
+                  username={username}
+                  favorites={favorites || []}
+                  entityName={company_name}
+                />
               </div>
             )}
           </div>
@@ -180,7 +185,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
           </div>
         </div>
 
-        {/* Right Side (Risk Score) */}
+        {/* Right Side (SAM registration) */}
         <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white text-center box-border">
           <div className="flex items-center gap-2 relative">
             <h2 className="text-3xl font-bold">SAM Registration Status</h2>
@@ -194,7 +199,12 @@ export default async function Page({ params }: CompanyDetailsProps) {
                   height={100}
                   alt="Check Mark"
                 />
-                <p className="mt-2">{capitalizeWords(company_name)} is currently registered with SAM.gov. They are eligible to participate in federal contracts, subcontracts, grants, loans, and other federal assistance programs.</p>
+                <p className="mt-2">
+                  {capitalizeWords(company_name)} is currently registered with
+                  SAM.gov. They are eligible to participate in federal
+                  contracts, subcontracts, grants, loans, and other federal
+                  assistance programs.
+                </p>
               </>
             ) : (
               <>
@@ -205,46 +215,34 @@ export default async function Page({ params }: CompanyDetailsProps) {
                   alt="Expired"
                 />
                 <p className="mt-2">
-                  {capitalizeWords(company_name)} is not currently registered with SAM.gov. As a result, they may be ineligible to participate in federal contracts, subcontracts, grants, loans, and other federal assistance programs until registration is completed.
+                  {capitalizeWords(company_name)} is not currently registered
+                  with SAM.gov. As a result, they may be ineligible to
+                  participate in federal contracts, subcontracts, grants, loans,
+                  and other federal assistance programs until registration is
+                  completed.
                 </p>
               </>
             )}
           </div>
         </div>
       </div>
-      {exclusions != null && (
-        <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
-          <div className="flex justify-center items-center">
-            <Image
-              src="/warning.png"
-              width={40}
-              height={15}
-              alt="Warning"
-            />
-            <h2 className="text-3xl font-bold mb-2 ml-2">Exclusions</h2>
-            <Image
-              src="/warning.png"
-              width={40}
-              height={15}
-              alt="Warning"
-            />
-          </div>
 
-          <p>
-            {capitalizeWords(company_name)} has active exclusions that may disqualify them from participating in certain federal contracts, subcontracts, grants, loans, and/or other federal assistance programs.
-            Please refer to{' '}
-            <Link href="https://sam.gov" passHref legacyBehavior>
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-300 underline hover:text-blue-400 transition-colors"
-              >
-                SAM.gov
-              </a>
-            </Link> for more information.
-          </p>
-        </div>
+      {exclusion_type && (
+        <ExclusionsTable
+          company_name={capitalizeWords(company_name)}
+          exclusion_type={exclusion_type}
+          excluding_agency={excluding_agency}
+          ex_active_date={ex_active_date}
+          ex_termination_date={ex_termination_date}
+        />
       )}
+
+      {certifications &&
+        <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
+          <CertsTable certifications={certifications} />
+        </div>
+      }
+
       <footer className="mt-12 text-center text-sm">
         <p>
           Company data is provided by the official U.S. System for Award

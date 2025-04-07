@@ -795,7 +795,7 @@ def FetchSamData(uei: str) -> dict:
             """
             SELECT legal_business_name, cage_code, country_code,
                    state_or_province, city, zip_code, address_line1, address_line2,
-                   registration_date, expiration_date, "riskScore", exclusions
+                   registration_date, expiration_date, "riskScore", certifications, exclusion_type, excluding_agency, ex_active_date, ex_termination_date
             FROM sam_entities
             WHERE entity_id = %s
             LIMIT 1;
@@ -807,8 +807,6 @@ def FetchSamData(uei: str) -> dict:
         connection.close()
 
         if row:
-            raw_exclusions = row[11]  # This might be a string like "A411|R799"
-            translated = translate_exclusions(raw_exclusions) if raw_exclusions else []
 
             company = {
                 "company_name": row[0],
@@ -822,7 +820,11 @@ def FetchSamData(uei: str) -> dict:
                 "registration_date": row[8] if row[8] else None,
                 "expiration_date": row[9] if row[9] else None,
                 "riskScore": row[10],
-                "exclusions": translated if translated else None,
+                "certifications": get_certification_names(row[11]) if row[11] else None,
+                "exclusion_type": row[12] if row[12] else None,
+                "excluding_agency": row[13] if row[13] else None,
+                "ex_active_date": row[14] if row[14] else None,
+                "ex_termination_date": row[15] if row[15] else None,
             }
             return {"status": "success", "company": company}
         else:
@@ -879,6 +881,51 @@ def get_reviewed_companies() -> dict:
         if connection:
             cursor.close()
             connection.close()
+
+
+CERTIFICATION_CODE_MAP = {
+    "2X": "Self-Certified Small Disadvantaged Business (SDB)",
+    "8W": "Women-Owned Small Business (WOSB)",
+    "A2": "Economically Disadvantaged Women-Owned Small Business (EDWOSB)",
+    "LJ": "Certified HUBZone Small Business",
+    "MF": "Minority-Owned Business",
+    "HQ": "Veteran-Owned Small Business (VOSB)",
+    "XS": "Service-Disabled Veteran-Owned Small Business (SDVOSB)",
+    "OY": "AbilityOne Program Participant",
+    "8C": "8(a) Business Development Program Participant",
+    "FR": "Foreign-Owned and Located Business",
+    "JS": "Joint Venture",
+    "A8": "Nonprofit Organization",
+    "H2": "Historically Black College or University/Minority Institution (HBCU/MI)",
+    "ZZ": "Other Small Business",
+    "NB": "Native American-Owned Business",
+    "HQ": "Veteran-Owned Small Business",
+    "QF": "Alaskan Native Corporation Owned Firm",
+    "NG": "Tribal Government",
+    "UP": "U.S. Owned and Located",
+    "PI": "Asian Pacific American Owned",
+    "XS": "Service Disabled Veteran-Owned Small Business",
+    "27": "Small Business",
+    "23": "Woman Owned",
+    "NQ": "Asian-Indian American Owned",
+    "2L": "Limited Liability Company (LLC)",
+    "2J": "Sole Proprietorship",
+    "2K": "Corporation",
+    "8H": "Nonprofit with 501(c)(3) IRS Status (except higher education)",
+    "2A": "Government Entity",
+    "2C": "Other Not-For-Profit Organization",
+    "2D": "Partnership or Limited Partnership",
+    "2B": "Foreign Entity",
+    "2M": "Subchapter S Corporation",
+    "2N": "For-Profit Organization",
+}
+
+
+def get_certification_names(code_string):
+    codes = code_string.split("~")
+    return [
+        CERTIFICATION_CODE_MAP[code] for code in codes if code in CERTIFICATION_CODE_MAP
+    ]
 
 
 EXCLUSION_CODE_MAP = {
