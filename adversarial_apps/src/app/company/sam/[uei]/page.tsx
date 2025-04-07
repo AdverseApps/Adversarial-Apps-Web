@@ -170,13 +170,25 @@ export default async function Page({ params }: CompanyDetailsProps) {
           <div className="mt-4 flex flex-col items-center">
             {isActive ? (
               <>
-                <span className="text-green-500 text-5xl">&#10003;</span>
-                <p className="mt-2">Sam Compliant</p>
+                <Image
+                  src="/check.png"
+                  width={100}
+                  height={100}
+                  alt="Check Mark"
+                />
+                <p className="mt-2">{capitalizeWords(company_name)} is currently registered with SAM.gov. They are eligible to participate in federal contracts, subcontracts, grants, loans, and other federal assistance programs.</p>
               </>
             ) : (
               <>
-                <span className="text-red-500 text-5xl">&#x2717;</span>
-                <p className="mt-2">Expired</p>
+                <Image
+                  src="/x-red-circle.png"
+                  width={100}
+                  height={100}
+                  alt="Expired"
+                />
+                <p className="mt-2">
+                  {capitalizeWords(company_name)} is not currently registered with SAM.gov. As a result, they may be ineligible to participate in federal contracts, subcontracts, grants, loans, and other federal assistance programs until registration is completed.
+                </p>
               </>
             )}
           </div>
