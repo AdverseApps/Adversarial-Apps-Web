@@ -33,7 +33,7 @@ interface FavoriteCompanyProps {
   company: SECCompany | SAMCompany;
   source: "SEC" | "SAM";
   username: string;
-  riskScore: number | null;
+  riskScore: number | string | null;
 }
 
 // function for handling when the user clicks 'add to favorites' button
