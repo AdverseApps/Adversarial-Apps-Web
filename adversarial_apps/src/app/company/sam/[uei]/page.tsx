@@ -94,7 +94,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
     address_line2,
     registration_date,
     expiration_date,
-    // riskScore removed since it's no longer used
+    riskScore,
   } = result.company;
 
   function capitalizeWords(input: string | null | undefined): string {
