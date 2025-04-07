@@ -18,12 +18,6 @@ def get_safe(row, idx):
         return ""
 
 
-def get_safe(row, idx):
-    try:
-        return row[idx].strip()
-    except IndexError:
-        return ""
-
 
 def parse_sam_dat_file(data_file_path: str, output_file_path: str) -> int:
     """
@@ -51,7 +45,7 @@ def parse_sam_dat_file(data_file_path: str, output_file_path: str) -> int:
                     entity_id = get_safe(row, 0)
                     cage_code = get_safe(row, 3)
                     registration_date = get_safe(row, 7)
-                    expiration_date = get_safe(row, 9)
+                    expiration_date = get_safe(row, 8)
                     legal_business_name = get_safe(row, 11)
                     address_line1 = get_safe(row, 15)
                     address_line2 = get_safe(row, 16)
@@ -62,6 +56,9 @@ def parse_sam_dat_file(data_file_path: str, output_file_path: str) -> int:
                     certifications = get_safe(row, 31)
                     naics_primary = get_safe(row, 32)
                     exclusions = get_safe(row, 36)
+
+                    if not country_code:
+                        log.write(f"Row {row_num} warning: country_code is empty | Entity ID: {get_safe(row, 0)}\n")
 
                     if len(row) < 40:
                         log.write(
@@ -133,7 +130,7 @@ def store_subset_in_db(records: list) -> None:
             "entity_id" text NOT NULL,
             "legal_business_name" text NOT NULL,
             "cage_code" text,
-            "country_code" text NOT NULL,
+            "country_code" text,
             "state_or_province" text,
             "city" text,
             "zip_code" text,
@@ -216,8 +213,8 @@ def copy_into_sam_entities(csv_path: str) -> None:
             "zip_code" text,
             "registration_date" text NOT NULL,
             "expiration_date" text,
-            "address_line2" text,
             "address_line1" text,
+            "address_line2" text,
             "certifications" text DEFAULT '',
             "naics_primary" text DEFAULT '',
             "exclusions" text DEFAULT '',
@@ -302,7 +299,7 @@ def main():
 
     # Construct the relative path to the data file (adjust as needed)
     data_file_path = os.path.join(
-        script_dir, "..", "..", "..", "lib", "SAM_PUBLIC_UTF-8_MONTHLY_V2_20250302.dat"
+        script_dir, "..", "..", "..", "lib", "SAM_PUBLIC_UTF-8_MONTHLY_V2_20250406.dat"
     )
     data_file_path = os.path.normpath(data_file_path)
     print(f"Processing SAM data from: {data_file_path}")
