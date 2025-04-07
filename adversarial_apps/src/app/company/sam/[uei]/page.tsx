@@ -8,6 +8,8 @@ import { QRCodeComponent } from "@/components/QR";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import SAMInfo from "@/components/SAMInfo";
 import Link from "next/link";
+import Image from "next/image";
+
 interface CompanyDetailsProps {
   params: { uei: string };
 }
@@ -182,9 +184,24 @@ export default async function Page({ params }: CompanyDetailsProps) {
       </div>
       {exclusions != null && (
         <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
-          <h2 className="text-3xl font-bold mb-2">Exclusions</h2>
+          <div className="flex justify-center items-center">
+            <Image
+              src="/warning.png"
+              width={40}
+              height={15}
+              alt="Warning"
+            />
+            <h2 className="text-3xl font-bold mb-2 ml-2">Exclusions</h2>
+            <Image
+              src="/warning.png"
+              width={40}
+              height={15}
+              alt="Warning"
+            />
+          </div>
+
           <p>
-            {capitalizeWords(company_name)} has active exclusions that may disqualify them from participating in federal contracts, subcontracts, grants, loans, and/or other federal assistance programs.
+            {capitalizeWords(company_name)} has active exclusions that may disqualify them from participating in certain federal contracts, subcontracts, grants, loans, and/or other federal assistance programs.
             Please refer to{' '}
             <Link href="https://sam.gov" passHref legacyBehavior>
               <a
