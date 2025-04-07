@@ -923,7 +923,7 @@ CERTIFICATION_CODE_MAP = {
 def get_certification_names(code_string):
     codes = code_string.split("~")
     return [
-        CERTIFICATION_CODE_MAP.get(code, f"Unknown Code ({code})") for code in codes
+        CERTIFICATION_CODE_MAP[code] for code in codes if code in CERTIFICATION_CODE_MAP
     ]
 
 
