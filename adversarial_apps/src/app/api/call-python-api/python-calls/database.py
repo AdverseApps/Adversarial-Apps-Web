@@ -829,7 +829,8 @@ def FetchSamData(uei: str) -> dict:
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
-    
+
+
 def get_reviewed_companies() -> dict:
     """
     Retrieve a list of companies that have been reviewed by checking the
@@ -844,7 +845,7 @@ def get_reviewed_companies() -> dict:
         connection = psycopg2.connect(db_url)
         cursor = connection.cursor()
 
-        # Query the COMPANIES table for verified companies 
+        # Query the COMPANIES table for verified companies
         cursor.execute(
             'SELECT "CIK", "riskScore", "lastVerified", "entityName" FROM "COMPANIES" WHERE "isVerified" = TRUE'
         )
@@ -855,12 +856,14 @@ def get_reviewed_companies() -> dict:
                 last_verified = row[2]
                 # Convert datetime object to ISO 8601 string
                 last_verified_str = last_verified.isoformat() if last_verified else None
-                reviewed_companies.append({
-                    "cik": row[0],
-                    "riskScore": row[1],
-                    "lastVerified": last_verified_str,
-                    "entityName": row[3]
-                })
+                reviewed_companies.append(
+                    {
+                        "cik": row[0],
+                        "riskScore": row[1],
+                        "lastVerified": last_verified_str,
+                        "entityName": row[3],
+                    }
+                )
 
         return {"status": "success", "reviewedCompanies": reviewed_companies}
 
