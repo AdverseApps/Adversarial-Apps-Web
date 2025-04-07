@@ -51,8 +51,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
         <div className="text-center text-xl text-red-500">
           <h2>Error</h2>
           <p>
-            Unable to fetch company details at this time. Please try again
-            later.
+            Unable to fetch company details at this time. Please try again later.
           </p>
         </div>
       </div>
@@ -83,8 +82,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
     console.error("Error in verifying user:", error);
   }
 
-  // Assume result.company contains fields similar to your SEC page but from SAM data
-  // Extract SAM company data; updated to include address_line1 and address_line2
+  // Extract SAM company data
   const {
     company_name,
     cage_code,
@@ -96,18 +94,37 @@ export default async function Page({ params }: CompanyDetailsProps) {
     address_line2,
     registration_date,
     expiration_date,
-    riskScore,
+    // riskScore removed since it's no longer used
   } = result.company;
+
+  function capitalizeWords(input: string | null | undefined): string {
+    if (!input) return "";
+    return input.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
+  function parseDate(dateString: string) {
+    if (dateString.length !== 8) {
+      return new Date(NaN);
+    }
+    const formattedDate = `${dateString.slice(0, 4)}-${dateString.slice(
+      4,
+      6
+    )}-${dateString.slice(6, 8)}`;
+    return new Date(formattedDate);
+  }
 
   const formatDate = (date: string): string => {
     const formatted = parseDate(date);
-    const parsedDate = new Date(formatted);
-    return parsedDate.toLocaleDateString("en-US");
+    return formatted.toLocaleDateString("en-US");
   };
 
-  // Authentication & favorites as in your SEC page
+  // Authentication & favorites
   const { username } = await getUsername();
   const { favorites } = await getFavorites(username);
+
+  // Determine if the company is active based on the expiration date
+  const isActive =
+    expiration_date && parseDate('20250407') > new Date();
 
   return (
     <div className="text-white min-h-screen p-8 box-border">
@@ -115,12 +132,10 @@ export default async function Page({ params }: CompanyDetailsProps) {
         {/* Left Side (Company Info) */}
         <div className="w-full md:w-[calc(50%-1.5rem)] bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-navy-600 box-border">
           <div className="flex items-center justify-between">
-            {/* Add flex container */}
             <h2 className="text-3xl font-bold text-navy-300 mb-4 max-w-[65%]">
               {capitalizeWords(company_name) || "N/A"}
             </h2>
             <div className="flex items-center space-x-2">
-              {/* Wrap buttons */}
               <QRCodeComponent
                 companyName={company_name}
                 identifier={uei}
@@ -168,34 +183,21 @@ export default async function Page({ params }: CompanyDetailsProps) {
         {/* Right Side (Risk Score) */}
         <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white text-center box-border">
           <div className="flex items-center gap-2 relative">
-            <h2 className="text-3xl font-bold text-navy-300">Risk Score</h2>
-            <RiskScoreTooltip />
+            <h2 className="text-3xl font-bold text-navy-300">Status</h2>
           </div>
-
-          {/* Displaying risk score */}
-          {riskScore !== undefined && riskScore !== null ? (
-            <div>
-              <RiskScoreMeter riskScore={riskScore} />
-              <div className="mt-2">
-                <RiskScoreExplanation riskScore={riskScore} />
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center">
-              <p>This Company has not yet been verified</p>
-              <RequestReviewButton
-                identifier={uei}
-                source="SAM"
-                username={username || null}
-                role={reviewerData?.role || null}
-                entityName={company_name}
-              />
-            </div>
-          )}
-
-          {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany identifier={uei} source="SAM" entityName={company_name} />
-          )}
+          <div className="mt-4 flex flex-col items-center">
+            {isActive ? (
+              <>
+                <span className="text-green-500 text-5xl">&#10003;</span>
+                <p className="mt-2">Sam Compliant</p>
+              </>
+            ) : (
+              <>
+                <span className="text-red-500 text-5xl">&#x2717;</span>
+                <p className="mt-2">Expired</p>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
