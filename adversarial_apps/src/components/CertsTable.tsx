@@ -6,7 +6,7 @@ interface Props {
 
 export const CertsTable = ({ certifications }: Props) => {
   return (
-    <div className="mt-8">
+    <div>
       <h2 className="text-2xl font-semibold text-white mb-4">Certifications</h2>
       <p className="mb-4">
         Below are the small business and eligibility certifications associated
