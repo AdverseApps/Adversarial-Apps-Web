@@ -807,8 +807,6 @@ def FetchSamData(uei: str) -> dict:
         connection.close()
 
         if row:
-        
-          
 
             company = {
                 "company_name": row[0],
