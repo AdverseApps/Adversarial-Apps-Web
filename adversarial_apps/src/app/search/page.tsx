@@ -1,6 +1,22 @@
 import SearchBar from "@/components/searchbar";
+import { ReviewedCompaniesTable } from "@/components/ReviewedCompaniesTable";
+import { getReviewedCompanies } from "../lib/data";
 
-export default function Page() {
+interface ReviewedCompany {
+  cik: string;
+  riskScore: number | null;
+  lastVerified: string | null;
+  entityName: string;
+}
+
+interface ApiResponse {
+  status: 'success' | 'error';
+  reviewedCompanies?: ReviewedCompany[];
+  message?: string;
+}
+
+export default async function Page() {
+  const companiesData: ApiResponse = await getReviewedCompanies();
 
   return (
     <>
@@ -17,44 +33,28 @@ export default function Page() {
         <section className="mt-6 mx-6 text-center">
           <p className="text-lg mb-4">
             Enter a company name above to search for detailed company
-            information from SEC filings. Your search results will include:
+            information from SEC filings and SAM.gov website.
           </p>
-          <ul className="list-disc list-inside text-left inline-block">
-            <li>
-              <strong>Company Name:</strong> The official, formatted name of the
-              company.
-            </li>
-            <li>
-              <strong>Business Address:</strong> The primary address, including
-              street, city, state/country, and ZIP code.
-            </li>
-            <li>
-              <strong>Former Names:</strong> Any previous names the company has
-              used.
-            </li>
-            <li>
-              <strong>Date of Last Filing:</strong> The most recent filing date
-              from SEC data.
-            </li>
-            <li>
-              <strong>Risk Score:</strong> For verified companies, a risk score
-              is displayed. (If a company isn’t verified, you’ll see a message
-              indicating that verification is pending.)
-            </li>
-          </ul> 
-
           <p className="text-lg mt-4">
             <strong>Note:</strong> For best results, please log in or sign up to
             access all features.
           </p>
 
-          <p className="text-md mt-4">
+          <div className="text-md mt-4">
             <p><u>We do not track user searches with this tool.</u> We value user privacy and will not save anything without your permission. We only store</p>
             <p>user data for login credentials and user-favorited companies. For website demonstration inquiries, please email: adversarialapps@gmail.com</p>
-          </p>
+          </div>
         </section>
+        <div className="flex justify-center mt-4 mb-64">
+          {companiesData.status === 'success' && companiesData.reviewedCompanies ? (
+            <ReviewedCompaniesTable reviewedCompanies={companiesData.reviewedCompanies} />
+          ) : companiesData.status === 'error' ? (
+            <p>Error fetching data: {companiesData.message}</p>
+          ) : (
+            <p>Loading reviewed companies...</p>
+          )}
+        </div>
 
-        
         {/* if we still want to show full-page results after submission, add that section here */}
         {/*
         {query && (

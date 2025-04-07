@@ -431,3 +431,41 @@ export async function getReviewRequests(): Promise<{
     return { status: "error", message: "Error fetching review requests" };
   }
 }
+
+export async function getReviewedCompanies() {
+  try {
+    console.log("Getting Reviewed Companies ... ");
+    const headersList = headers();
+    const domain = headersList.get("host");
+    const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+
+    const data = { action: "get_reviewed_companies" };
+    const response = await fetch(
+      `${protocol}://${domain}/api/call-python-api`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`Reviewed Companies fetch failed: ${response.statusText}`);
+      return {
+        status: "error",
+        message: `Failed to fetch Reviewed Companies: ${response.statusText}`,
+      };
+    }
+    const result = await response.json();
+    console.log(result);
+    return result;
+  } catch (error) {
+    console.error("Error fetching Reviewed Companies:", error);
+    return {
+      status: "error",
+      message: `An unexpected error occurred: ${error}`,
+    };
+  }
+}
