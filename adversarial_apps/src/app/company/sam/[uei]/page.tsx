@@ -192,7 +192,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
             {isActive ? (
               <>
                 <span className="text-green-500 text-5xl">&#10003;</span>
-                <p className="mt-2">Sam Compliant</p>
+                <p className="mt-2">SAM Compliant</p>
               </>
             ) : (
               <>
