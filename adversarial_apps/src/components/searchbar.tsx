@@ -30,7 +30,7 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
   const [results, setResults] = useState<CompanyResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const resultsPerPage = 10;
+  const resultsPerPage = 6;
   const paginatedResults = results.slice(
     (currentPage - 1) * resultsPerPage,
     currentPage * resultsPerPage
@@ -118,7 +118,7 @@ function SearchBarContent({ placeholder }: { placeholder: string }) {
   /*
      SEC ONLY FETCH
   async function fetchResults(query: string) {
-    
+
     // Data will hold what will be given in the API body. [query] is what is typed in the box
     console.log("Fetching CIK number...");
     const data = { action: "obtain_cik_number", search_term: query };
