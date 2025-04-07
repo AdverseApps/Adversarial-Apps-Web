@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Props {
   identifier: string; // CIK for SEC or entity_id for SAM
@@ -18,19 +18,48 @@ export const FavoriteButton = (props: Props) => {
   const [isFavorite, setIsFavorite] = useState(favorites.includes(identifier));
   const [showLoginMessage, setShowLoginMessage] = useState(false);
 
-  // function for handling when the user clicks 'add to favorites' button
+  // ✅ Check backend to determine favorite status on component mount
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!username) return;
+
+      try {
+        const response = await fetch("/api/call-python-api", {
+          method: "POST",
+          body: JSON.stringify({
+            action: "get_favorites",
+            username,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === "success") {
+          const favoriteList =
+            source === "SEC" ? data.sec_favorites : data.sam_favorites;
+          setIsFavorite(favoriteList.includes(identifier));
+        } else {
+          console.warn("Error fetching favorites:", data.message);
+        }
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      }
+    };
+
+    fetchFavorites();
+  }, [username, identifier, source]);
+
+  // Handles add/remove click
   const handleClick = async () => {
-    // Checking if the user is logged in
     if (username) {
       try {
-        console.log("adding/removing favorite");
         const response = await fetch("/api/call-python-api", {
           method: "POST",
           body: JSON.stringify({
             action: "add_remove_favorite",
             username,
             identifier,
-            source, // Send either CIK or UEI
+            source,
             entityName,
           }),
         });
@@ -39,7 +68,6 @@ export const FavoriteButton = (props: Props) => {
         console.log(data.message);
 
         if (response.ok) {
-          console.log("favorite added/removed");
           setIsFavorite((prev) => !prev);
         }
       } catch (error) {
@@ -47,8 +75,7 @@ export const FavoriteButton = (props: Props) => {
       }
     } else {
       setShowLoginMessage(true);
-      setTimeout(() => setShowLoginMessage(false), 3000); // Hide message after 3 seconds
-      return;
+      setTimeout(() => setShowLoginMessage(false), 3000);
     }
   };
 
@@ -68,7 +95,6 @@ export const FavoriteButton = (props: Props) => {
         <span>{isFavorite ? "Remove from Favorites" : "Add to Favorites"}</span>
       </button>
 
-      {/* Message if not logged in */}
       {showLoginMessage && (
         <div className="bg-gray-700 text-white px-4 py-2 rounded-md shadow-md mt-2 flex justify-between items-center max-w-md">
           <span>
@@ -97,7 +123,7 @@ export const FavoriteButton = (props: Props) => {
               alt="Close"
               width={18}
               height={20}
-              className="cursor-pointer hover:opacity-80 invert               "
+              className="cursor-pointer hover:opacity-80 invert"
             />
           </button>
         </div>
