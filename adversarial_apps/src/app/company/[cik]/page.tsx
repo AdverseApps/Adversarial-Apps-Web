@@ -160,23 +160,39 @@ export default async function page({ params }: CompanyDetailsProps) {
             <h2 className="text-3xl font-bold text-navy-300 mb-4 max-w-[65%]">
               {capitalizeWords(name) || "N/A"}
             </h2>
-            <div className="flex items-center space-x-2">
-              {" "}
-              {/* Wrap buttons */}
-              <QRCodeComponent
-                companyName={name}
-                identifier={cik}
-                source="SEC"
-                displayIconOnly={false}
-              />
-              <FavoriteButton
-                identifier={cik}
-                source="SEC"
-                username={username}
-                favorites={favorites || []}
-                entityName={name}
-              />
-            </div>
+
+            {/* Split div into reviewer/user conditions */}
+            {reviewerData && reviewerData.role === "true" && (
+              <div className="flex items-center space-x-2">
+                {" "}
+                {/* Wrap buttons */}
+                <QRCodeComponent
+                  companyName={name}
+                  identifier={cik}
+                  source="SEC"
+                  displayIconOnly={false}
+                />
+              </div>
+            )}
+            {reviewerData && reviewerData.role === "false" && (
+              <div className="flex items-center space-x-2">
+                {" "}
+                {/* Wrap buttons */}
+                <QRCodeComponent
+                  companyName={name}
+                  identifier={cik}
+                  source="SEC"
+                  displayIconOnly={false}
+                />
+                <FavoriteButton
+                  identifier={cik}
+                  source="SEC"
+                  username={username}
+                  favorites={favorites || []}
+                  entityName={name}
+                />
+              </div>
+            )}
           </div>
 
           {/* Former Names */}
