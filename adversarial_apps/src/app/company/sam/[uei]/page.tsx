@@ -9,10 +9,6 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 import SAMInfo from "@/components/SAMInfo";
 import { CertsTable } from "@/components/CertsTable";
 import Image from "next/image";
-import { RiskScoreMeter } from "@/components/RiskScoreMeter";
-import { RiskScoreExplanation } from "@/components/RiskScoreExplanation";
-import RequestReviewButton from "@/components/RequestReviewButton";
-import UpdateCompany from "@/components/UpdateCompany";
 import ExclusionsTable from "@/components/ExclusionsTable";
 
 interface CompanyDetailsProps {
@@ -229,35 +225,6 @@ export default async function Page({ params }: CompanyDetailsProps) {
               </>
             )}
           </div>
-
-          {/* Displaying risk score */}
-          {riskScore !== undefined && riskScore !== null ? (
-            <div>
-              <RiskScoreMeter riskScore={riskScore} />
-              <div className="mt-2">
-                <RiskScoreExplanation riskScore={riskScore} />
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center">
-              <p>This Company has not yet been verified</p>
-              <RequestReviewButton
-                identifier={uei}
-                source="SAM"
-                username={username || null}
-                role={reviewerData?.role || null}
-                entityName={company_name}
-              />
-            </div>
-          )}
-
-          {reviewerData && reviewerData.role === "true" && (
-            <UpdateCompany
-              identifier={uei}
-              source="SAM"
-              entityName={company_name}
-            />
-          )}
         </div>
       </div>
 
