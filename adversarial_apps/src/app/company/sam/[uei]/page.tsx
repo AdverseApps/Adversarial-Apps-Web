@@ -12,6 +12,7 @@ import RiskScoreTooltip from "@/components/RiskScoreTooltip";
 import RequestReviewButton from "@/components/RequestReviewButton";
 import { RiskScoreExplanation } from "@/components/RiskScoreExplanation";
 import SAMInfo from "@/components/SAMInfo";
+import Link from "next/link";
 interface CompanyDetailsProps {
   params: { uei: string };
 }
@@ -98,7 +99,6 @@ export default async function Page({ params }: CompanyDetailsProps) {
     exclusions,
   } = result.company;
 
-  console.log("Exclusions are:",exclusions)
 
   function capitalizeWords(input: string | null | undefined): string {
     if (!input) return "";
@@ -186,7 +186,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
         {/* Right Side (Risk Score) */}
         <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white text-center box-border">
           <div className="flex items-center gap-2 relative">
-            <h2 className="text-3xl font-bold text-navy-300">Status</h2>
+            <h2 className="text-3xl font-bold">SAM Registration Status</h2>
           </div>
           <div className="mt-4 flex flex-col items-center">
             {isActive ? (
@@ -203,9 +203,24 @@ export default async function Page({ params }: CompanyDetailsProps) {
           </div>
         </div>
       </div>
-      <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
-        <p>Exclusions are:</p>
-      </div>
+      {exclusions != null && (
+        <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
+          <h2 className="text-3xl font-bold mb-2">Exclusions</h2>
+          <p>
+            {capitalizeWords(company_name)} has active exclusions that may disqualify them from participating in federal contracts, subcontracts, grants, loans, and/or other federal assistance programs.
+            Please refer to{' '}
+            <Link href="https://sam.gov" passHref legacyBehavior>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-300 underline hover:text-blue-400 transition-colors"
+              >
+                SAM.gov
+              </a>
+            </Link> for more information.
+          </p>
+        </div>
+      )}
       <footer className="mt-12 text-center text-sm">
         <p>
           Company data is provided by the official U.S. System for Award
@@ -213,7 +228,7 @@ export default async function Page({ params }: CompanyDetailsProps) {
         </p>
       </footer>
       {/* Only display additional SEC API data for reviewer users */}
-      </div>
+    </div>
   );
 
   {
