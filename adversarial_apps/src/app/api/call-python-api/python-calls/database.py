@@ -795,7 +795,7 @@ def FetchSamData(uei: str) -> dict:
             """
             SELECT legal_business_name, cage_code, country_code,
                    state_or_province, city, zip_code, address_line1, address_line2,
-                   registration_date, expiration_date, "riskScore", exclusions, certifications,exclusion_type, excluding_agency, ex_active_date, ex_termination_date
+                   registration_date, expiration_date, "riskScore", exclusions, certifications, exclusion_type, excluding_agency, ex_active_date, ex_termination_date
             FROM sam_entities
             WHERE entity_id = %s
             LIMIT 1;
@@ -824,10 +824,10 @@ def FetchSamData(uei: str) -> dict:
                 "riskScore": row[10],
                 "exclusions": translated if translated else None,
                 "certifications": get_certification_names(row[12]) if row[12] else None,
-                "exclusion_type": row[13],
-                "excluding_agency": row[14],
-                "ex_active_date": row[15],
-                "ex_termination_date": row[16],
+                "exclusion_type": row[13] if row[13] else None,
+                "excluding_agency": row[14] if row[14] else None,
+                "ex_active_date": row[15] if row[15] else None,
+                "ex_termination_date": row[16] if row[16] else None,
             }
             return {"status": "success", "company": company}
         else:

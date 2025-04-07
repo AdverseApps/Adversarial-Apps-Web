@@ -14,6 +14,7 @@ import { RiskScoreMeter } from "@/components/RiskScoreMeter";
 import { RiskScoreExplanation } from "@/components/RiskScoreExplanation";
 import RequestReviewButton from "@/components/RequestReviewButton";
 import UpdateCompany from "@/components/UpdateCompany";
+import ExclusionsTable from "@/components/ExclusionsTable";
 
 interface CompanyDetailsProps {
   params: { uei: string };
@@ -101,6 +102,10 @@ export default async function Page({ params }: CompanyDetailsProps) {
     riskScore,
     exclusions,
     certifications,
+    exclusion_type,
+    excluding_agency,
+    ex_active_date,
+    ex_termination_date,
   } = result.company;
 
   const formatDate = (date: string): string => {
@@ -258,30 +263,14 @@ export default async function Page({ params }: CompanyDetailsProps) {
         </div>
       </div>
 
-      {exclusions != null && (
-        <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
-          <div className="flex justify-center items-center">
-            <Image src="/warning.png" width={40} height={15} alt="Warning" />
-            <h2 className="text-3xl font-bold mb-2 ml-2">Exclusions</h2>
-            <Image src="/warning.png" width={40} height={15} alt="Warning" />
-          </div>
-          <p>
-            {capitalizeWords(company_name)} has active exclusions that may
-            disqualify them from participating in certain federal contracts,
-            subcontracts, grants, loans, and/or other federal assistance
-            programs. Please refer to{" "}
-            <Link href="https://sam.gov" passHref legacyBehavior>
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-300 underline hover:text-blue-400 transition-colors"
-              >
-                SAM.gov
-              </a>
-            </Link>{" "}
-            for more information.
-          </p>
-        </div>
+      {exclusion_type && (
+        <ExclusionsTable
+          company_name={capitalizeWords(company_name)}
+          exclusion_type={exclusion_type}
+          excluding_agency={excluding_agency}
+          ex_active_date={ex_active_date}
+          ex_termination_date={ex_termination_date}
+        />
       )}
       <div className="w-full mt-6 bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-white">
         {certifications && <CertsTable certifications={certifications} />}
