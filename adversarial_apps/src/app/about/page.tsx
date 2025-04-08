@@ -10,10 +10,10 @@ export default function Page() {
 
     return (
         <main aria-label="main-content">
-            <h1 className="text-6xl font-bold pl-5">About Us and FAQ</h1>
+            <h1 className="text-6xl font-bold pl-5 ">About Us and FAQ</h1>
 
             {/* Adversarial Apps Accordion */}
-            <div className="w-full text-lg text-left px-5 py-3 bg-gray-700 rounded-lg mt-5 mb-5 focus-visible:ring-blue-500 focus-visible:ring-12 focus-visible:ring-offset-4"
+            <div className="w-full text-white text-lg text-left px-5 py-3 bg-gray-700 rounded-lg mt-5 mb-5 focus-visible:ring-blue-500 focus-visible:ring-12 focus-visible:ring-offset-4"
                 tabIndex={0}  // Makes the div tabbable
                 role="button"
                 onClick={() => setIsAdversarialAppsOpen(!isAdversarialAppsOpen)}
@@ -23,11 +23,11 @@ export default function Page() {
                     }
                 }}
             >
-                <span className="justify-self-start mr-4">{isAdversarialAppsOpen ? "▲" : "▼"}</span>
-                <span className="font-bold text-xl">What is Adversarial Apps?</span>
+                <span className="justify-self-start text-white mr-4">{isAdversarialAppsOpen ? "▲" : "▼"}</span>
+                <span className="font-bold text-xl text-white">What is Adversarial Apps?</span>
 
                 {isAdversarialAppsOpen && (
-                    <div className="p-5">
+                    <div className="p-5 text-white">
                         <p>Adversarial Apps is an open source student-led project made
                             for UCF Senior Design and sponsored by NSIN and NC DEFTECH. Our mission is to aid
                             start-up companies in searching for business partners whose affiliation will not
@@ -37,7 +37,7 @@ export default function Page() {
             </div>
 
             {/* Company Assessment Accordion */}
-            <div className="w-full text-lg text-left px-5 py-3 bg-gray-700 rounded-lg mt-5 mb-5 focus-visible:ring-blue-500 focus-visible:ring-12 focus-visible:ring-offset-4"
+            <div className="w-full text-white text-lg text-left px-5 py-3 bg-gray-700 rounded-lg mt-5 mb-5 focus-visible:ring-blue-500 focus-visible:ring-12 focus-visible:ring-offset-4"
                 tabIndex={0}  // Makes the div tabbable
                 role="button"
                 onClick={() => setIsAssessmentOpen(!isAssessmentOpen)}
@@ -48,7 +48,7 @@ export default function Page() {
                 }}
             >
                 <span className="justify-self-start mr-4">{isAssessmentOpen ? "▲" : "▼"}</span>
-                <span className="font-bold text-xl">How do we assess companies?</span>
+                <span className="font-bold text-xl text-white">How do we assess companies?</span>
                 {isAssessmentOpen && (
                     <div className="p-5">
                         <p className="pl-5">To assess companies in a fair and transparent way, we have
@@ -113,7 +113,7 @@ export default function Page() {
             </div>
 
             {/* Risk Score Levels Accordion */}
-            <div className="w-full text-lg text-left px-5 py-3 bg-gray-700 rounded-lg mt-5 mb-5 focus-visible:ring-blue-500 focus-visible:ring-12 focus-visible:ring-offset-4"
+            <div className="w-full text-white text-lg text-left px-5 py-3 bg-gray-700 rounded-lg mt-5 mb-5 focus-visible:ring-blue-500 focus-visible:ring-12 focus-visible:ring-offset-4"
                 tabIndex={0}  // Makes the div tabbable
                 role="button"
                 onClick={() => setIsRiskLevelsOpen(!isRiskLevelsOpen)}
@@ -124,9 +124,9 @@ export default function Page() {
                 }}
             >
                 <span className="justify-self-start mr-4">{isRiskLevelsOpen ? "▲" : "▼"}</span>
-                <span className="font-bold text-xl">What are the Risk Score levels?</span>
+                <span className="font-bold text-white text-xl">What are the Risk Score levels?</span>
                 {isRiskLevelsOpen && (
-                    <div className="p-5">
+                    <div className="p-5 text-white">
                         <p><b>0 - 1 (Very Low Risk):</b> A Risk Score of 0 to 1 indicates a very low risk of foreign adversary involvement. No significant indicators suggest potential compromise or influence that could impact defense or federal contract eligibility. Standard due diligence is still advised.</p>
                         <p><br /><b>1 - 2 (Low Risk):</b> A Risk Score of 1 to 2 indicates a low risk of foreign adversary involvement. While generally secure, minor indicators suggest a need for review to ensure no potential compromise that could affect defense or federal contract eligibility.</p>
                         <p><br /><b>2 - 3 (Moderate Risk):</b> A Risk Score of 2 to 3 indicates a moderate risk of foreign adversary involvement. Certain factors suggest potential vulnerabilities that could impact defense or federal contract eligibility. Careful consideration and further investigation are recommended.</p>
@@ -138,7 +138,7 @@ export default function Page() {
             </div>
 
             {/* NEW: Privacy Accordion */}
-            <div className="w-full text-lg text-left px-5 py-3 bg-gray-700 rounded-lg mt-5 mb-5 focus-visible:ring-blue-500 focus-visible:ring-12 focus-visible:ring-offset-4"
+            <div className="w-full text-white text-lg text-left px-5 py-3 bg-gray-700 rounded-lg mt-5 mb-5 focus-visible:ring-blue-500 focus-visible:ring-12 focus-visible:ring-offset-4"
                 tabIndex={0}
                 role="button"
                 onClick={() => setIsPrivacyOpen(!isPrivacyOpen)}
@@ -149,7 +149,7 @@ export default function Page() {
                 }}
             >
                 <span className="justify-self-start mr-4">{isPrivacyOpen ? "▲" : "▼"}</span>
-                <span className="font-bold text-xl">Privacy Statement</span>
+                <span className="font-bold text-white text-xl">Privacy Statement</span>
                 {isPrivacyOpen && (
                     <div className="p-5">
                         <p>Your privacy is important to us. Adversarial Apps does not collect or store any personal identifying information about our users. All searches and assessments are anonymous.</p>

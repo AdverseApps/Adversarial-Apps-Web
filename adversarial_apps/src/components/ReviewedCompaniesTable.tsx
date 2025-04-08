@@ -39,7 +39,7 @@ export function ReviewedCompaniesTable({ reviewedCompanies }: ReviewedCompaniesT
     }));
 
     return (
-        <div className="h-[500px] w-4/5 text-[#f0f0f0]">
+        <div className="h-[500px] w-4/5 ">
             <h1 className="text-4xl mt-12 ml-6 text-center mb-4">
                 Reviewed SEC Companies
             </h1>
@@ -54,6 +54,9 @@ export function ReviewedCompaniesTable({ reviewedCompanies }: ReviewedCompaniesT
                 sx={{
                     '& .MuiDataGrid-row:nth-child(even)': {
                         backgroundColor: '#1e1e1e',
+                    },
+                    '& .MuiDataGrid-row:nth-child(odd)': {
+                        backgroundColor: '#121212',
                     },
                     '& .MuiDataGrid-cell': {
                         borderColor: '#333',
