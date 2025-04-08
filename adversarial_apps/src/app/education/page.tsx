@@ -12,15 +12,15 @@ const Module: React.FC<ModuleProps> = ({ title, children }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <details 
-            className={`module w-full max-w-lg mx-auto rounded-lg shadow-md overflow-hidden mb-4 border-2 border-solid text-white ${isOpen ? 'bg-gray-800' : 'bg-transparent'}`} 
+        <details
+            className={`module w-full max-w-lg mx-auto rounded-lg shadow-md overflow-hidden mb-4 border-2 border-solid text-white ${isOpen ? 'bg-gray-800' : 'bg-transparent'}`}
             open={isOpen}
             onToggle={(e) => setIsOpen(e.currentTarget.open)}
         >
             <summary
-                id={`${id}-title`} 
+                id={`${id}-title`}
                 className={`module-header bg-blue-900 p-4 cursor-pointer flex justify-between items-center text-lg focus:text-yellow-300 focus:font-bold`}
-                aria-expanded={isOpen} 
+                aria-expanded={isOpen}
                 aria-controls={`${id}-content`}
             >
                 {title}
@@ -39,12 +39,12 @@ const ModulesContainer: React.FC = () => {
         <div className="modules-container pt-4 px-6">
             {/* Header Section */}
             <header className="text-center mb-6">
-                <h1 className="text-3xl font-bold text-white">Stay Informed!</h1>
-                <p className="text-lg text-gray-300 mt-2">
-                    We at Adversarial Apps want you to be educated when going through the process of signing 
-                    up for your contracts. We have compiled our research into various areas of the application 
-                    and legal aspects here, but it is by no means complete; <u>we urge you to do your own 
-                    research as well.</u> This is intended to help you get started on investigating relevant 
+                <h1 className="text-3xl font-bold">Stay Informed!</h1>
+                <p className="text-lg mt-2">
+                    We at Adversarial Apps want you to be educated when going through the process of signing
+                    up for your contracts. We have compiled our research into various areas of the application
+                    and legal aspects here, but it is by no means complete; <u>we urge you to do your own
+                    research as well.</u> This is intended to help you get started on investigating relevant
                     laws and information.
                 </p>
             </header>
@@ -53,7 +53,7 @@ const ModulesContainer: React.FC = () => {
             <div className="justify-evenly align-middle" aria-label="main-content">
                 <Module title="Module 1: CFR Title 15">
                     <p>
-                        This module goes over the legislation introduced by the Code of Federal Regulations (CFR) Title 15, which has impacts on 
+                        This module goes over the legislation introduced by the Code of Federal Regulations (CFR) Title 15, which has impacts on
                         what technologies companies can use and who they cannot associate with.
                     </p>
                     <br></br><hr></hr><br></br>
@@ -74,7 +74,7 @@ const ModulesContainer: React.FC = () => {
                 </Module>
                 <Module title="Module 3: SBIR Due Diligence">
                     <p>
-                        This module goes over requirements for the Due Diligence program, as well as detailing 
+                        This module goes over requirements for the Due Diligence program, as well as detailing
                         what is necessary to obtain SBIR and STTR grants.
                     </p>
                     <br></br><hr></hr><br></br>
@@ -85,7 +85,7 @@ const ModulesContainer: React.FC = () => {
                 </Module>
                 <Module title="Module 4: CMMC">
                     <p>
-                        This module goes over the new Cybersecurity Maturity Model Certification (CMMC) 2.0 program and its initiative to increase 
+                        This module goes over the new Cybersecurity Maturity Model Certification (CMMC) 2.0 program and its initiative to increase
                         cybersecurity standards across contracted entities.
                     </p>
                     <br></br><hr></hr><br></br>
@@ -96,7 +96,7 @@ const ModulesContainer: React.FC = () => {
                 </Module>
                 <Module title="Module 5: FOCI">
                     <p>
-                        This module further details Foreign Ownership Control and Influence, an attribute 
+                        This module further details Foreign Ownership Control and Influence, an attribute
                         addressed in CFR Title 15.
                     </p>
                     <br></br><hr></hr><br></br>
