@@ -55,9 +55,11 @@ export function ReviewedCompaniesTable({ reviewedCompanies }: ReviewedCompaniesT
                     '& .MuiDataGrid-row:nth-child(even)': {
                         backgroundColor: '#1e1e1e',
                     },
+                    '& .MuiDataGrid-row:nth-child(odd)': {
+                        backgroundColor: '#121212',
+                    },
                     '& .MuiDataGrid-cell': {
                         borderColor: '#333',
-                        backgroundColor: 'black',
                         color: '#f0f0f0', // Ensure cell text is white
                     },
                     '& .MuiDataGrid-footerContainer': {
